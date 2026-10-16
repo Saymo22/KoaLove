@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body class="app">
+
+<main class="app-wrap">
+
+    <div class="app-logo">Nosso Amor ❤️</div>
+    <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+
+    <div class="passo ativo">
+        <h2>Finalizar pedido</h2>
+        <p class="sub">Falta pouco para o seu presente ficar pronto.</p>
+    </div>
+
+    <div class="caixa">
+        <ul class="resumo" id="resumo"></ul>
+        <div class="total">
+            <span>Total</span>
+            <strong id="total"></strong>
+        </div>
+    </div>
+
+    <div class="aviso-teste" id="avisoTeste" style="display:none">
+        <b>Modo de teste:</b> nenhum pagamento real será cobrado. Para vender de verdade,
+        integre um gateway (Pix/cartão) na função <code>pagar()</code> deste arquivo e
+        coloque <code>CONFIG.modoTeste = false</code> em <code>app.js</code>.
+    </div>
+
+    <button class="btn grande" id="btnPagar">Pagar agora</button>
+    <div class="erro" id="erro"></div>
+    <div style="text-align:center;margin-top:10px">
+        <a href="criar.html" style="color:var(--rosa);font-size:13px">← Voltar e editar</a>
+    </div>
+
+</main>
+
+<script src="app.js"></script>
+<script>
+    const id = parametro("id");
+    let pedido = null;
+    const $ = (x) => document.getElementById(x);
+
+    (async function () {
+        pedido = id ? await buscarPedido(id) : null;
+        if (!pedido) { location.href = "criar.html"; return; }
+        if (pedido.status === "pago") { location.href = "resultado.html?id=" + id; return; }
+
+        aplicarTema(pedido.tema);
+        const t = THEMES[pedido.tema];
+
+        const linhas = [
+            ["Tema", t.emoji + " " + t.nome],
+            ["Para", pedido.para],
+            ["De", pedido.de],
+            ["Fotos", pedido.fotos.length],
+            ["Vídeos", pedido.videos.length],
+            ["Música", pedido.musica ? (pedido.musicaNome || "Enviada") : "—"]
+        ];
+        $("resumo").innerHTML = linhas.map(l => `<li><span>${l[0]}</span><span></span></li>`).join("");
+        [...$("resumo").children].forEach((li, i) => li.lastChild.textContent = linhas[i][1]);
+        $("total").textContent = formatarPreco(CONFIG.preco);
+        if (CONFIG.modoTeste) {
+            $("avisoTeste").style.display = "block";
+            $("btnPagar").textContent = "Simular pagamento aprovado";
+        }
+    })();
+
+    async function pagar() {
+        /* ---------------------------------------------------------
+           INTEGRAÇÃO REAL (exemplo do que fazer):
+           1. Chamar SEU servidor: POST /api/criar-cobranca { pedidoId, valor }
+           2. O servidor cria a cobrança no gateway (Mercado Pago, Stripe,
+              Asaas, etc.) e devolve a URL de checkout / código Pix.
+           3. Redirecionar o cliente para lá.
+           4. O gateway avisa seu servidor por webhook quando o pagamento
+              for aprovado -> o servidor marca o pedido como "pago".
+           5. A página resultado.html só deve liberar o link se o servidor
+              confirmar o status "pago" (nunca confie só no navegador).
+        --------------------------------------------------------- */
+        if (!CONFIG.modoTeste) {
+            throw new Error("Gateway de pagamento ainda não integrado.");
+        }
+        pedido.status = "pago";
+        pedido.pagoEm = Date.now();
+        await salvarPedido(pedido);
+    }
+
+    $("btnPagar").addEventListener("click", async () => {
+        const b = $("btnPagar");
+        b.disabled = true;
+        b.textContent = "Processando...";
+        $("erro").textContent = "";
+        try {
+            await pagar();
+            location.href = "resultado.html?id=" + id;
+        } catch (e) {
+            $("erro").textContent = e.message || "Falha no pagamento.";
+            b.disabled = false;
+            b.textContent = CONFIG.modoTeste ? "Simular pagamento aprovado" : "Pagar agora";
+        }
+    });
+</script>
+</body>
+</html>

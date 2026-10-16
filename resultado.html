@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu presente está pronto ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body class="app">
+
+<main class="app-wrap">
+
+    <div class="app-logo">Nosso Amor ❤️</div>
+
+    <div class="passo ativo">
+        <h2>Pagamento confirmado! 🎉</h2>
+        <p class="sub">Seu presente está pronto. Envie o link ou o QR Code para quem você ama.</p>
+    </div>
+
+    <div class="caixa qr-box">
+        <div id="qr"></div>
+        <div class="link-row">
+            <input type="text" id="link" readonly>
+            <button class="btn" id="btnCopiar" type="button">Copiar link</button>
+        </div>
+        <div class="share-row">
+            <a class="btn wpp" id="btnWpp" target="_blank" rel="noopener" style="text-decoration:none">Enviar no WhatsApp</a>
+            <button class="btn sec" id="btnBaixar" type="button">Baixar QR Code</button>
+            <a class="btn sec" id="btnVer" target="_blank" style="text-decoration:none">Ver presente</a>
+        </div>
+    </div>
+
+    <div style="text-align:center">
+        <a href="criar.html" style="color:var(--rosa);font-size:13px">Criar outro presente</a>
+    </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="app.js"></script>
+<script>
+    const id = parametro("id");
+    const $ = (x) => document.getElementById(x);
+
+    (async function () {
+        const pedido = id ? await buscarPedido(id) : null;
+        if (!pedido) { location.href = "criar.html"; return; }
+        if (pedido.status !== "pago") { location.href = "pagamento.html?id=" + id; return; }
+
+        aplicarTema(pedido.tema);
+
+        const url = new URL("ver.html?id=" + id, location.href).href;
+        $("link").value = url;
+        $("btnVer").href = url;
+        $("btnWpp").href = "https://wa.me/?text=" + encodeURIComponent("Fiz uma surpresa para você ❤️ " + url);
+
+        new QRCode($("qr"), { text: url, width: 220, height: 220, colorDark: "#7d3048", colorLight: "#ffffff" });
+
+        $("btnCopiar").addEventListener("click", async () => {
+            try { await navigator.clipboard.writeText(url); }
+            catch (e) { $("link").select(); document.execCommand("copy"); }
+            $("btnCopiar").textContent = "Copiado ✓";
+            setTimeout(() => $("btnCopiar").textContent = "Copiar link", 2000);
+        });
+
+        $("btnBaixar").addEventListener("click", () => {
+            const canvas = $("qr").querySelector("canvas");
+            const a = document.createElement("a");
+            a.download = "qrcode-presente.png";
+            a.href = canvas ? canvas.toDataURL("image/png") : $("qr").querySelector("img").src;
+            a.click();
+        });
+    })();
+</script>
+</body>
+</html>

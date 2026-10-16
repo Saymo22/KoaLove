@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma surpresa para você ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .carta-section { background: var(--vinho); }
+        footer { background: var(--vinho-escuro, #4d1e2d); }
+        .historia { background: var(--rosa-pastel); }
+        .carta p, .evento p { white-space: pre-line; }
+        #msg { min-height: 100vh; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--vinho); }
+        .hero-foto { background-size: cover; background-position: center; }
+
+        /* =====================================================
+           TEMA NETFLIX
+        ===================================================== */
+        body.tema-netflix { background: #0b0b0b; color: #fff; }
+        body.tema-netflix .heart { display: none; }
+
+        .nf { background: #0b0b0b; color: #fff; min-height: 100vh; font-family: 'Poppins', sans-serif; }
+        .nf-hero {
+            position: relative;
+            min-height: 92vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 0 5vw 70px;
+            background: #111 center/cover no-repeat;
+        }
+        .nf-hero-grad {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(11,11,11,.35) 0%, rgba(11,11,11,.7) 55%, #0b0b0b 100%);
+        }
+        .nf-hero-inner { position: relative; z-index: 2; max-width: 640px; }
+        .nf-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+            color: #fff; margin-bottom: 14px; font-weight: 600;
+        }
+        .nf-badge::before { content: "N"; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: #e50914; border-radius: 3px; font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 700; }
+        .nf-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: clamp(42px, 6vw, 76px);
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin-bottom: 14px;
+            text-shadow: 0 4px 30px rgba(0,0,0,.6);
+            text-transform: uppercase;
+        }
+        .nf-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 13px; margin-bottom: 14px; color: #d1d1d1; }
+        .nf-meta .nf-match { color: #46d369; font-weight: 600; }
+        .nf-meta .nf-hd { border: 1px solid #888; padding: 1px 6px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; }
+        .nf-desc {
+            font-size: 15px; line-height: 1.65;
+            color: #e5e5e5; margin-bottom: 24px;
+            max-width: 560px;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: pre-line;
+        }
+        .nf-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .nf-btn-play, .nf-btn-sec, .nf-icon {
+            border: none; border-radius: 4px; cursor: pointer;
+            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600;
+            padding: 11px 26px; display: inline-flex; align-items: center; gap: 8px;
+            transition: .2s;
+        }
+        .nf-btn-play { background: #fff; color: #000; }
+        .nf-btn-play:hover { background: #d8d8d8; }
+        .nf-btn-sec { background: rgba(109,109,110,.7); color: #fff; }
+        .nf-btn-sec:hover { background: rgba(109,109,110,.9); }
+        .nf-icon { background: rgba(42,42,42,.6); color: #fff; padding: 11px 14px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; }
+        .nf-icon:hover { background: rgba(42,42,42,.9); }
+
+        /* Stats */
+        .nf-stats {
+            background: #e50914;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            padding: 22px 5vw;
+            gap: 16px;
+            text-align: center;
+        }
+        .nf-stat strong { display: block; font-family: 'Poppins', sans-serif; font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: #fff; line-height: 1; }
+        .nf-stat span { display: block; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.85); margin-top: 6px; font-weight: 600; }
+
+        /* Seções */
+        .nf-sec { padding: 50px 5vw; }
+        .nf-sec h2 { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 22px; color: #fff; letter-spacing: -0.01em; }
+        .nf-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+        .nf-sec-head h2 { margin: 0; }
+        .nf-sec-tab { font-size: 13px; color: #b3b3b3; cursor: pointer; }
+
+        /* Episódios */
+        .nf-episodios { display: flex; flex-direction: column; gap: 4px; }
+        .nf-ep {
+            display: grid;
+            grid-template-columns: 40px 140px 1fr;
+            gap: 18px;
+            align-items: center;
+            padding: 16px 8px;
+            border-bottom: 1px solid #1f1f1f;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .nf-ep:hover { background: #141414; }
+        .nf-ep-num { font-size: 26px; font-weight: 700; color: #fff; text-align: center; }
+        .nf-ep-thumb {
+            aspect-ratio: 16/9; border-radius: 4px; overflow: hidden; background: #222;
+            position: relative;
+        }
+        .nf-ep-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .nf-ep-thumb::after {
+            content: "▶"; position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,.35); color: #fff; font-size: 24px; opacity: 0; transition: .2s;
+        }
+        .nf-ep:hover .nf-ep-thumb::after { opacity: 1; }
+        .nf-ep-info h3 { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+        .nf-ep-info p { font-size: 13px; line-height: 1.55; color: #b3b3b3; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .nf-ep-data { font-size: 12px; color: #808080; }
+
+        /* Momentos */
+        .nf-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .nf-galeria img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; transition: transform .3s; cursor: pointer; }
+        .nf-galeria img:hover { transform: scale(1.05); }
+
+        /* Sinopse */
+        .nf-carta p { font-size: 16px; line-height: 1.75; color: #e5e5e5; white-space: pre-line; max-width: 780px; }
+        .nf-assin { margin-top: 22px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #e50914; font-weight: 600; }
+
+        /* Música */
+        .nf-musica {
+            display: flex; align-items: center; gap: 18px;
+            background: #181818; border-radius: 6px; padding: 18px 20px;
+            max-width: 620px;
+        }
+        .nf-mus-cover { width: 60px; height: 60px; border-radius: 4px; background: #222 center/cover; flex-shrink: 0; }
+        .nf-mus-info { flex: 1; min-width: 0; }
+        .nf-mus-info b { display: block; font-size: 15px; font-weight: 600; color: #fff; }
+        .nf-mus-info span { font-size: 13px; color: #b3b3b3; }
+
+        /* Rodapé */
+        .nf-footer { padding: 60px 5vw; text-align: center; color: #808080; font-size: 13px; border-top: 1px solid #1f1f1f; }
+        .nf-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 22px; color: #e50914; letter-spacing: 2px; margin-bottom: 12px; }
+        .nf-logo span { color: #fff; }
+
+        @media (max-width: 700px) {
+            .nf-ep { grid-template-columns: 30px 110px 1fr; gap: 10px; padding: 12px 4px; }
+            .nf-ep-num { font-size: 20px; }
+            .nf-ep-info p { -webkit-line-clamp: 2; font-size: 12px; }
+            .nf-hero { padding: 0 20px 50px; min-height: 88vh; }
+            .nf-stats { padding: 18px 20px; }
+            .nf-sec { padding: 40px 20px; }
+            .nf-sec h2 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="msg"></div>
+
+<div id="conteudo" style="display:none">
+
+    <!-- =====================================================
+         LAYOUT PADRÃO (romântico)
+    ====================================================== -->
+    <div id="layoutPadrao" style="display:none">
+        <div class="heart" style="left: 10%; animation-delay: 0s;">♥</div>
+        <div class="heart" style="left: 25%; animation-delay: 3s;">♡</div>
+        <div class="heart" style="left: 45%; animation-delay: 1s;">♥</div>
+        <div class="heart" style="left: 65%; animation-delay: 5s;">♡</div>
+        <div class="heart" style="left: 85%; animation-delay: 2s;">♥</div>
+
+        <header class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-small" id="pequeno"></div>
+                <h1 id="titulo"></h1>
+                <p id="duracao"></p>
+            </div>
+            <div class="scroll">nossa história<span>↓</span></div>
+        </header>
+
+        <section class="contador-section">
+            <div class="polaroid polaroid-left" style="top: 24px; --rot: -5deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="titulo">
+                    <span>Desde que tudo começou</span>
+                    <h2>Nosso tempo juntos</h2>
+                    <p>Cada segundo ao seu lado se tornou parte da nossa história.</p>
+                </div>
+                <div class="contador">
+                    <div class="tempo"><strong id="anos">0</strong><span>Anos</span></div>
+                    <div class="tempo"><strong id="meses">0</strong><span>Meses</span></div>
+                    <div class="tempo"><strong id="dias">0</strong><span>Dias</span></div>
+                    <div class="tempo"><strong id="horas">0</strong><span>Horas</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="historia">
+            <div class="polaroid polaroid-right" style="top: 30px; --rot: 4deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="titulo">
+                    <span>Era uma vez...</span>
+                    <h2>A nossa história</h2>
+                    <p>Alguns momentos que fizeram nossa história chegar até aqui.</p>
+                </div>
+                <div class="timeline" id="timeline"></div>
+            </div>
+        </section>
+
+        <section class="galeria-section" id="secGaleria">
+            <div class="polaroid polaroid-left" style="top: 18px; --rot: -3deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="titulo">
+                    <span>Nossos momentos</span>
+                    <h2>Um álbum só nosso</h2>
+                    <p>Alguns pedacinhos da nossa história, guardados como pequenas Polaroids. ❤️</p>
+                </div>
+                <div class="galeria" id="galeria"></div>
+            </div>
+        </section>
+
+        <section class="momentos" id="secMomentos">
+            <div class="polaroid polaroid-right" style="top: 34px; --rot: 5deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="titulo">
+                    <span>Pequenas coisas</span>
+                    <h2 id="amoTitulo"></h2>
+                </div>
+                <div class="cards" id="cards"></div>
+            </div>
+        </section>
+
+        <section class="video-section" id="secVideo">
+            <div class="container video-container">
+                <div class="titulo">
+                    <span>Um momento só nosso</span>
+                    <h2>Nosso Momento</h2>
+                    <p>Algumas lembranças que eu guardaria para sempre. ❤️</p>
+                </div>
+                <div class="story-card" id="storyCard">
+                    <div class="story-header">
+                        <div class="story-progress-bar" id="progressBarContainer"></div>
+                        <div class="story-profile">
+                            <div class="story-profile-info">
+                                <img id="avatar" alt="" class="story-avatar">
+                                <span class="story-username" id="storyUser"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="videosWrap"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="carta-section">
+            <div class="polaroid polaroid-left" style="top: 22px; --rot: -4deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="carta">
+                    <div class="aspas">“</div>
+                    <h2>Para você</h2>
+                    <p id="carta"></p>
+                    <div class="assinatura" id="assinatura"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="musica-section" id="secMusica">
+            <div class="polaroid polaroid-right" style="top: 26px; --rot: 3deg;">
+                <img class="pol" alt="Nossa foto">
+            </div>
+            <div class="container">
+                <div class="titulo">
+                    <span>A nossa música</span>
+                    <h2>Uma música para nós</h2>
+                </div>
+                <div class="player">
+                    <div class="disco" id="disco"></div>
+                    <h3 id="musicaNome"></h3>
+                    <p id="musicaArtista"></p>
+                    <audio id="audio" controls preload="auto"></audio>
+                    <br><br>
+                    <button class="btn-musica" id="botaoMusica">▶ Tocar nossa música</button>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="coracao">❤️</div>
+            <p id="rodape"></p>
+            <small>E que venham muitos outros capítulos da nossa história.</small>
+        </footer>
+    </div>
+
+    <!-- =====================================================
+         LAYOUT NETFLIX
+    ====================================================== -->
+    <div id="layoutNetflix" class="nf" style="display:none">
+        <section class="nf-hero" id="nfHero">
+            <div class="nf-hero-grad"></div>
+            <div class="nf-hero-inner">
+                <div class="nf-badge"><span id="nfBadge">NAMORO</span> ORIGINAL</div>
+                <h1 class="nf-title" id="nfTitulo">EU TE AMO PARA SEMPRE!</h1>
+                <div class="nf-meta">
+                    <span class="nf-match">98% compatível</span>
+                    <span id="nfAno">2023</span>
+                    <span id="nfTemp">2 Temporadas</span>
+                    <span class="nf-hd">HD</span>
+                </div>
+                <p class="nf-desc" id="nfDesc"></p>
+                <div class="nf-actions">
+                    <button class="nf-btn-play" id="nfPlay">▶ Reproduzir</button>
+                    <button class="nf-btn-sec" id="nfLista">＋ Minha lista</button>
+                    <button class="nf-icon" title="Curtir">👍</button>
+                    <button class="nf-icon" title="Compartilhar" id="nfShare">🔗</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="nf-stats">
+            <div class="nf-stat"><strong id="nfStatAnos">0</strong><span>Anos Juntos</span></div>
+            <div class="nf-stat"><strong id="nfStatDias">0</strong><span>Dias de História</span></div>
+            <div class="nf-stat"><strong id="nfStatData">—</strong><span>Data Especial</span></div>
+        </section>
+
+        <section class="nf-sec">
+            <div class="nf-sec-head">
+                <h2>Episódios</h2>
+                <span class="nf-sec-tab">Temporada 1 ▾</span>
+            </div>
+            <div class="nf-episodios" id="nfEpisodios"></div>
+        </section>
+
+        <section class="nf-sec" id="nfSecGaleria">
+            <h2>Momentos</h2>
+            <div class="nf-galeria" id="nfGaleria"></div>
+        </section>
+
+        <section class="nf-sec nf-carta">
+            <h2>Sinopse</h2>
+            <p id="nfCarta"></p>
+            <div class="nf-assin" id="nfAssin"></div>
+        </section>
+
+        <section class="nf-sec" id="nfSecMusica" style="display:none">
+            <h2>Trilha sonora</h2>
+            <div class="nf-musica">
+                <div class="nf-mus-cover" id="nfMusCover"></div>
+                <div class="nf-mus-info">
+                    <b id="nfMusNome">—</b>
+                    <span id="nfMusArtista"></span>
+                </div>
+                <button class="nf-btn-play" id="nfMusBtn">▶</button>
+                <audio id="nfAudio" preload="auto"></audio>
+            </div>
+        </section>
+
+        <footer class="nf-footer">
+            <div class="nf-logo">NOSSO<span>AMOR</span></div>
+            <p id="nfRodape"></p>
+        </footer>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+    const $ = (x) => document.getElementById(x);
+
+    function mostrarMensagem(txt) {
+        $("msg").textContent = txt;
+        $("msg").style.display = "flex";
+    }
+
+    /* =====================================================
+       LAYOUT NETFLIX
+    ===================================================== */
+    function renderNetflix(p, tema) {
+        const t = tempoJuntos(p.inicio);
+        const urls = p.fotos.map(f => URL.createObjectURL(f));
+
+        /* Hero */
+        $("nfHero").style.backgroundImage =
+            "linear-gradient(180deg, rgba(11,11,11,.2) 0%, rgba(11,11,11,.55) 45%, #0b0b0b 100%), url('" + urls[0] + "')";
+        $("nfBadge").textContent = (tema.nome || "Namoro").toUpperCase();
+        $("nfTitulo").textContent = p.titulo || "Eu te amo para sempre!";
+
+        const anos = Math.max(1, Math.floor(t.meses / 12));
+        const temp = Math.max(1, Math.ceil(t.meses / 12));
+        $("nfAno").textContent = (p.inicio || "").split("-")[0] || "—";
+        $("nfTemp").textContent = temp + (temp === 1 ? " Temporada" : " Temporadas");
+
+        const primeiraLinha = (p.carta || "").split("\n\n")[0] || "";
+        $("nfDesc").textContent =
+            (p.frase || tema.sufixo) + (primeiraLinha ? "\n\n" + primeiraLinha : "");
+
+        /* Stats */
+        $("nfStatAnos").textContent = t.anos || Math.floor(t.meses / 12);
+        $("nfStatDias").textContent = t.dias.toLocaleString("pt-BR");
+        const partes = (p.inicio || "").split("-");
+        $("nfStatData").textContent = partes.length === 3
+            ? partes[2] + "/" + partes[1]
+            : "—";
+
+        /* Episódios */
+        const epsWrap = $("nfEpisodios");
+        epsWrap.innerHTML = "";
+        const eventos = [...(p.eventos || [])];
+        eventos.push({
+            data: new Date().toLocaleDateString("pt-BR"),
+            titulo: "Hoje",
+            texto: textoDuracao(t) + " construindo nossa história."
+        });
+
+        eventos.forEach((ev, i) => {
+            const ep = document.createElement("div");
+            ep.className = "nf-ep";
+            ep.innerHTML =
+                '<div class="nf-ep-num"></div>' +
+                '<div class="nf-ep-thumb"><img alt=""></div>' +
+                '<div class="nf-ep-info">' +
+                    '<div class="nf-ep-head"><h3></h3><span class="nf-ep-data"></span></div>' +
+                    '<p></p>' +
+                '</div>';
+            ep.querySelector(".nf-ep-num").textContent = (i + 1);
+            ep.querySelector("h3").textContent = ev.titulo || ("Episódio " + (i + 1));
+            ep.querySelector(".nf-ep-data").textContent = ev.data || "";
+            ep.querySelector("p").textContent = ev.texto || "";
+            ep.querySelector("img").src = urls[(i + 1) % urls.length];
+            epsWrap.appendChild(ep);
+        });
+
+        /* Galeria */
+        const gal = $("nfGaleria");
+        gal.innerHTML = "";
+        urls.forEach(u => {
+            const img = document.createElement("img");
+            img.src = u;
+            img.alt = "Momento";
+            gal.appendChild(img);
+        });
+
+        /* Carta */
+        $("nfCarta").textContent = p.carta || "";
+        $("nfAssin").textContent = "Com todo meu amor, " + (p.de || "");
+
+        /* Música */
+        if (p.musica) {
+            $("nfSecMusica").style.display = "block";
+            $("nfMusNome").textContent = p.musicaNome || "Nossa música";
+            $("nfMusArtista").textContent = p.musicaArtista || "";
+            $("nfMusCover").style.backgroundImage = "url('" + urls[0] + "')";
+
+            const a = $("nfAudio");
+            a.src = URL.createObjectURL(p.musica);
+            const btn = $("nfMusBtn");
+            btn.addEventListener("click", () => {
+                a.paused ? a.play().catch(() => {}) : a.pause();
+            });
+            a.addEventListener("play", () => btn.textContent = "❚❚");
+            a.addEventListener("pause", () => btn.textContent = "▶");
+        }
+
+        /* Rodapé */
+        $("nfRodape").textContent = textoDuracao(t) + " — a história continua...";
+
+        /* Botão reproduzir → rola pros episódios */
+        $("nfPlay").addEventListener("click", () => {
+            document.querySelector(".nf-episodios").scrollIntoView({ behavior: "smooth" });
+        });
+
+        /* Compartilhar */
+        $("nfShare").addEventListener("click", () => {
+            if (navigator.share) {
+                navigator.share({ title: document.title, url: location.href }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(location.href).catch(() => {});
+                $("nfShare").textContent = "✓";
+                setTimeout(() => $("nfShare").textContent = "🔗", 1500);
+            }
+        });
+    }
+
+    /* =====================================================
+       LAYOUT PADRÃO
+    ===================================================== */
+    function renderPadrao(p, tema) {
+        const urls = p.fotos.map(f => URL.createObjectURL(f));
+        const t = tempoJuntos(p.inicio);
+
+        /* Capa */
+        const hero = $("hero");
+        hero.classList.add("hero-foto");
+        hero.style.background =
+            "linear-gradient(rgba(80,25,43,.35),rgba(80,25,43,.45)), url('" + urls[0] + "') center/cover";
+        $("pequeno").textContent = tema.pequeno;
+        $("titulo").textContent = p.titulo;
+        $("duracao").textContent = textoDuracao(t) + " " + (p.frase || tema.sufixo);
+
+        /* Polaroids decorativas */
+        document.querySelectorAll(".pol").forEach((img, i) => {
+            img.src = urls[(i + 1) % urls.length];
+        });
+
+        /* Contador */
+        $("anos").textContent = t.anos;
+        $("meses").textContent = t.meses;
+        $("dias").textContent = t.dias.toLocaleString("pt-BR");
+        $("horas").textContent = t.horas.toLocaleString("pt-BR");
+
+        /* Linha do tempo */
+        function addEvento(data, titulo, texto) {
+            const d = document.createElement("div");
+            d.className = "evento";
+            d.innerHTML = '<div class="evento-data"></div><h3></h3><p></p>';
+            if (data) d.children[0].textContent = data; else d.children[0].remove();
+            d.querySelector("h3").textContent = titulo;
+            d.querySelector("p").textContent = texto;
+            $("timeline").appendChild(d);
+        }
+        (p.eventos || []).forEach(e => addEvento(e.data, e.titulo || "", e.texto || ""));
+        addEvento(
+            new Date().toLocaleDateString("pt-BR"),
+            "Hoje",
+            "E depois de tudo isso, estamos aqui.\n" + textoDuracao(t) + " construindo nossa história."
+        );
+
+        /* Galeria */
+        urls.forEach(u => {
+            const d = document.createElement("div");
+            d.className = "foto";
+            d.innerHTML = '<img alt="Nossa foto">';
+            d.firstChild.src = u;
+            $("galeria").appendChild(d);
+        });
+
+        /* Pequenas coisas */
+        const amo = p.amo || [];
+        if (!amo.length) {
+            $("secMomentos").style.display = "none";
+        } else {
+            $("amoTitulo").textContent = tema.amoTitulo || "O que eu amo em você";
+            const emojis = ["😁", "😋", "❤️"];
+            amo.forEach((txt, i) => {
+                const c = document.createElement("div");
+                c.className = "card";
+                c.innerHTML = '<div class="card-icon"></div><h3></h3>';
+                c.children[0].textContent = emojis[i % emojis.length];
+                c.children[1].textContent = txt;
+                $("cards").appendChild(c);
+            });
+        }
+
+        /* Carta */
+        $("carta").textContent = p.para + "\n\n" + p.carta;
+        $("assinatura").textContent = "Com todo meu amor, " + p.de;
+        $("rodape").textContent = textoDuracao(t) + "...";
+
+        /* Vídeos estilo Story */
+        if (!p.videos.length) {
+            $("secVideo").style.display = "none";
+        } else {
+            $("avatar").src = urls[0];
+            $("storyUser").textContent = p.de.toLowerCase().replace(/\s+/g, "");
+            const vids = [], fills = [];
+            p.videos.forEach((f) => {
+                const seg = document.createElement("div");
+                seg.className = "progress-segment";
+                seg.innerHTML = '<div class="progress-fill"></div>';
+                $("progressBarContainer").appendChild(seg);
+                fills.push(seg.firstChild);
+
+                const v = document.createElement("video");
+                v.className = "story-video";
+                v.src = URL.createObjectURL(f);
+                v.playsInline = true;
+                v.muted = true;
+                $("videosWrap").appendChild(v);
+                vids.push(v);
+            });
+
+            let atual = 0;
+            function carregar(i) {
+                vids.forEach((v, k) => {
+                    if (k === i) { v.classList.add("active"); v.currentTime = 0; v.play().catch(() => {}); }
+                    else { v.classList.remove("active"); v.pause(); }
+                });
+                fills.forEach((f, k) => { if (k < i) f.style.width = "100%"; else if (k > i) f.style.width = "0%"; });
+            }
+            vids.forEach((v, i) => {
+                v.addEventListener("timeupdate", () => {
+                    if (i === atual && v.duration) fills[i].style.width = (v.currentTime / v.duration * 100) + "%";
+                });
+                v.addEventListener("ended", () => { fills[i].style.width = "100%"; atual = (atual + 1) % vids.length; carregar(atual); });
+            });
+            $("storyCard").addEventListener("click", (e) => {
+                const r = $("storyCard").getBoundingClientRect();
+                atual = (e.clientX - r.left > r.width / 2) ? (atual + 1) % vids.length : (atual - 1 + vids.length) % vids.length;
+                carregar(atual);
+            });
+            carregar(0);
+        }
+
+        /* Música */
+        if (!p.musica) {
+            $("secMusica").style.display = "none";
+        } else {
+            const audio = $("audio"), botao = $("botaoMusica"), disco = $("disco");
+            audio.src = URL.createObjectURL(p.musica);
+            $("musicaNome").textContent = p.musicaNome || "Nossa música";
+            $("musicaArtista").textContent = p.musicaArtista || "";
+
+            audio.addEventListener("play", () => { botao.textContent = "❚❚ Pausar nossa música"; disco.classList.add("tocando"); });
+            audio.addEventListener("pause", () => { botao.textContent = "▶ Tocar nossa música"; disco.classList.remove("tocando"); });
+            botao.addEventListener("click", (e) => { e.stopPropagation(); audio.paused ? audio.play().catch(() => {}) : audio.pause(); });
+
+            const primeiro = () => {
+                document.removeEventListener("click", primeiro);
+                document.removeEventListener("touchstart", primeiro);
+                if (audio.paused) audio.play().catch(() => {});
+            };
+            document.addEventListener("click", primeiro);
+            document.addEventListener("touchstart", primeiro, { passive: true });
+        }
+    }
+
+    /* =====================================================
+       BOOT
+    ===================================================== */
+    (async function () {
+        const id = parametro("id");
+        const p = id ? await buscarPedido(id) : null;
+
+        if (!p) return mostrarMensagem("Presente não encontrado.");
+        if (p.status !== "pago") return mostrarMensagem("Este presente ainda não foi liberado.");
+
+        aplicarTema(p.tema);
+        const tema = THEMES[p.tema] || THEMES.namoro;
+        document.title = "Uma surpresa de " + p.de + " ❤️";
+        $("conteudo").style.display = "block";
+
+        if (p.tema === "netflix") {
+            $("layoutNetflix").style.display = "block";
+            renderNetflix(p, tema);
+        } else {
+            $("layoutPadrao").style.display = "block";
+            renderPadrao(p, tema);
+        }
+    })();
+</script>
+</body>
+</html>

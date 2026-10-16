@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar seu presente ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app.css">
+    <style>
+        .previa { background: #fff; border-radius: 22px; padding: 22px; box-shadow: var(--sombra); margin: 4px 0 22px; text-align: center; }
+        .previa-frase { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--vinho); margin-bottom: 16px; line-height: 1.3; }
+        .previa-cont { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .previa-cont div { background: var(--rosa-pastel); border-radius: 14px; padding: 14px 6px; }
+        .previa-cont strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--vinho); }
+        .previa-cont span { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--rosa); }
+        .previa-tag { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--rosa); margin-bottom: 10px; }
+
+        .ev-item { background: #fff; border-radius: 20px; padding: 20px 22px 6px; box-shadow: var(--sombra); margin-bottom: 16px; }
+        .ev-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; color: var(--vinho); }
+        .ev-rem { border: none; background: var(--rosa-claro); color: var(--vinho); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        .ev-rem:hover { background: var(--rosa); color: #fff; }
+        .ev-item textarea { min-height: 110px; }
+        .bloco-titulo { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--vinho); margin: 34px 0 6px; text-align: center; }
+        .nota { text-align: center; color: #8b717b; font-size: 12px; margin-bottom: 18px; line-height: 1.6; }
+
+        .criar-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 380px;
+            gap: 30px;
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 0 24px;
+            align-items: start;
+            justify-content: center;
+            justify-items: center;
+        }
+        .criar-layout > .app-wrap {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 50px 0 80px;
+            justify-self: center;
+        }
+
+        .preview-col {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            justify-self: center;
+        }
+        .preview-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            height: 100%;
+            text-align: center;
+        }
+        .preview-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--rosa);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .preview-phone {
+            width: 340px;
+            height: min(720px, calc(100vh - 100px));
+            background: #1d1519;
+            border-radius: 44px;
+            padding: 10px;
+            box-shadow: 0 30px 60px rgba(125, 48, 72, 0.28), inset 0 0 0 2px rgba(255,255,255,0.06);
+            position: relative;
+            flex-shrink: 0;
+            margin: 0 auto;
+        }
+        .preview-phone::before {
+            content: "";
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 6px;
+            border-radius: 6px;
+            background: #2a2025;
+            z-index: 3;
+        }
+        .preview-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 34px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--rosa-pastel);
+            position: relative;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .preview-screen::-webkit-scrollbar { display: none; }
+
+        /* ===== Prévia PADRÃO ===== */
+        .pv-hero {
+            min-height: 62%;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 40px 20px; color: #fff;
+            background: linear-gradient(135deg, var(--rosa), var(--vinho));
+            background-size: cover; background-position: center;
+            position: relative;
+        }
+        .pv-hero::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 55%, rgba(255,241,245,.35));
+            pointer-events: none;
+        }
+        .pv-hero-content { position: relative; z-index: 2; }
+        .pv-hero small { display: block; font-size: 8px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; opacity: .95; }
+        .pv-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; line-height: .95; margin-bottom: 12px; text-shadow: 0 2px 12px rgba(0,0,0,.35); }
+        .pv-hero p { font-size: 11px; line-height: 1.55; opacity: .95; max-width: 240px; margin: 0 auto; }
+
+        .pv-sec { padding: 24px 18px; text-align: center; background: #fff; border-top: 1px solid rgba(0,0,0,.04); }
+        .pv-sec:nth-of-type(even) { background: var(--rosa-pastel); }
+        .pv-eyebrow { display: block; font-size: 7px; letter-spacing: 3px; text-transform: uppercase; color: var(--rosa); margin-bottom: 6px; }
+        .pv-sec h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--vinho); font-weight: 600; margin-bottom: 14px; line-height: 1.1; }
+
+        .pv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .pv-box { background: var(--rosa-pastel); border-radius: 8px; padding: 10px 2px; text-align: center; }
+        .pv-box strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--vinho); line-height: 1; }
+        .pv-box span { font-size: 6px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rosa); }
+
+        .pv-timeline { display: flex; flex-direction: column; gap: 12px; text-align: left; position: relative; padding-left: 16px; }
+        .pv-timeline::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: var(--rosa-claro); }
+        .pv-ev { position: relative; }
+        .pv-ev::before { content: "♥"; position: absolute; left: -18px; top: 1px; width: 12px; height: 12px; border-radius: 50%; background: #fff; color: var(--rosa); font-size: 7px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(125,48,72,.18); }
+        .pv-ev-data { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rosa); margin-bottom: 2px; }
+        .pv-ev h4 { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--vinho); margin-bottom: 3px; line-height: 1.2; }
+        .pv-ev p { font-size: 9px; line-height: 1.5; color: #765f67; white-space: pre-line; }
+        .pv-empty { font-size: 10px; color: #a08a92; font-style: italic; text-align: center; padding: 8px 0; }
+
+        .pv-fotos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .pv-fotos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; box-shadow: 0 3px 8px rgba(75,55,64,.15); }
+
+        .pv-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .pv-card { background: #fff; border-radius: 8px; padding: 10px 4px; box-shadow: 0 3px 8px rgba(125,48,72,.08); text-align: center; }
+        .pv-card div { font-size: 16px; margin-bottom: 4px; }
+        .pv-card b { font-family: 'Cormorant Garamond', serif; font-size: 10px; color: var(--vinho); font-weight: 600; display: block; line-height: 1.2; }
+
+        .pv-video-frame { width: 130px; aspect-ratio: 9/16; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #000; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+        .pv-video-frame video { width: 100%; height: 100%; object-fit: cover; }
+        .pv-video-badge { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,.55); color: #fff; font-size: 8px; padding: 2px 6px; border-radius: 20px; backdrop-filter: blur(4px); }
+
+        .pv-carta { background: var(--vinho) !important; color: #fff; }
+        .pv-carta .pv-eyebrow { color: #e9a6b8; }
+        .pv-carta h2 { color: #fff; }
+        .pv-carta p { font-family: 'Cormorant Garamond', serif; font-size: 12px; line-height: 1.7; color: #fbeef2; white-space: pre-line; text-align: center; }
+        .pv-assin { margin-top: 12px; font-family: 'Cormorant Garamond', serif; font-size: 12px; color: #e9a6b8; text-align: center; }
+
+        .pv-musica h2 { margin-bottom: 4px; }
+        .pv-musica p { font-size: 10px; color: #80616c; text-align: center; }
+
+        .pv-footer { background: var(--vinho-escuro, #4d1e2d); color: #fff; text-align: center; padding: 22px 12px; }
+        .pv-footer div { font-size: 20px; margin-bottom: 4px; }
+        .pv-footer p { font-family: 'Cormorant Garamond', serif; font-size: 13px; }
+
+        /* =====================================================
+           PRÉVIA NETFLIX
+        ===================================================== */
+        #pvNetflix { background: #0b0b0b; color: #fff; min-height: 100%; }
+        .pvn-hero {
+            position: relative;
+            min-height: 260px;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 16px;
+            background: #111 center/cover;
+        }
+        .pvn-hero::before {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(11,11,11,.25) 0%, rgba(11,11,11,.85) 70%, #0b0b0b 100%);
+        }
+        .pvn-hero > * { position: relative; z-index: 1; }
+        .pvn-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 7px; letter-spacing: 2px; text-transform: uppercase;
+            color: #fff; font-weight: 600; margin-bottom: 8px;
+        }
+        .pvn-badge::before {
+            content: "N"; display: inline-flex; align-items: center; justify-content: center;
+            width: 12px; height: 12px; background: #e50914; border-radius: 2px;
+            font-family: 'Cormorant Garamond', serif; font-size: 9px; font-weight: 700;
+        }
+        .pvn-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800; font-size: 22px; line-height: 1;
+            letter-spacing: -0.01em; margin-bottom: 8px;
+            text-transform: uppercase; color: #fff;
+        }
+        .pvn-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 8px; color: #d1d1d1; margin-bottom: 8px; }
+        .pvn-meta .pvn-match { color: #46d369; font-weight: 600; }
+        .pvn-desc {
+            font-size: 9px; line-height: 1.5; color: #ccc; margin-bottom: 10px;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+            white-space: pre-line;
+        }
+        .pvn-actions { display: flex; gap: 6px; }
+        .pvn-play, .pvn-sec {
+            border: none; border-radius: 3px; cursor: pointer;
+            font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600;
+            padding: 7px 12px; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .pvn-play { background: #fff; color: #000; }
+        .pvn-sec { background: rgba(109,109,110,.7); color: #fff; }
+
+        .pvn-stats {
+            background: #e50914; display: grid; grid-template-columns: repeat(3, 1fr);
+            padding: 10px; gap: 4px; text-align: center;
+        }
+        .pvn-stats strong { display: block; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 800; color: #fff; line-height: 1; }
+        .pvn-stats span { display: block; font-size: 6px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.85); margin-top: 3px; font-weight: 600; }
+
+        .pvn-sec { padding: 14px 12px; border-bottom: 1px solid #1a1a1a; }
+        .pvn-sec h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        .pvn-sec-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .pvn-sec-head h3 { margin: 0; }
+        .pvn-sec-head span { font-size: 8px; color: #999; }
+
+        .pvn-eps { display: flex; flex-direction: column; gap: 2px; }
+        .pvn-ep { display: grid; grid-template-columns: 20px 60px 1fr; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid #1a1a1a; }
+        .pvn-ep:last-child { border-bottom: none; }
+        .pvn-ep-num { font-size: 13px; font-weight: 700; color: #fff; text-align: center; }
+        .pvn-ep-thumb { aspect-ratio: 16/9; border-radius: 3px; overflow: hidden; background: #222; }
+        .pvn-ep-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pvn-ep-info h4 { font-size: 9px; font-weight: 600; color: #fff; margin-bottom: 2px; line-height: 1.2; }
+        .pvn-ep-info p { font-size: 8px; line-height: 1.4; color: #999; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+        .pvn-ep-data { display: block; font-size: 7px; color: #666; margin-bottom: 1px; }
+
+        .pvn-galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .pvn-galeria img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 3px; }
+
+        .pvn-carta-p { font-size: 9px; line-height: 1.55; color: #ccc; white-space: pre-line; }
+        .pvn-assin { margin-top: 10px; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: #e50914; font-weight: 600; }
+
+        .pvn-mus {
+            background: #181818; border-radius: 4px; padding: 10px 12px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .pvn-mus b { font-size: 10px; font-weight: 600; color: #fff; }
+        .pvn-mus span { font-size: 9px; color: #999; }
+
+        .pvn-footer { padding: 16px; text-align: center; color: #666; font-size: 8px; }
+        .pvn-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 12px; color: #e50914; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .pvn-logo span { color: #fff; }
+
+        /* Botões flutuantes */
+        .preview-btn {
+            display: none; position: fixed; bottom: 20px; right: 20px; z-index: 998;
+            background: var(--vinho); color: #fff; border: none; border-radius: 50px;
+            padding: 14px 22px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(125, 48, 72, 0.45); cursor: pointer;
+            align-items: center; gap: 8px; transition: transform .2s;
+        }
+        .preview-btn:active { transform: scale(.96); }
+
+        .preview-close {
+            display: none; position: fixed; top: 20px; right: 20px; z-index: 1001;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: rgba(255,255,255,.95); color: var(--vinho); font-size: 16px;
+            cursor: pointer; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,.18);
+        }
+
+        .acoes { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+        .steps { justify-content: center; }
+
+        @media (max-width: 1100px) {
+            .criar-layout { grid-template-columns: 1fr; padding: 0 20px; justify-items: center; }
+            .preview-col { display: none; }
+            .preview-col.mobile-open {
+                display: flex; position: fixed; inset: 0; z-index: 999;
+                background: rgba(75, 55, 64, 0.92);
+                backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                padding: 60px 20px 20px; align-items: center; justify-content: center;
+            }
+            .preview-col.mobile-open .preview-label { color: #fff; }
+            .preview-btn { display: flex; }
+            .preview-close { display: flex; }
+        }
+
+        @media (max-width: 600px) {
+            .previa-cont strong { font-size: 22px; }
+            .preview-phone { width: min(340px, 92vw); height: min(720px, calc(100vh - 100px)); }
+        }
+    </style>
+</head>
+<body class="app">
+
+<div class="criar-layout">
+
+    <main class="app-wrap">
+        <div class="app-logo">Nosso Amor ❤️</div>
+        <div class="steps"><i class="on"></i><i></i><i></i><i></i></div>
+
+        <form id="form" novalidate>
+
+            <div class="passo ativo" data-passo="1">
+                <h2>Para quem é o presente?</h2>
+                <p class="sub">Escolha o tema. Ele define as cores e os textos da página.</p>
+                <div class="temas" id="temas"></div>
+                <div class="erro" id="erro1"></div>
+                <div class="acoes">
+                    <button type="button" class="btn" data-ir="2">Continuar</button>
+                </div>
+            </div>
+
+            <div class="passo" data-passo="2">
+                <h2>Conte a história</h2>
+                <p class="sub">Esses textos aparecem na página final.</p>
+
+                <div class="grid2">
+                    <div class="campo"><label for="de">Seu nome</label><input type="text" id="de" maxlength="40" placeholder="Quem está presenteando"></div>
+                    <div class="campo"><label for="para">Nome de quem recebe</label><input type="text" id="para" maxlength="40" placeholder="Quem vai receber"></div>
+                </div>
+
+                <div class="grid2">
+                    <div class="campo"><label for="titulo">Título da capa</label><input type="text" id="titulo" maxlength="40" placeholder="Ex.: Nós dois"></div>
+                    <div class="campo"><label for="inicio">Desde quando?</label><input type="date" id="inicio"><small>Alimenta o contador e a frase da capa.</small></div>
+                </div>
+
+                <div class="previa">
+                    <div class="previa-tag">Prévia da capa e do contador</div>
+                    <div class="previa-frase" id="previaFrase">Escolha a data para ver o contador.</div>
+                    <div class="previa-cont">
+                        <div><strong id="pAnos">0</strong><span>Anos</span></div>
+                        <div><strong id="pMeses">0</strong><span>Meses</span></div>
+                        <div><strong id="pDias">0</strong><span>Dias</span></div>
+                        <div><strong id="pHoras">0</strong><span>Horas</span></div>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="frase">Frase da capa</label>
+                    <input type="text" id="frase" maxlength="90" placeholder="Ex.: de amor, risadas e momentos inesquecíveis.">
+                    <small>A duração (ex.: "2 anos e 10 meses") vem da data e aparece antes da sua frase.</small>
+                </div>
+
+                <div class="campo">
+                    <label for="carta">Sua mensagem / carta</label>
+                    <textarea id="carta" maxlength="2000" placeholder="Escreva com carinho..."></textarea>
+                </div>
+
+                <div class="erro" id="erro2"></div>
+                <div class="acoes">
+                    <button type="button" class="btn sec" data-ir="1">Voltar</button>
+                    <button type="button" class="btn" data-ir="3">Continuar</button>
+                </div>
+            </div>
+
+            <div class="passo" data-passo="3">
+                <h2>Linha do tempo</h2>
+                <p class="sub">Os momentos que marcaram a história de vocês, em ordem.</p>
+
+                <div id="eventos"></div>
+                <button type="button" class="btn sec" id="btnAddEv" style="width:100%">+ Adicionar momento</button>
+                <p class="nota" style="margin-top:12px">O último item, <b>"Hoje"</b>, é criado automaticamente com a data de hoje e o tempo juntos.</p>
+
+                <div class="bloco-titulo">Pequenas coisas</div>
+                <p class="nota">Até 3 coisas que você ama ou admira (opcional).</p>
+                <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu sorriso"></div>
+                <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu carisma"></div>
+                <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Você"></div>
+
+                <div class="acoes">
+                    <button type="button" class="btn sec" data-ir="2">Voltar</button>
+                    <button type="button" class="btn" data-ir="4">Continuar</button>
+                </div>
+            </div>
+
+            <div class="passo" data-passo="4">
+                <h2>Fotos, vídeo e música</h2>
+                <p class="sub">Adicione o que deixa o presente único.</p>
+
+                <div class="campo">
+                    <label class="upload">
+                        <input type="file" id="fotos" accept="image/*" multiple>
+                        <b>📸 Fotos (até 12)</b>
+                        <span>A primeira vira a capa; as outras aparecem no álbum e nos polaroids</span>
+                        <span class="qtd" id="qtdFotos"></span>
+                    </label>
+                </div>
+
+                <div class="campo">
+                    <label class="upload">
+                        <input type="file" id="videos" accept="video/*" multiple>
+                        <b>🎬 Vídeos (até 4)</b>
+                        <span>Aparecem no estilo Story, de preferência na vertical</span>
+                        <span class="qtd" id="qtdVideos"></span>
+                    </label>
+                </div>
+
+                <div class="campo">
+                    <label class="upload">
+                        <input type="file" id="musica" accept="audio/*">
+                        <b>🎵 Música</b>
+                        <span>Arquivo MP3 que toca na página</span>
+                        <span class="qtd" id="qtdMusica"></span>
+                    </label>
+                </div>
+
+                <div class="grid2">
+                    <div class="campo"><label for="musicaNome">Nome da música</label><input type="text" id="musicaNome" maxlength="60" placeholder="Ex.: Can't Help Falling In Love"></div>
+                    <div class="campo"><label for="musicaArtista">Artista</label><input type="text" id="musicaArtista" maxlength="60" placeholder="Ex.: Elvis Presley"></div>
+                </div>
+
+                <div class="erro" id="erro3"></div>
+                <div class="acoes">
+                    <button type="button" class="btn sec" data-ir="3">Voltar</button>
+                    <button type="submit" class="btn" id="btnFinal">Ir para o pagamento</button>
+                </div>
+            </div>
+
+        </form>
+    </main>
+
+    <aside class="preview-col" id="previewCol">
+        <button class="preview-close" id="previewClose" type="button">✕</button>
+        <div class="preview-wrap">
+            <div class="preview-label">Prévia em tempo real</div>
+            <div class="preview-phone">
+                <div class="preview-screen" id="previewScreen">
+
+                    <!-- ============ PRÉVIA PADRÃO ============ -->
+                    <div id="pvPadrao">
+                        <section class="pv-hero" id="pvHero">
+                            <div class="pv-hero-content">
+                                <small id="pvPequeno">Uma história que continua...</small>
+                                <h1 id="pvTitulo">Nós dois</h1>
+                                <p id="pvFrase">Sua história começa aqui...</p>
+                            </div>
+                        </section>
+
+                        <section class="pv-sec pv-contador">
+                            <span class="pv-eyebrow">Desde que tudo começou</span>
+                            <h2>Nosso tempo juntos</h2>
+                            <div class="pv-grid">
+                                <div class="pv-box"><strong id="pvAnos">0</strong><span>Anos</span></div>
+                                <div class="pv-box"><strong id="pvMeses">0</strong><span>Meses</span></div>
+                                <div class="pv-box"><strong id="pvDias">0</strong><span>Dias</span></div>
+                                <div class="pv-box"><strong id="pvHoras">0</strong><span>Horas</span></div>
+                            </div>
+                        </section>
+
+                        <section class="pv-sec pv-historia">
+                            <span class="pv-eyebrow">Era uma vez...</span>
+                            <h2>A nossa história</h2>
+                            <div class="pv-timeline" id="pvTimeline"></div>
+                        </section>
+
+                        <section class="pv-sec pv-galeria" id="pvSecGaleria">
+                            <span class="pv-eyebrow">Nossos momentos</span>
+                            <h2>Um álbum só nosso</h2>
+                            <div class="pv-fotos" id="pvFotos"></div>
+                        </section>
+
+                        <section class="pv-sec pv-amo" id="pvSecAmo">
+                            <span class="pv-eyebrow">Pequenas coisas</span>
+                            <h2 id="pvAmoTitulo">O que eu amo em você</h2>
+                            <div class="pv-cards" id="pvCards"></div>
+                        </section>
+
+                        <section class="pv-sec pv-video" id="pvSecVideo">
+                            <span class="pv-eyebrow">Um momento só nosso</span>
+                            <h2>Nosso Momento</h2>
+                            <div class="pv-video-frame" id="pvVideoFrame"></div>
+                        </section>
+
+                        <section class="pv-sec pv-carta">
+                            <span class="pv-eyebrow">Para você</span>
+                            <h2>Para você</h2>
+                            <p id="pvCarta">Sua mensagem aparece aqui...</p>
+                            <div class="pv-assin" id="pvAssin">Com todo meu amor,</div>
+                        </section>
+
+                        <section class="pv-sec pv-musica" id="pvSecMusica">
+                            <span class="pv-eyebrow">A nossa música</span>
+                            <h2 id="pvMusNome">—</h2>
+                            <p id="pvMusArtista"></p>
+                        </section>
+
+                        <footer class="pv-footer">
+                            <div>❤️</div>
+                            <p id="pvRodape">Nosso tempo juntos...</p>
+                        </footer>
+                    </div>
+
+                    <!-- ============ PRÉVIA NETFLIX ============ -->
+                    <div id="pvNetflix" style="display:none">
+                        <section class="pvn-hero" id="pvnHero">
+                            <div class="pvn-badge"><span id="pvnBadge">NAMORO</span> ORIGINAL</div>
+                            <h1 class="pvn-title" id="pvnTitulo">EU TE AMO PARA SEMPRE!</h1>
+                            <div class="pvn-meta">
+                                <span class="pvn-match">98% compatível</span>
+                                <span id="pvnAno">2023</span>
+                                <span id="pvnTemp">2 Temporadas</span>
+                            </div>
+                            <p class="pvn-desc" id="pvnDesc"></p>
+                            <div class="pvn-actions">
+                                <button class="pvn-play" type="button">▶ Reproduzir</button>
+                                <button class="pvn-sec" type="button">＋ Minha lista</button>
+                            </div>
+                        </section>
+
+                        <section class="pvn-stats">
+                            <div><strong id="pvnAnos">0</strong><span>Anos Juntos</span></div>
+                            <div><strong id="pvnDias">0</strong><span>Dias de História</span></div>
+                            <div><strong id="pvnData">—</strong><span>Data Especial</span></div>
+                        </section>
+
+                        <section class="pvn-sec">
+                            <div class="pvn-sec-head">
+                                <h3>Episódios</h3>
+                                <span>Temporada 1 ▾</span>
+                            </div>
+                            <div class="pvn-eps" id="pvnEps"></div>
+                        </section>
+
+                        <section class="pvn-sec">
+                            <h3>Momentos</h3>
+                            <div class="pvn-galeria" id="pvnGaleria"></div>
+                        </section>
+
+                        <section class="pvn-sec">
+                            <h3>Sinopse</h3>
+                            <p class="pvn-carta-p" id="pvnCarta"></p>
+                            <div class="pvn-assin" id="pvnAssin"></div>
+                        </section>
+
+                        <section class="pvn-sec" id="pvnSecMusica" style="display:none">
+                            <h3>Trilha sonora</h3>
+                            <div class="pvn-mus">
+                                <b id="pvnMusNome">—</b>
+                                <span id="pvnMusArtista"></span>
+                            </div>
+                        </section>
+
+                        <footer class="pvn-footer">
+                            <div class="pvn-logo">NOSSO<span>AMOR</span></div>
+                            <p id="pvnRodape"></p>
+                        </footer>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </aside>
+
+</div>
+
+<button class="preview-btn" id="previewBtn" type="button">👁 Ver prévia</button>
+
+<script src="app.js"></script>
+<script>
+    let tema = null;
+    let fraseEditada = false;
+    const MAX_EVENTOS = 6;
+    const $ = (id) => document.getElementById(id);
+
+    let fotoURLs = [];
+    let videoURLs = [];
+
+    (function () {
+        const h = new Date();
+        $("inicio").max =
+            h.getFullYear() + "-" +
+            String(h.getMonth() + 1).padStart(2, "0") + "-" +
+            String(h.getDate()).padStart(2, "0");
+    })();
+
+    /* =====================================================
+       PRÉVIA EM TEMPO REAL
+    ===================================================== */
+    function atualizarPreview() {
+        const temaChave = tema || "namoro";
+        const t = THEMES[temaChave] || THEMES.namoro;
+
+        const ini = $("inicio").value;
+        const sufixo = $("frase").value.trim();
+        let tempo = null;
+        if (ini) tempo = tempoJuntos(ini);
+
+        /* ==== Contador inline (formulário) ==== */
+        if (tempo) {
+            $("pAnos").textContent = tempo.anos;
+            $("pMeses").textContent = tempo.meses;
+            $("pDias").textContent = tempo.dias.toLocaleString("pt-BR");
+            $("pHoras").textContent = tempo.horas.toLocaleString("pt-BR");
+            $("previaFrase").textContent = (textoDuracao(tempo) + " " + (sufixo || t.sufixo)).trim();
+        } else {
+            ["pAnos", "pMeses", "pDias", "pHoras"].forEach(i => $(i).textContent = "0");
+            $("previaFrase").textContent = "Escolha a data para ver o contador.";
+        }
+
+        /* ==== Escolhe qual layout mostrar ==== */
+        const isNetflix = temaChave === "netflix";
+        $("pvPadrao").style.display = isNetflix ? "none" : "block";
+        $("pvNetflix").style.display = isNetflix ? "block" : "none";
+
+        if (isNetflix) {
+            renderPreviewNetflix(tempo, t);
+        } else {
+            renderPreviewPadrao(tempo, t);
+        }
+    }
+
+    /* =====================================================
+       PRÉVIA PADRÃO
+    ===================================================== */
+    function renderPreviewPadrao(tempo, t) {
+        const ini = $("inicio").value;
+        const sufixo = $("frase").value.trim();
+
+        $("pvPequeno").textContent = t.pequeno;
+        $("pvTitulo").textContent = $("titulo").value.trim() || "Nós dois";
+        $("pvFrase").textContent = ini
+            ? (textoDuracao(tempo) + " " + (sufixo || t.sufixo)).trim()
+            : "Sua história começa aqui...";
+
+        if (fotoURLs[0]) {
+            $("pvHero").style.backgroundImage =
+                "linear-gradient(rgba(80,25,43,.35), rgba(80,25,43,.55)), url('" + fotoURLs[0] + "')";
+            $("pvHero").style.backgroundSize = "cover";
+            $("pvHero").style.backgroundPosition = "center";
+        } else {
+            $("pvHero").style.backgroundImage = "linear-gradient(135deg, var(--rosa), var(--vinho))";
+        }
+
+        if (tempo) {
+            $("pvAnos").textContent = tempo.anos;
+            $("pvMeses").textContent = tempo.meses;
+            $("pvDias").textContent = tempo.dias.toLocaleString("pt-BR");
+            $("pvHoras").textContent = tempo.horas.toLocaleString("pt-BR");
+        }
+
+        const tl = $("pvTimeline");
+        tl.innerHTML = "";
+        const evs = [...document.querySelectorAll(".ev-item")].map(el => ({
+            data: el.querySelector(".ev-data").value.trim(),
+            titulo: el.querySelector(".ev-titulo").value.trim(),
+            texto: el.querySelector(".ev-texto").value.trim()
+        })).filter(e => e.titulo || e.texto);
+        if (ini && tempo) {
+            evs.push({ data: new Date().toLocaleDateString("pt-BR"), titulo: "Hoje", texto: textoDuracao(tempo) + " construindo nossa história." });
+        }
+        if (!evs.length) {
+            tl.innerHTML = '<p class="pv-empty">Adicione momentos para vê-los aqui...</p>';
+        } else {
+            evs.forEach(ev => {
+                const d = document.createElement("div");
+                d.className = "pv-ev";
+                d.innerHTML = '<div class="pv-ev-data"></div><h4></h4><p></p>';
+                d.querySelector(".pv-ev-data").textContent = ev.data;
+                d.querySelector("h4").textContent = ev.titulo;
+                d.querySelector("p").textContent = ev.texto;
+                tl.appendChild(d);
+            });
+        }
+
+        const g = $("pvFotos");
+        g.innerHTML = "";
+        if (fotoURLs.length) {
+            $("pvSecGaleria").style.display = "";
+            fotoURLs.forEach(u => {
+                const img = document.createElement("img");
+                img.src = u;
+                g.appendChild(img);
+            });
+        } else {
+            $("pvSecGaleria").style.display = "none";
+        }
+
+        const amo = [...document.querySelectorAll(".amo")].map(i => i.value.trim()).filter(Boolean);
+        const cards = $("pvCards");
+        cards.innerHTML = "";
+        if (amo.length) {
+            $("pvSecAmo").style.display = "";
+            const emojis = ["😁", "😋", "❤️"];
+            amo.forEach((txt, i) => {
+                const c = document.createElement("div");
+                c.className = "pv-card";
+                c.innerHTML = "<div></div><b></b>";
+                c.children[0].textContent = emojis[i % emojis.length];
+                c.children[1].textContent = txt;
+                cards.appendChild(c);
+            });
+        } else {
+            $("pvSecAmo").style.display = "none";
+        }
+        $("pvAmoTitulo").textContent = t.amoTitulo || "O que eu amo em você";
+
+        if (videoURLs.length) {
+            $("pvSecVideo").style.display = "";
+            const vf = $("pvVideoFrame");
+            vf.innerHTML = "";
+            const v = document.createElement("video");
+            v.src = videoURLs[0];
+            v.muted = true; v.playsInline = true; v.loop = true; v.autoplay = true;
+            v.play && v.play().catch(() => {});
+            vf.appendChild(v);
+            const badge = document.createElement("div");
+            badge.className = "pv-video-badge";
+            badge.textContent = videoURLs.length + " vídeo" + (videoURLs.length > 1 ? "s" : "");
+            vf.appendChild(badge);
+        } else {
+            $("pvSecVideo").style.display = "none";
+        }
+
+        const para = $("para").value.trim();
+        const carta = $("carta").value.trim();
+        $("pvCarta").textContent = (para ? para + "\n\n" : "") + (carta || "Sua mensagem aparece aqui...");
+        $("pvAssin").textContent = "Com todo meu amor, " + ($("de").value.trim() || "quem te ama");
+
+        const musNome = $("musicaNome").value.trim();
+        const musArt = $("musicaArtista").value.trim();
+        const musFile = $("musica").files[0];
+        if (musNome || musFile) {
+            $("pvSecMusica").style.display = "";
+            $("pvMusNome").textContent = musNome || (musFile ? musFile.name.replace(/\.[^.]+$/, "") : "Nossa música");
+            $("pvMusArtista").textContent = musArt || "";
+        } else {
+            $("pvSecMusica").style.display = "none";
+        }
+
+        $("pvRodape").textContent = tempo ? textoDuracao(tempo) + "..." : "Nosso tempo juntos...";
+    }
+
+    /* =====================================================
+       PRÉVIA NETFLIX
+    ===================================================== */
+    function renderPreviewNetflix(tempo, t) {
+        const ini = $("inicio").value;
+        const sufixo = $("frase").value.trim();
+        const carta = $("carta").value.trim();
+
+        /* Hero background */
+        if (fotoURLs[0]) {
+            $("pvnHero").style.backgroundImage = "url('" + fotoURLs[0] + "')";
+        } else {
+            $("pvnHero").style.backgroundImage = "linear-gradient(135deg, #e50914, #5a0509)";
+        }
+
+        $("pvnBadge").textContent = (t.nome || "Namoro").toUpperCase();
+        $("pvnTitulo").textContent = $("titulo").value.trim() || "Eu te amo para sempre!";
+
+        const partes = ini ? ini.split("-") : [];
+        $("pvnAno").textContent = partes[0] || "—";
+        const temp = tempo ? Math.max(1, Math.ceil(tempo.meses / 12)) : 1;
+        $("pvnTemp").textContent = temp + (temp === 1 ? " Temporada" : " Temporadas");
+
+        const primeiraLinha = carta.split("\n\n")[0] || "";
+        $("pvnDesc").textContent = (sufixo || t.sufixo) + (primeiraLinha ? "\n\n" + primeiraLinha : "");
+
+        /* Stats */
+        $("pvnAnos").textContent = tempo ? (tempo.anos || Math.floor(tempo.meses / 12)) : 0;
+        $("pvnDias").textContent = tempo ? tempo.dias.toLocaleString("pt-BR") : 0;
+        $("pvnData").textContent = partes.length === 3 ? partes[2] + "/" + partes[1] : "—";
+
+        /* Episódios */
+        const epsWrap = $("pvnEps");
+        epsWrap.innerHTML = "";
+        const evs = [...document.querySelectorAll(".ev-item")].map(el => ({
+            data: el.querySelector(".ev-data").value.trim(),
+            titulo: el.querySelector(".ev-titulo").value.trim(),
+            texto: el.querySelector(".ev-texto").value.trim()
+        })).filter(e => e.titulo || e.texto);
+        if (ini && tempo) {
+            evs.push({ data: new Date().toLocaleDateString("pt-BR"), titulo: "Hoje", texto: textoDuracao(tempo) + " construindo nossa história." });
+        }
+        if (!evs.length) {
+            epsWrap.innerHTML = '<p class="pv-empty">Adicione momentos para vê-los aqui...</p>';
+        } else {
+            evs.forEach((ev, i) => {
+                const ep = document.createElement("div");
+                ep.className = "pvn-ep";
+                ep.innerHTML =
+                    '<div class="pvn-ep-num"></div>' +
+                    '<div class="pvn-ep-thumb"><img alt=""></div>' +
+                    '<div class="pvn-ep-info">' +
+                        '<span class="pvn-ep-data"></span>' +
+                        '<h4></h4>' +
+                        '<p></p>' +
+                    '</div>';
+                ep.querySelector(".pvn-ep-num").textContent = (i + 1);
+                ep.querySelector("h4").textContent = ev.titulo || ("Episódio " + (i + 1));
+                ep.querySelector(".pvn-ep-data").textContent = ev.data || "";
+                ep.querySelector("p").textContent = ev.texto || "";
+                if (fotoURLs.length) {
+                    ep.querySelector("img").src = fotoURLs[(i + 1) % fotoURLs.length];
+                }
+                epsWrap.appendChild(ep);
+            });
+        }
+
+        /* Galeria */
+        const gal = $("pvnGaleria");
+        gal.innerHTML = "";
+        if (fotoURLs.length) {
+            fotoURLs.forEach(u => {
+                const img = document.createElement("img");
+                img.src = u;
+                gal.appendChild(img);
+            });
+        } else {
+            // placeholder
+            for (let i = 0; i < 3; i++) {
+                const ph = document.createElement("div");
+                ph.style.cssText = "aspect-ratio:2/3;background:#222;border-radius:3px;";
+                gal.appendChild(ph);
+            }
+        }
+
+        /* Sinopse */
+        const para = $("para").value.trim();
+        $("pvnCarta").textContent = (para ? para + "\n\n" : "") + (carta || "Sua mensagem aparece aqui...");
+        $("pvnAssin").textContent = "Com todo meu amor, " + ($("de").value.trim() || "quem te ama");
+
+        /* Trilha sonora */
+        const musNome = $("musicaNome").value.trim();
+        const musArt = $("musicaArtista").value.trim();
+        const musFile = $("musica").files[0];
+        if (musNome || musFile) {
+            $("pvnSecMusica").style.display = "";
+            $("pvnMusNome").textContent = musNome || (musFile ? musFile.name.replace(/\.[^.]+$/, "") : "Nossa música");
+            $("pvnMusArtista").textContent = musArt || "";
+        } else {
+            $("pvnSecMusica").style.display = "none";
+        }
+
+        /* Rodapé */
+        $("pvnRodape").textContent = tempo ? textoDuracao(tempo) + " — a história continua..." : "";
+    }
+
+    /* =====================================================
+       INPUTS
+    ===================================================== */
+    $("form").addEventListener("input", atualizarPreview);
+    $("form").addEventListener("change", atualizarPreview);
+    $("frase").addEventListener("input", () => { fraseEditada = true; });
+
+    /* =====================================================
+       CARDS DE TEMA
+    ===================================================== */
+    const wrap = $("temas");
+    Object.entries(THEMES).forEach(([chave, t]) => {
+        const d = document.createElement("div");
+        d.className = "tema";
+        d.innerHTML = `<div class="e">${t.emoji}</div><h3>${t.nome}</h3><p>${t.desc}</p>`;
+        d.addEventListener("click", () => {
+            tema = chave;
+            document.querySelectorAll(".tema").forEach(x => x.classList.remove("sel"));
+            d.classList.add("sel");
+            aplicarTema(chave);
+            if (!fraseEditada) $("frase").value = t.sufixo;
+            $("erro1").textContent = "";
+            atualizarPreview();
+        });
+        wrap.appendChild(d);
+    });
+
+    /* =====================================================
+       LINHA DO TEMPO (editor)
+    ===================================================== */
+    const wrapEv = $("eventos");
+    function renumerar() {
+        [...wrapEv.children].forEach((el, i) => el.querySelector(".ev-topo b").textContent = "Momento " + (i + 1));
+        $("btnAddEv").style.display = wrapEv.children.length >= MAX_EVENTOS ? "none" : "block";
+    }
+    function addEvento() {
+        if (wrapEv.children.length >= MAX_EVENTOS) return;
+        const d = document.createElement("div");
+        d.className = "ev-item";
+        d.innerHTML = `
+            <div class="ev-topo"><b>Momento</b><button type="button" class="ev-rem" title="Remover">✕</button></div>
+            <div class="grid2">
+                <div class="campo"><label>Data / época</label><input type="text" class="ev-data" maxlength="30" placeholder="Ex.: 2016"></div>
+                <div class="campo"><label>Título</label><input type="text" class="ev-titulo" maxlength="50" placeholder="Ex.: Quando nos conhecemos"></div>
+            </div>
+            <div class="campo"><label>Texto</label><textarea class="ev-texto" maxlength="800" placeholder="Conte esse momento..."></textarea></div>`;
+        d.querySelector(".ev-rem").addEventListener("click", () => { d.remove(); renumerar(); atualizarPreview(); });
+        wrapEv.appendChild(d);
+        renumerar();
+        atualizarPreview();
+    }
+    $("btnAddEv").addEventListener("click", addEvento);
+    addEvento();
+    addEvento();
+
+    /* =====================================================
+       NAVEGAÇÃO ENTRE PASSOS
+    ===================================================== */
+    function ir(n) {
+        document.querySelectorAll(".passo").forEach(p => p.classList.toggle("ativo", p.dataset.passo == n));
+        document.querySelectorAll(".steps i").forEach((b, i) => b.classList.toggle("on", i < n));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function validar(destino) {
+        if (destino >= 2 && !tema) { $("erro1").textContent = "Escolha um tema para continuar."; ir(1); return false; }
+        if (destino >= 3) {
+            if (!$("de").value.trim() || !$("para").value.trim() || !$("inicio").value || !$("carta").value.trim()) {
+                $("erro2").textContent = "Preencha os nomes, a data e a mensagem."; ir(2); return false;
+            }
+        }
+        return true;
+    }
+    document.querySelectorAll("[data-ir]").forEach(b =>
+        b.addEventListener("click", () => { const n = Number(b.dataset.ir); if (validar(n)) ir(n); })
+    );
+
+    /* =====================================================
+       CONTADORES DE ARQUIVOS
+    ===================================================== */
+    $("fotos").addEventListener("change", e => {
+        fotoURLs.forEach(u => URL.revokeObjectURL(u));
+        const files = [...e.target.files].slice(0, 12);
+        fotoURLs = files.map(f => URL.createObjectURL(f));
+        if (e.target.files.length > 12) $("erro3").textContent = "Máximo de 12 fotos.";
+        $("qtdFotos").textContent = files.length ? files.length + " foto(s) selecionada(s)" : "";
+        atualizarPreview();
+    });
+    $("videos").addEventListener("change", e => {
+        videoURLs.forEach(u => URL.revokeObjectURL(u));
+        const files = [...e.target.files].slice(0, 4);
+        videoURLs = files.map(f => URL.createObjectURL(f));
+        if (e.target.files.length > 4) $("erro3").textContent = "Máximo de 4 vídeos.";
+        $("qtdVideos").textContent = files.length ? files.length + " vídeo(s) selecionado(s)" : "";
+        atualizarPreview();
+    });
+    $("musica").addEventListener("change", e => {
+        $("qtdMusica").textContent = e.target.files[0] ? e.target.files[0].name : "";
+        atualizarPreview();
+    });
+
+    /* =====================================================
+       ENVIO
+    ===================================================== */
+    $("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!validar(4)) return;
+
+        const fotos = [...$("fotos").files].slice(0, 12);
+        const videos = [...$("videos").files].slice(0, 4);
+        const musica = $("musica").files[0] || null;
+        if (!fotos.length) { $("erro3").textContent = "Adicione pelo menos uma foto."; return; }
+
+        const eventos = [...document.querySelectorAll(".ev-item")].map(el => ({
+            data: el.querySelector(".ev-data").value.trim(),
+            titulo: el.querySelector(".ev-titulo").value.trim(),
+            texto: el.querySelector(".ev-texto").value.trim()
+        })).filter(ev => ev.titulo || ev.texto);
+        const amo = [...document.querySelectorAll(".amo")].map(i => i.value.trim()).filter(Boolean);
+
+        const btn = $("btnFinal");
+        btn.disabled = true;
+        btn.textContent = "Salvando...";
+
+        const pedido = {
+            id: novoId(),
+            tema,
+            de: $("de").value.trim(),
+            para: $("para").value.trim(),
+            titulo: $("titulo").value.trim() || "Nós dois",
+            inicio: $("inicio").value,
+            frase: $("frase").value.trim() || THEMES[tema].sufixo,
+            carta: $("carta").value.trim(),
+            eventos, amo,
+            musicaNome: $("musicaNome").value.trim(),
+            musicaArtista: $("musicaArtista").value.trim(),
+            fotos, videos, musica,
+            status: "rascunho",
+            criadoEm: Date.now()
+        };
+
+        try {
+            await salvarPedido(pedido);
+            location.href = "pagamento.html?id=" + pedido.id;
+        } catch (err) {
+            $("erro3").textContent = "Não foi possível salvar. Tente com arquivos menores.";
+            btn.disabled = false;
+            btn.textContent = "Ir para o pagamento";
+        }
+    });
+
+    /* =====================================================
+       PRÉVIA MOBILE
+    ===================================================== */
+    const previewCol = $("previewCol");
+    $("previewBtn").addEventListener("click", () => previewCol.classList.add("mobile-open"));
+    $("previewClose").addEventListener("click", () => previewCol.classList.remove("mobile-open"));
+
+    /* Estado inicial */
+    atualizarPreview();
+</script>
+</body>
+</html>
