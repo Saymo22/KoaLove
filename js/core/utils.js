@@ -18,7 +18,7 @@ function formatarPreco(v) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 function aplicarTema(chave) {
-  const t = (THEMES[chave] || THEMES.namoro).cores,
+  const t = (NA.themes[chave] || NA.themes.namoro).cores,
     s = document.documentElement.style;
   s.setProperty("--rosa", t.rosa);
   s.setProperty("--rosa-claro", t.rosaClaro);
@@ -28,7 +28,7 @@ function aplicarTema(chave) {
   s.setProperty("--texto", t.texto);
 }
 function temaEscuro(chave) {
-  const t = THEMES[chave] || THEMES.namoro;
+  const t = NA.themes[chave] || NA.themes.namoro;
   return (
     t.categoria === "especial" ||
     t.cores.pastel === "#1a1a1a" ||

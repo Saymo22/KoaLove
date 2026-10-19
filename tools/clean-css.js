@@ -1,9 +1,12 @@
 /**
  * tools/clean-css.js
  *
- * Remove dos CSS de cada pagina os blocos que foram centralizados
- * em css/base.css (reset, navbar, botoes .b, scroll-progress e
+ * Remove dos CSS de cada pagina os blocos centralizados em
+ * css/base.css (reset, navbar, botao .b, scroll-progress e
  * animacoes compartilhadas).
+ *
+ * As diferencas entre paginas (alturas, tamanhos, cores) sao
+ * preservadas via variaveis CSS definidas em cada pagina.
  *
  * Uso: node tools/clean-css.js
  */
@@ -13,142 +16,76 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 
-/** Remove um bloco de selecao (e as regras imediatamente
- *  dependentes indicadas) de um arquivo CSS. */
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Remove blocos de seletor (simples ou multi-seletor). */
 function removeBlocks(css, selectors) {
   let out = css;
   for (const sel of selectors) {
-    // regra simples: sel { ... }
-    const re = new RegExp(
-      "(?:^|\\n)[ \\t]*" + sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\{[^}]*\\}",
-      "g"
-    );
-    out = out.replace(re, "\n");
-    // regra com varias seletores: sel, outro { ... }
-    const reMulti = new RegExp(
-      "(?:^|\\n)[ \\t]*" + sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*,[^\\{]*\\{[^}]*\\}",
-      "g"
-    );
-    out = out.replace(reMulti, "\n");
+    const e = esc(sel);
+    out = out.replace(new RegExp("(?:^|\\n)[ \\t]*" + e + "\\s*\\{[^}]*\\}", "g"), "\n");
+    out = out.replace(new RegExp("(?:^|\\n)[ \\t]*" + e + "\\s*,[^\\{]*\\{[^}]*\\}", "g"), "\n");
   }
   return out;
 }
 
-/** Removekeyframes pelo nome. */
+/** Remove @keyframes pelo nome. */
 function removeKeyframes(css, names) {
   let out = css;
   for (const name of names) {
-    const re = new RegExp(
-      "(?:^|\\n)[ \\t]*@keyframes\\s+" + name + "\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}",
-      "g"
+    out = out.replace(
+      new RegExp("(?:^|\\n)[ \\t]*@keyframes\\s+" + esc(name) + "\\s*\\{(?:[^{}]|\\{[^{}]*\\})*\\}", "g"),
+      "\n"
     );
-    out = out.replace(re, "\n");
   }
   return out;
 }
 
-function tidy(css) {
-  return css
+const tidy = (css) =>
+  css
     .replace(/\n{3,}/g, "\n\n")
     .replace(/[ \t]+\n/g, "\n")
     .replace(/^\n+/, "")
     .replace(/\s+$/, "\n");
-}
+
+const NAV = [
+  ".nav",
+  ".nav.scrolled",
+  ".nav .wrap",
+  ".nav.scrolled .wrap",
+  ".logo",
+  ".logo::before",
+  ".nav-links",
+  ".nav-links a:not(.b)",
+  ".nav-links a:not(.b):hover",
+  ".nav-links .b",
+];
+
+const BTN = [
+  ".b",
+  ".b:hover",
+  ".b.ouro",
+  ".b.ouro:hover",
+  ".b.peq",
+  ".b .seta",
+  ".b:hover .seta",
+];
 
 const JOBS = {
   "css/home.css": {
-    selectors: [
-      "\\.nav",
-      "\\.nav\\.scrolled",
-      "\\.nav \\.wrap",
-      "\\.nav\\.scrolled \\.wrap",
-      "\\.logo",
-      "\\.logo::before",
-      "\\.nav-links",
-      "\\.nav-links a:not\\(\\.b\\)",
-      "\\.nav-links a:not\\(\\.b\\):hover",
-      "\\.nav-links \\.b",
-      "\\.b",
-      "\\.b:hover",
-      "\\.b\\.ouro",
-      "\\.b\\.ouro:hover",
-      "\\.b\\.peq",
-      "\\.b \\.seta",
-      "\\.b:hover \\.seta",
-      "\\.b \\.ripple",
-      "\\.b::before",
-      "\\.b:hover::before",
-      "\\.scroll-progress",
-    ],
+    selectors: [...NAV, ...BTN, ".b::before", ".b:hover::before", ".b .ripple", ".scroll-progress"],
     keyframes: ["navIn", "heartPulse", "goldShift", "rippleAnim"],
   },
   "css/criar.css": {
-    selectors: [
-      "\\.nav",
-      "\\.nav\\.scrolled",
-      "\\.nav \\.wrap",
-      "\\.nav\\.scrolled \\.wrap",
-      "\\.logo",
-      "\\.logo::before",
-      "\\.nav-links",
-      "\\.nav-links a:not\\(\\.b\\)",
-      "\\.nav-links a:not\\(\\.b\\):hover",
-      "\\.nav-links \\.b",
-      "\\.b",
-      "\\.b:hover",
-      "\\.b\\.ouro",
-      "\\.b\\.ouro:hover",
-      "\\.b\\.peq",
-      "\\.b \\.seta",
-      "\\.b:hover \\.seta",
-      "\\.scroll-progress",
-    ],
+    selectors: [...NAV, ...BTN, ".scroll-progress"],
     keyframes: ["navIn", "heartPulse", "goldShift", "pageIn"],
   },
   "css/pagamento.css": {
-    selectors: [
-      "\\.nav",
-      "\\.nav\\.scrolled",
-      "\\.nav \\.wrap",
-      "\\.nav\\.scrolled \\.wrap",
-      "\\.logo",
-      "\\.logo::before",
-      "\\.nav-links",
-      "\\.nav-links a:not\\(\\.b\\)",
-      "\\.nav-links a:not\\(\\.b\\):hover",
-      "\\.nav-links \\.b",
-      "\\.b",
-      "\\.b:hover",
-      "\\.b\\.ouro",
-      "\\.b\\.ouro:hover",
-      "\\.b\\.peq",
-      "\\.b \\.seta",
-      "\\.b:hover \\.seta",
-      "\\.scroll-progress",
-    ],
+    selectors: [...NAV, ...BTN, ".scroll-progress"],
     keyframes: ["navIn", "heartPulse", "goldShift", "pageIn"],
   },
   "css/resultado.css": {
-    selectors: [
-      "\\.nav",
-      "\\.nav\\.scrolled",
-      "\\.nav \\.wrap",
-      "\\.nav\\.scrolled \\.wrap",
-      "\\.logo",
-      "\\.logo::before",
-      "\\.nav-links",
-      "\\.nav-links a:not\\(\\.b\\)",
-      "\\.nav-links a:not\\(\\.b\\):hover",
-      "\\.nav-links \\.b",
-      "\\.b",
-      "\\.b:hover",
-      "\\.b\\.ouro",
-      "\\.b\\.ouro:hover",
-      "\\.b\\.peq",
-      "\\.b \\.seta",
-      "\\.b:hover \\.seta",
-      "\\.scroll-progress",
-    ],
+    selectors: [...NAV, ...BTN, ".scroll-progress"],
     keyframes: ["navIn", "heartPulse", "goldShift", "pageIn"],
   },
 };
@@ -164,9 +101,9 @@ for (const [file, job] of Object.entries(JOBS)) {
 
   fs.writeFileSync(full, css, "utf8");
   console.log(
-    `${file}: ${before} -> ${css.length} bytes (${(
+    `${file}: ${before} -> ${css.length} bytes (-${(
       (1 - css.length / before) *
       100
-    ).toFixed(1)}% reduzido)`
+    ).toFixed(1)}%)`
   );
 }

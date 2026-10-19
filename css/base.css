@@ -3,6 +3,8 @@
    Carregado por todas as paginas antes do CSS especifico.
    ===================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
 /* ---------- TOKENS GLOBAIS ---------- */
 :root {
   --rosa: #d96c8a;
@@ -26,10 +28,29 @@
   --erro: #b3263e;
   --erro-claro: #fde8ec;
 
-  /* Medidas reutilizadas pelos componentes compartilhados */
+  /* Shell compartilhado (ajustavel por pagina) */
+  --nav-bg: rgba(255, 252, 248, 0.72);
+  --nav-bg-scrolled: rgba(255, 252, 248, 0.92);
   --nav-altura: 64px;
   --nav-altura-scrolled: 58px;
-  --nav-largura: min(1120px, calc(100% - 32px));
+  --logo-fs: 25px;
+  --logo-badge: 32px;
+  --logo-badge-fs: 14px;
+
+  --btn-pad: 12px 24px;
+  --btn-fs: 13px;
+  --btn-gap: 8px;
+  --btn-ls: 0.4px;
+  --btn-peq-pad: 10px 20px;
+  --btn-peq-fs: 12.5px;
+  --btn-lift: -3px;
+  --btn-shadow: 0 8px 22px rgba(125, 48, 72, 0.25);
+  --btn-shadow-hover: 0 14px 32px rgba(125, 48, 72, 0.35);
+
+  /* Coracoes decorativos */
+  --heart-cor: rgba(217, 108, 138, 0.25);
+  --heart-dur: 8s;
+  --heart-blur: none;
 }
 
 /* ---------- RESET ---------- */
@@ -51,6 +72,47 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+section {
+  position: relative;
+  z-index: 1;
+  padding: 100px 20px;
+  overflow-x: clip;
+}
+
+footer {
+  background: #4d1e2d;
+  color: white;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+footer p {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 23px;
+}
+
+footer small {
+  display: block;
+  margin-top: 15px;
+  color: #dca6b6;
+}
+
+audio {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* ---------- CORACOES DECORATIVOS ---------- */
+.heart {
+  position: fixed;
+  color: var(--heart-cor);
+  font-size: 20px;
+  pointer-events: none;
+  animation: flutuar var(--heart-dur) linear infinite;
+  z-index: 0;
+  filter: var(--heart-blur);
+}
+
 /* ---------- BARRA DE PROGRESSO DO SCROLL ---------- */
 .scroll-progress {
   position: fixed;
@@ -58,11 +120,10 @@ body {
   left: 0;
   height: 3px;
   width: 0%;
-  background: linear-gradient(90deg, var(--ouro), var(--rosa), var(--ouro));
+  background: linear-gradient(90deg, var(--ouro), var(--rosa, #d96c8a), var(--ouro));
   z-index: 10000;
   transition: width 0.1s linear;
   box-shadow: 0 0 15px rgba(201, 168, 106, 0.8);
-  pointer-events: none;
 }
 
 /* ---------- NAVBAR ---------- */
@@ -71,9 +132,9 @@ body {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: var(--nav-largura);
+  width: min(1120px, calc(100% - 32px));
   z-index: 100;
-  background: rgba(255, 252, 248, 0.72);
+  background: var(--nav-bg);
   backdrop-filter: blur(22px) saturate(1.6);
   -webkit-backdrop-filter: blur(22px) saturate(1.6);
   border: 1px solid rgba(201, 168, 106, 0.3);
@@ -85,7 +146,7 @@ body {
 
 .nav.scrolled {
   top: 10px;
-  background: rgba(255, 252, 248, 0.92);
+  background: var(--nav-bg-scrolled);
   box-shadow: 0 18px 50px rgba(75, 55, 64, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -107,7 +168,7 @@ body {
   align-items: center;
   gap: 12px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 25px;
+  font-size: var(--logo-fs);
   color: var(--vinho);
   font-weight: 600;
   text-decoration: none;
@@ -118,12 +179,12 @@ body {
 .logo::before {
   content: "♥";
   flex: none;
-  width: 32px;
-  height: 32px;
+  width: var(--logo-badge);
+  height: var(--logo-badge);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: var(--logo-badge-fs);
   color: #fff;
   background: linear-gradient(135deg, var(--ouro), #a9812f);
   box-shadow: 0 6px 16px rgba(201, 168, 106, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45);
@@ -161,27 +222,27 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--btn-gap);
   border: none;
   border-radius: 50px;
-  padding: 12px 24px;
+  padding: var(--btn-pad);
   background: var(--vinho);
   color: #fff;
   font-family: "Poppins", sans-serif;
-  font-size: 13px;
+  font-size: var(--btn-fs);
   font-weight: 500;
-  letter-spacing: 0.4px;
+  letter-spacing: var(--btn-ls);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 22px rgba(125, 48, 72, 0.25);
+  box-shadow: var(--btn-shadow);
 }
 
 .b:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 14px 32px rgba(125, 48, 72, 0.35);
+  transform: translateY(var(--btn-lift)) scale(1.02);
+  box-shadow: var(--btn-shadow-hover);
 }
 
 .b.ouro {
@@ -196,8 +257,8 @@ body {
 }
 
 .b.peq {
-  padding: 10px 20px;
-  font-size: 12.5px;
+  padding: var(--btn-peq-pad);
+  font-size: var(--btn-peq-fs);
 }
 
 .b .seta {
@@ -264,6 +325,23 @@ body {
 @keyframes rippleAnim {
   to {
     transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes flutuar {
+  0% {
+    transform: translateY(110vh) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
     opacity: 0;
   }
 }
