@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta — Nosso Amor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/minha-conta.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="nav">
+        <div class="wrap">
+            <a href="home.html" class="logo">Nosso Amor</a>
+            <div class="nav-links">
+                <a href="minha-conta.html" class="active">Minha Conta</a>
+                <a href="criar.html" class="b ouro peq">Criar novo +</a>
+                <div class="nav-profile">
+                    <div class="user-avatar" id="navAvatar">U</div>
+                    <span id="navUserName">Usuário</span>
+                    <button id="btnLogout" class="btn-logout" title="Sair">Sair</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dash-main">
+        <!-- Header do Usuário -->
+        <header class="user-header">
+            <div class="user-greeting">
+                <h1>Olá, <span id="greetingName">Usuário</span>!</h1>
+                <p>Aqui estão todas as histórias que você já criou.</p>
+            </div>
+            <a href="criar.html" class="btn-create-hero">
+                <span>✨</span> Criar novo presente
+            </a>
+        </header>
+
+        <!-- Stats -->
+        <section class="dash-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <span class="stat-num" id="statTotal">0</span>
+                    <span class="stat-label">Total de Presentes</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✨</div>
+                <div class="stat-info">
+                    <span class="stat-num" id="statPagos">0</span>
+                    <span class="stat-label">Prontos para enviar</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✏️</div>
+                <div class="stat-info">
+                    <span class="stat-num" id="statRascunhos">0</span>
+                    <span class="stat-label">Rascunhos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Buscar por título ou nome...">
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="pago">Pagos</button>
+                <button class="filter-btn" data-filter="rascunho">Rascunhos</button>
+            </div>
+        </div>
+
+        <!-- Grid de Presentes -->
+        <div id="giftsGrid" class="gifts-grid"></div>
+        
+        <!-- Skeleton Loading -->
+        <div id="skeletonGrid" class="gifts-grid" style="display:none;">
+            <div class="gift-skeleton"></div>
+            <div class="gift-skeleton"></div>
+            <div class="gift-skeleton"></div>
+        </div>
+
+        <!-- Empty States -->
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <div class="empty-icon">💌</div>
+            <h3>Sua coleção está vazia</h3>
+            <p>Você ainda não criou nenhum presente. Que tal começar agora?</p>
+            <a href="criar.html" class="btn-primary">Criar meu primeiro presente</a>
+        </div>
+        
+        <div id="noResults" class="empty-state" style="display:none;">
+            <div class="empty-icon">🔎</div>
+            <h3>Nada encontrado</h3>
+            <p>Tente buscar por outro termo ou mudar o filtro.</p>
+        </div>
+    </main>
+
+    <!-- Modal de Exclusão -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon">🗑️</div>
+            <h3>Excluir presente?</h3>
+            <p>Tem certeza que deseja apagar este presente? Essa ação não pode ser desfeita.</p>
+            <div class="modal-actions">
+                <button id="btnCancelDelete" class="btn-sec">Cancelar</button>
+                <button id="btnConfirmDelete" class="btn-danger">Sim, excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/core/config.js"></script>
+    <script src="js/core/db.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/auth.js"></script>
+    <script src="js/pages/minha-conta.js"></script>
+</body>
+</html>

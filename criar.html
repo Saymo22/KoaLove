@@ -4,27 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Criar presente ❤️ — Nosso Amor</title>
-    <meta
-      name="description"
-      content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos."
-    />
+    <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos." />
 
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/criar.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet" />
   </head>
   <body class="app">
     <div class="scroll-progress" id="scrollProgress"></div>
@@ -37,9 +24,7 @@
           <a href="home.html#temas">Temas</a>
           <a href="home.html#preco">Preço</a>
           <a href="home.html#duvidas">Dúvidas</a>
-          <a href="criar.html" class="b ouro peq"
-            >Criar presente <span class="seta">→</span></a
-          >
+          <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
         </div>
       </div>
     </nav>
@@ -47,14 +32,13 @@
     <div class="criar-layout">
       <main class="app-wrap">
         <header class="criar-header">
-          <div class="criar-eyebrow">
+          <div class="criar-eyebrow" id="criarEyebrow">
             <span class="dot"></span>
             Criar meu presente
           </div>
           <h1 class="criar-titulo">Vamos criar uma <em>história?</em></h1>
           <p class="criar-sub">
-            Em poucos minutos, transforme suas memórias em uma página que vai
-            emocionar.
+            Em poucos minutos, transforme suas memórias em uma página que vai emocionar.
           </p>
 
           <div class="steps" id="steps">
@@ -84,10 +68,7 @@
           <div class="passo ativo" data-passo="1" id="passo1">
             <div class="passo-header">
               <h2>Qual é o <em>tema?</em></h2>
-              <p>
-                Escolha o estilo. Ele define cores, tipografia e o clima da
-                página.
-              </p>
+              <p>Escolha o estilo. Ele define cores, tipografia e o clima da página.</p>
             </div>
 
             <div class="temas-grupo">
@@ -117,55 +98,32 @@
             <div class="grid2">
               <div class="campo" data-campo="de">
                 <label for="de">Seu nome</label>
-                <input
-                  type="text"
-                  id="de"
-                  maxlength="40"
-                  placeholder="Quem presenteia"
-                />
-                <div class="erro-campo-msg" data-msg="de">
-                  Preencha seu nome
-                </div>
+                <input type="text" id="de" maxlength="40" placeholder="Quem presenteia" />
+                <div class="erro-campo-msg" data-msg="de">Preencha seu nome</div>
               </div>
               <div class="campo" data-campo="para">
                 <label for="para">Nome de quem recebe</label>
-                <input
-                  type="text"
-                  id="para"
-                  maxlength="40"
-                  placeholder="Quem vai receber"
-                />
-                <div class="erro-campo-msg" data-msg="para">
-                  Preencha o nome de quem recebe
-                </div>
+                <input type="text" id="para" maxlength="40" placeholder="Quem vai receber" />
+                <div class="erro-campo-msg" data-msg="para">Preencha o nome de quem recebe</div>
               </div>
             </div>
 
             <div class="grid2">
               <div class="campo" data-campo="titulo">
                 <label for="titulo">Título da capa</label>
-                <input
-                  type="text"
-                  id="titulo"
-                  maxlength="40"
-                  placeholder="Ex.: Nós dois"
-                />
+                <input type="text" id="titulo" maxlength="40" placeholder="Ex.: Nós dois" />
               </div>
               <div class="campo" data-campo="inicio">
                 <label for="inicio">Desde quando?</label>
                 <input type="date" id="inicio" />
-                <div class="erro-campo-msg" data-msg="inicio">
-                  Escolha uma data
-                </div>
+                <div class="erro-campo-msg" data-msg="inicio">Escolha uma data</div>
                 <small>Alimenta o contador e a frase da capa.</small>
               </div>
             </div>
 
             <div class="previa-contador">
               <div class="previa-tag">Prévia do contador</div>
-              <div class="previa-frase" id="previaFrase">
-                Escolha a data para ver o contador.
-              </div>
+              <div class="previa-frase" id="previaFrase">Escolha a data para ver o contador.</div>
               <div class="previa-grid">
                 <div><strong id="pAnos">0</strong><span>Anos</span></div>
                 <div><strong id="pMeses">0</strong><span>Meses</span></div>
@@ -176,35 +134,20 @@
 
             <div class="campo">
               <label for="frase">Frase da capa</label>
-              <input
-                type="text"
-                id="frase"
-                maxlength="90"
-                placeholder="Ex.: de amor, risadas e momentos inesquecíveis."
-              />
+              <input type="text" id="frase" maxlength="90" placeholder="Ex.: de amor, risadas e momentos inesquecíveis." />
               <small>A duração vem automaticamente antes da sua frase.</small>
             </div>
 
             <div class="campo" data-campo="carta">
               <label for="carta">Sua mensagem / carta</label>
-              <textarea
-                id="carta"
-                maxlength="2000"
-                placeholder="Escreva com carinho..."
-              ></textarea>
-              <div class="erro-campo-msg" data-msg="carta">
-                Escreva sua mensagem
-              </div>
+              <textarea id="carta" maxlength="2000" placeholder="Escreva com carinho..."></textarea>
+              <div class="erro-campo-msg" data-msg="carta">Escreva sua mensagem</div>
             </div>
 
             <div class="erro" id="erro2"></div>
             <div class="acoes">
-              <button type="button" class="btn sec" data-ir="1">
-                ← Voltar
-              </button>
-              <button type="button" class="btn ouro" data-ir="3">
-                Continuar →
-              </button>
+              <button type="button" class="btn sec" data-ir="1">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="3">Continuar →</button>
             </div>
           </div>
 
@@ -215,52 +158,20 @@
             </div>
 
             <div id="eventos"></div>
-            <button
-              type="button"
-              class="btn sec"
-              id="btnAddEv"
-              style="width: 100%; margin-bottom: 8px"
-            >
+            <button type="button" class="btn sec" id="btnAddEv" style="width: 100%; margin-bottom: 8px">
               + Adicionar momento
             </button>
-            <p class="nota">
-              O último item, <b>"Hoje"</b>, é criado automaticamente.
-            </p>
+            <p class="nota">O último item, <b>"Hoje"</b>, é criado automaticamente.</p>
 
             <div class="bloco-titulo">Pequenas coisas</div>
             <p class="nota">Até 3 coisas que você ama ou admira (opcional).</p>
-            <div class="campo">
-              <input
-                type="text"
-                class="amo"
-                maxlength="30"
-                placeholder="Ex.: Seu sorriso"
-              />
-            </div>
-            <div class="campo">
-              <input
-                type="text"
-                class="amo"
-                maxlength="30"
-                placeholder="Ex.: Seu carisma"
-              />
-            </div>
-            <div class="campo">
-              <input
-                type="text"
-                class="amo"
-                maxlength="30"
-                placeholder="Ex.: Você"
-              />
-            </div>
+            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu sorriso" /></div>
+            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu carisma" /></div>
+            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Você" /></div>
 
             <div class="acoes">
-              <button type="button" class="btn sec" data-ir="2">
-                ← Voltar
-              </button>
-              <button type="button" class="btn ouro" data-ir="4">
-                Continuar →
-              </button>
+              <button type="button" class="btn sec" data-ir="2">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="4">Continuar →</button>
             </div>
           </div>
 
@@ -278,9 +189,7 @@
                 <span>A primeira vira a capa</span>
                 <span class="qtd" id="qtdFotos"></span>
               </label>
-              <div class="erro-campo-msg" data-msg="fotos">
-                Adicione pelo menos uma foto
-              </div>
+              <div class="erro-campo-msg" data-msg="fotos">Adicione pelo menos uma foto</div>
             </div>
 
             <div class="campo">
@@ -306,21 +215,11 @@
             <div class="grid2">
               <div class="campo">
                 <label for="musicaNome">Nome da música</label>
-                <input
-                  type="text"
-                  id="musicaNome"
-                  maxlength="60"
-                  placeholder="Ex.: Can't Help Falling In Love"
-                />
+                <input type="text" id="musicaNome" maxlength="60" placeholder="Ex.: Can't Help Falling In Love" />
               </div>
               <div class="campo">
                 <label for="musicaArtista">Artista</label>
-                <input
-                  type="text"
-                  id="musicaArtista"
-                  maxlength="60"
-                  placeholder="Ex.: Elvis Presley"
-                />
+                <input type="text" id="musicaArtista" maxlength="60" placeholder="Ex.: Elvis Presley" />
               </div>
             </div>
 
@@ -331,17 +230,12 @@
                 <label>Suas fotos</label>
                 <input type="hidden" id="fotoCapa" value="0" />
                 <div id="fotosGrid" class="fotos-grid"></div>
-                <small
-                  >Clique na ★ para definir a capa. Arraste para reordenar ou
-                  use as setas.</small
-                >
+                <small>Clique na ★ para definir a capa. Arraste para reordenar ou use as setas.</small>
               </div>
 
               <label class="toggle-field">
                 <input type="checkbox" id="usarIntro" checked />
-                <span
-                  >Mostrar intro personalizada ao abrir ("Para [nome] ❤️")</span
-                >
+                <span>Mostrar intro personalizada ao abrir ("Para [nome] ❤️")</span>
               </label>
 
               <label class="toggle-field">
@@ -351,24 +245,15 @@
 
               <div class="campo">
                 <label for="rodapeCustom">Mensagem do rodapé</label>
-                <input
-                  type="text"
-                  id="rodapeCustom"
-                  maxlength="80"
-                  placeholder="Deixe em branco para usar a mensagem padrão"
-                />
+                <input type="text" id="rodapeCustom" maxlength="80" placeholder="Deixe em branco para usar a mensagem padrão" />
                 <small>Aparece no final da página do presente.</small>
               </div>
             </div>
 
             <div class="erro" id="erro3"></div>
             <div class="acoes">
-              <button type="button" class="btn sec" data-ir="3">
-                ← Voltar
-              </button>
-              <button type="submit" class="btn ouro" id="btnFinal">
-                Ir para o pagamento →
-              </button>
+              <button type="button" class="btn sec" data-ir="3">← Voltar</button>
+              <button type="submit" class="btn ouro" id="btnFinal">Ir para o pagamento →</button>
             </div>
           </div>
         </form>
@@ -400,9 +285,7 @@
                   <div class="layout-view" id="pvPadrao">
                     <section class="pv-hero" id="pvHero">
                       <div class="pv-hero-content">
-                        <small id="pvPequeno"
-                          >Uma história que continua...</small
-                        >
+                        <small id="pvPequeno">Uma história que continua...</small>
                         <h2 id="pvTitulo">Nós dois</h2>
                         <p id="pvFrase">Sua história começa aqui...</p>
                       </div>
@@ -412,18 +295,10 @@
                       <span class="pv-eyebrow">Desde que tudo começou</span>
                       <h3>Nosso tempo juntos</h3>
                       <div class="pv-counter-grid">
-                        <div>
-                          <strong id="pvAnos">0</strong><span>Anos</span>
-                        </div>
-                        <div>
-                          <strong id="pvMeses">0</strong><span>Meses</span>
-                        </div>
-                        <div>
-                          <strong id="pvDias">0</strong><span>Dias</span>
-                        </div>
-                        <div>
-                          <strong id="pvHoras">0</strong><span>Horas</span>
-                        </div>
+                        <div><strong id="pvAnos">0</strong><span>Anos</span></div>
+                        <div><strong id="pvMeses">0</strong><span>Meses</span></div>
+                        <div><strong id="pvDias">0</strong><span>Dias</span></div>
+                        <div><strong id="pvHoras">0</strong><span>Horas</span></div>
                       </div>
                     </section>
 
@@ -455,9 +330,7 @@
                       <span class="pv-eyebrow">Para você</span>
                       <h3>Para você</h3>
                       <p id="pvCarta">Sua mensagem aparece aqui...</p>
-                      <div class="pv-assin" id="pvAssin">
-                        Com todo meu amor,
-                      </div>
+                      <div class="pv-assin" id="pvAssin">Com todo meu amor,</div>
                     </section>
 
                     <section class="pv-sec pv-musica" id="pvSecMusica">
@@ -472,15 +345,13 @@
                     </footer>
                   </div>
 
-                  <!-- NETFLIX PREMIUM -->
+                  <!-- NETFLIX -->
                   <div class="layout-view" id="pvNetflix" style="display: none">
                     <section class="pvn-hero" id="pvnHero">
                       <div class="pvn-hero-slides" id="pvnSlides"></div>
                       <div class="pvn-hero-overlay"></div>
                       <div class="pvn-hero-content">
-                        <div class="pvn-badge">
-                          <span class="pvn-badge-n">N</span>SÉRIE ORIGINAL
-                        </div>
+                        <div class="pvn-badge"><span class="pvn-badge-n">N</span>SÉRIE ORIGINAL</div>
                         <h2 class="pvn-title" id="pvnTitulo">Nós Dois</h2>
                         <div class="pvn-meta">
                           <span class="pvn-match">98% relevante</span>
@@ -490,85 +361,47 @@
                         </div>
                         <p class="pvn-desc" id="pvnDesc"></p>
                         <div class="pvn-actions">
-                          <button class="pvn-play" type="button">
-                            ▶ Assistir
-                          </button>
-                          <button class="pvn-info" type="button">
-                            + Minha lista
-                          </button>
+                          <button class="pvn-play" type="button">▶ Assistir</button>
+                          <button class="pvn-info" type="button">+ Minha lista</button>
                         </div>
                       </div>
                       <div class="pvn-slide-dots" id="pvnSlideDots"></div>
                     </section>
 
                     <section class="pvn-section">
-                      <h3 class="pvn-section-title">
-                        Continuar assistindo como <span id="pvnDe">você</span>
-                      </h3>
+                      <h3 class="pvn-section-title">Continuar assistindo como <span id="pvnDe">você</span></h3>
                       <div class="pvn-carousel" id="pvnContinue"></div>
                     </section>
 
                     <section class="pvn-section">
-                      <h3 class="pvn-section-title">
-                        Top 10 momentos no Brasil <span>Atualizado hoje</span>
-                      </h3>
+                      <h3 class="pvn-section-title">Top 10 momentos no Brasil <span>Atualizado hoje</span></h3>
                       <div class="pvn-top10" id="pvnTop10"></div>
                     </section>
 
                     <section class="pvn-section">
-                      <h3 class="pvn-section-title">
-                        Episódios <span id="pvnSeason">Temporada 1</span>
-                      </h3>
+                      <h3 class="pvn-section-title">Episódios <span id="pvnSeason">Temporada 1</span></h3>
                       <div class="pvn-episodes" id="pvnEpisodios"></div>
                     </section>
 
                     <section class="pvn-section pvn-about">
-                      <h3 class="pvn-section-title">
-                        Sobre <span id="pvnSobreTitulo">Nós Dois</span>
-                      </h3>
+                      <h3 class="pvn-section-title">Sobre <span id="pvnSobreTitulo">Nós Dois</span></h3>
                       <div class="pvn-about-grid">
                         <div><span>Elenco</span><b id="pvnElenco"></b></div>
                         <div><span>Gênero</span><b>Romance</b></div>
-                        <div>
-                          <span>Indicado</span><b class="pvn-age">14</b>
-                        </div>
+                        <div><span>Indicado</span><b class="pvn-age">14</b></div>
                       </div>
                       <p class="pvn-about-desc" id="pvnSobre"></p>
                     </section>
 
                     <nav class="pvn-nav">
-                      <button class="pvn-nav-item active" type="button">
-                        <svg viewBox="0 0 24 24">
-                          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-                        </svg>
-                        <span>Início</span>
-                      </button>
-                      <button class="pvn-nav-item" type="button">
-                        <svg viewBox="0 0 24 24">
-                          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
-                        </svg>
-                        <span>Séries</span>
-                      </button>
-                      <button class="pvn-nav-item" type="button">
-                        <svg viewBox="0 0 24 24">
-                          <path
-                            d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4v16h16V4z"
-                          />
-                        </svg>
-                        <span>Filmes</span>
-                      </button>
-                      <button class="pvn-nav-item" type="button">
-                        <svg viewBox="0 0 24 24">
-                          <path
-                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                          />
-                        </svg>
-                        <span>Lista</span>
-                      </button>
+                      <button class="pvn-nav-item active" type="button"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg><span>Início</span></button>
+                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" /></svg><span>Séries</span></button>
+                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4v16h16V4z" /></svg><span>Filmes</span></button>
+                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg><span>Lista</span></button>
                     </nav>
                   </div>
 
-                  <!-- SPOTIFY PREMIUM -->
+                  <!-- SPOTIFY -->
                   <div class="layout-view" id="pvSpotify" style="display: none">
                     <header class="pvsp-header" id="pvspHeader">
                       <div class="pvsp-cover-wrap">
@@ -581,18 +414,9 @@
                     </header>
 
                     <div class="pvsp-actions">
-                      <button
-                        class="pvsp-icon-btn"
-                        id="pvspHeart"
-                        type="button"
-                        title="Curtir"
-                      >
-                        ♡
-                      </button>
+                      <button class="pvsp-icon-btn" id="pvspHeart" type="button" title="Curtir">♡</button>
                       <button class="pvsp-play-big" type="button">▶</button>
-                      <button class="pvsp-icon-btn" type="button" title="Mais">
-                        ⋯
-                      </button>
+                      <button class="pvsp-icon-btn" type="button" title="Mais">⋯</button>
                     </div>
 
                     <div class="pvsp-tracks" id="pvspTracks"></div>
@@ -620,18 +444,14 @@
                       <div class="pvsp-player-cover" id="pvspPlayerCover"></div>
                       <div class="pvsp-player-body">
                         <div class="pvsp-player-title" id="pvspMusNome">—</div>
-                        <div class="pvsp-player-artist" id="pvspMusArtista">
-                          —
-                        </div>
-                        <div class="pvsp-player-progress">
-                          <span id="pvspProgressFill"></span>
-                        </div>
+                        <div class="pvsp-player-artist" id="pvspMusArtista">—</div>
+                        <div class="pvsp-player-progress"><span id="pvspProgressFill"></span></div>
                       </div>
                       <button class="pvsp-player-btn" type="button">▶</button>
                     </div>
                   </div>
 
-                  <!-- VINIL PREMIUM -->
+                  <!-- VINIL -->
                   <div class="layout-view" id="pvVinil" style="display: none">
                     <section class="pvl-hero">
                       <div class="pvl-hero-deco">
@@ -647,42 +467,22 @@
                         <div class="pvl-needle" id="pvlNeedle">
                           <svg viewBox="0 0 80 120" fill="none">
                             <circle cx="70" cy="10" r="6" fill="#d4a24e" />
-                            <path
-                              d="M70 16 L70 60 L36 100"
-                              stroke="#d4a24e"
-                              stroke-width="3"
-                              stroke-linecap="round"
-                            />
+                            <path d="M70 16 L70 60 L36 100" stroke="#d4a24e" stroke-width="3" stroke-linecap="round" />
                             <circle cx="36" cy="100" r="4" fill="#d4a24e" />
-                            <rect
-                              x="28"
-                              y="102"
-                              width="16"
-                              height="6"
-                              rx="2"
-                              fill="#d4a24e"
-                            />
+                            <rect x="28" y="102" width="16" height="6" rx="2" fill="#d4a24e" />
                           </svg>
                         </div>
                       </div>
-                      <div class="pvl-badge">
-                        Lado A • Edição de colecionador
-                      </div>
+                      <div class="pvl-badge">Lado A • Edição de colecionador</div>
                       <h2 class="pvl-title" id="pvlTitulo">Nós Dois</h2>
                       <div class="pvl-meta" id="pvlMeta"></div>
                       <p class="pvl-desc" id="pvlDesc"></p>
                     </section>
 
                     <section class="pvl-stats">
-                      <div class="pvl-stat">
-                        <strong id="pvlStatFaixas">0</strong><span>Faixas</span>
-                      </div>
-                      <div class="pvl-stat">
-                        <strong id="pvlStatAnos">0</strong><span>Anos</span>
-                      </div>
-                      <div class="pvl-stat">
-                        <strong id="pvlStatDias">0</strong><span>Dias</span>
-                      </div>
+                      <div class="pvl-stat"><strong id="pvlStatFaixas">0</strong><span>Faixas</span></div>
+                      <div class="pvl-stat"><strong id="pvlStatAnos">0</strong><span>Anos</span></div>
+                      <div class="pvl-stat"><strong id="pvlStatDias">0</strong><span>Dias</span></div>
                     </section>
 
                     <section class="pvl-sec">
@@ -717,9 +517,7 @@
                     </section>
 
                     <footer class="pvl-footer">
-                      <div class="pvl-footer-symbols">
-                        <span>◉</span><span>◉</span><span>◉</span>
-                      </div>
+                      <div class="pvl-footer-symbols"><span>◉</span><span>◉</span><span>◉</span></div>
                       <div class="pvl-footer-logo">NOSSO<span>AMOR</span></div>
                       <p id="pvlRodape">℗ © 2024 — gravado com amor</p>
                     </footer>
@@ -736,12 +534,9 @@
       </aside>
     </div>
 
-    <button class="preview-btn" id="previewBtn" type="button">
-      👁 Ver prévia
-    </button>
+    <button class="preview-btn" id="previewBtn" type="button">👁 Ver prévia</button>
 
     <script src="app.js"></script>
     <script src="js/pages/criar.js"></script>
-    
   </body>
 </html>

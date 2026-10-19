@@ -35,3 +35,43 @@ async function buscarPedido(id) {
 }
   return { abrirDB, salvarPedido, buscarPedido };
 })();
+
+/* Adicione ao js/core/db.js */
+async function listarTodosPedidos() {
+    const db = await abrirDB();
+    return new Promise((res, rej) => {
+        const req = db.transaction(STORE).objectStore(STORE).getAll();
+        req.onsuccess = () => res(req.result || []);
+        req.onerror = () => rej(req.error);
+    });
+}
+
+async function excluirPedidoDB(id) {
+    const db = await abrirDB();
+    return new Promise((res, rej) => {
+        const tx = db.transaction(STORE, "readwrite");
+        tx.objectStore(STORE).delete(id);
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+    });
+}
+
+/* Adicione ao final do js/core/db.js */
+async function listarTodosPedidos() {
+    const db = await abrirDB();
+    return new Promise((res, rej) => {
+        const req = db.transaction(STORE).objectStore(STORE).getAll();
+        req.onsuccess = () => res(req.result || []);
+        req.onerror = () => rej(req.error);
+    });
+}
+
+async function excluirPedidoDB(id) {
+    const db = await abrirDB();
+    return new Promise((res, rej) => {
+        const tx = db.transaction(STORE, "readwrite");
+        tx.objectStore(STORE).delete(id);
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+    });
+}
