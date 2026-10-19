@@ -1,0 +1,4 @@
+# Artefatos temporarios de verificacao / ferramentas locais
+.snapshots/
+tools/screenshots/
+*.log

@@ -4,175 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uma surpresa para você ❤️</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .carta-section { background: var(--vinho); }
-        footer { background: var(--vinho-escuro, #4d1e2d); }
-        .historia { background: var(--rosa-pastel); }
-        .carta p, .evento p { white-space: pre-line; }
-        #msg { min-height: 100vh; display: none; align-items: center; justify-content: center; text-align: center; padding: 30px; font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--vinho); }
-        .hero-foto { background-size: cover; background-position: center; }
+    <link rel="stylesheet" href="style.css" id="cssPadrao">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
-        /* =====================================================
-           TEMA NETFLIX
-        ===================================================== */
-        body.tema-netflix { background: #0b0b0b; color: #fff; }
-        body.tema-netflix .heart { display: none; }
-
-        .nf { background: #0b0b0b; color: #fff; min-height: 100vh; font-family: 'Poppins', sans-serif; }
-        .nf-hero {
-            position: relative;
-            min-height: 92vh;
-            display: flex;
-            align-items: flex-end;
-            padding: 0 5vw 70px;
-            background: #111 center/cover no-repeat;
-        }
-        .nf-hero-grad {
-            position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(11,11,11,.35) 0%, rgba(11,11,11,.7) 55%, #0b0b0b 100%);
-        }
-        .nf-hero-inner { position: relative; z-index: 2; max-width: 640px; }
-        .nf-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-            color: #fff; margin-bottom: 14px; font-weight: 600;
-        }
-        .nf-badge::before { content: "N"; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: #e50914; border-radius: 3px; font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 700; }
-        .nf-title {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: clamp(42px, 6vw, 76px);
-            line-height: 1;
-            letter-spacing: -0.02em;
-            margin-bottom: 14px;
-            text-shadow: 0 4px 30px rgba(0,0,0,.6);
-            text-transform: uppercase;
-        }
-        .nf-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 13px; margin-bottom: 14px; color: #d1d1d1; }
-        .nf-meta .nf-match { color: #46d369; font-weight: 600; }
-        .nf-meta .nf-hd { border: 1px solid #888; padding: 1px 6px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; }
-        .nf-desc {
-            font-size: 15px; line-height: 1.65;
-            color: #e5e5e5; margin-bottom: 24px;
-            max-width: 560px;
-            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: pre-line;
-        }
-        .nf-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-        .nf-btn-play, .nf-btn-sec, .nf-icon {
-            border: none; border-radius: 4px; cursor: pointer;
-            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600;
-            padding: 11px 26px; display: inline-flex; align-items: center; gap: 8px;
-            transition: .2s;
-        }
-        .nf-btn-play { background: #fff; color: #000; }
-        .nf-btn-play:hover { background: #d8d8d8; }
-        .nf-btn-sec { background: rgba(109,109,110,.7); color: #fff; }
-        .nf-btn-sec:hover { background: rgba(109,109,110,.9); }
-        .nf-icon { background: rgba(42,42,42,.6); color: #fff; padding: 11px 14px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; }
-        .nf-icon:hover { background: rgba(42,42,42,.9); }
-
-        /* Stats */
-        .nf-stats {
-            background: #e50914;
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            padding: 22px 5vw;
-            gap: 16px;
-            text-align: center;
-        }
-        .nf-stat strong { display: block; font-family: 'Poppins', sans-serif; font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: #fff; line-height: 1; }
-        .nf-stat span { display: block; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.85); margin-top: 6px; font-weight: 600; }
-
-        /* Seções */
-        .nf-sec { padding: 50px 5vw; }
-        .nf-sec h2 { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 22px; color: #fff; letter-spacing: -0.01em; }
-        .nf-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
-        .nf-sec-head h2 { margin: 0; }
-        .nf-sec-tab { font-size: 13px; color: #b3b3b3; cursor: pointer; }
-
-        /* Episódios */
-        .nf-episodios { display: flex; flex-direction: column; gap: 4px; }
-        .nf-ep {
-            display: grid;
-            grid-template-columns: 40px 140px 1fr;
-            gap: 18px;
-            align-items: center;
-            padding: 16px 8px;
-            border-bottom: 1px solid #1f1f1f;
-            cursor: pointer;
-            transition: background .2s;
-        }
-        .nf-ep:hover { background: #141414; }
-        .nf-ep-num { font-size: 26px; font-weight: 700; color: #fff; text-align: center; }
-        .nf-ep-thumb {
-            aspect-ratio: 16/9; border-radius: 4px; overflow: hidden; background: #222;
-            position: relative;
-        }
-        .nf-ep-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .nf-ep-thumb::after {
-            content: "▶"; position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,.35); color: #fff; font-size: 24px; opacity: 0; transition: .2s;
-        }
-        .nf-ep:hover .nf-ep-thumb::after { opacity: 1; }
-        .nf-ep-info h3 { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
-        .nf-ep-info p { font-size: 13px; line-height: 1.55; color: #b3b3b3; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .nf-ep-data { font-size: 12px; color: #808080; }
-
-        /* Momentos */
-        .nf-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-        .nf-galeria img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; transition: transform .3s; cursor: pointer; }
-        .nf-galeria img:hover { transform: scale(1.05); }
-
-        /* Sinopse */
-        .nf-carta p { font-size: 16px; line-height: 1.75; color: #e5e5e5; white-space: pre-line; max-width: 780px; }
-        .nf-assin { margin-top: 22px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #e50914; font-weight: 600; }
-
-        /* Música */
-        .nf-musica {
-            display: flex; align-items: center; gap: 18px;
-            background: #181818; border-radius: 6px; padding: 18px 20px;
-            max-width: 620px;
-        }
-        .nf-mus-cover { width: 60px; height: 60px; border-radius: 4px; background: #222 center/cover; flex-shrink: 0; }
-        .nf-mus-info { flex: 1; min-width: 0; }
-        .nf-mus-info b { display: block; font-size: 15px; font-weight: 600; color: #fff; }
-        .nf-mus-info span { font-size: 13px; color: #b3b3b3; }
-
-        /* Rodapé */
-        .nf-footer { padding: 60px 5vw; text-align: center; color: #808080; font-size: 13px; border-top: 1px solid #1f1f1f; }
-        .nf-logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 22px; color: #e50914; letter-spacing: 2px; margin-bottom: 12px; }
-        .nf-logo span { color: #fff; }
-
-        @media (max-width: 700px) {
-            .nf-ep { grid-template-columns: 30px 110px 1fr; gap: 10px; padding: 12px 4px; }
-            .nf-ep-num { font-size: 20px; }
-            .nf-ep-info p { -webkit-line-clamp: 2; font-size: 12px; }
-            .nf-hero { padding: 0 20px 50px; min-height: 88vh; }
-            .nf-stats { padding: 18px 20px; }
-            .nf-sec { padding: 40px 20px; }
-            .nf-sec h2 { font-size: 22px; }
-        }
-    </style>
+    <link rel="stylesheet" href="css/ver.css">
 </head>
 <body>
 
+<div id="introOverlay">
+    <div class="intro-heart">💝</div>
+    <div class="intro-para"></div>
+    <div class="intro-line"></div>
+    <div class="intro-de"></div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div id="floatControls">
+    <button id="btnMusic" class="float-btn" title="Música" style="display:none">🎵</button>
+    <button id="btnShare" class="float-btn" title="Compartilhar">↗</button>
+    <button id="btnTop" class="float-btn" title="Voltar ao topo">↑</button>
+</div>
+
+<div id="lightbox">
+    <button class="lb-btn" id="lbClose">✕</button>
+    <button class="lb-btn" id="lbPrev">‹</button>
+    <div class="lb-content">
+        <img id="lbImg" alt="">
+        <div id="lbLegenda"></div>
+    </div>
+    <button class="lb-btn" id="lbNext">›</button>
+</div>
+
 <div id="msg"></div>
+
+<div id="skeletonLoader">
+    <div class="sk-block sk-hero"></div>
+    <div class="sk-block sk-titulo"></div>
+    <div class="sk-block sk-sub"></div>
+    <div class="sk-grid"><div class="sk-block"></div><div class="sk-block"></div></div>
+    <div class="sk-block sk-txt"></div>
+    <div class="sk-block sk-txt curto"></div>
+</div>
 
 <div id="conteudo" style="display:none">
 
-    <!-- =====================================================
-         LAYOUT PADRÃO (romântico)
-    ====================================================== -->
+    <!-- PADRÃO -->
     <div id="layoutPadrao" style="display:none">
-        <div class="heart" style="left: 10%; animation-delay: 0s;">♥</div>
-        <div class="heart" style="left: 25%; animation-delay: 3s;">♡</div>
-        <div class="heart" style="left: 45%; animation-delay: 1s;">♥</div>
-        <div class="heart" style="left: 65%; animation-delay: 5s;">♡</div>
-        <div class="heart" style="left: 85%; animation-delay: 2s;">♥</div>
-
         <header class="hero" id="hero">
             <div class="hero-content">
                 <div class="hero-small" id="pequeno"></div>
@@ -181,32 +61,26 @@
             </div>
             <div class="scroll">nossa história<span>↓</span></div>
         </header>
-
         <section class="contador-section">
-            <div class="polaroid polaroid-left" style="top: 24px; --rot: -5deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-left rv" style="top:24px;--rot:-5deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="titulo">
+                <div class="titulo rv">
                     <span>Desde que tudo começou</span>
                     <h2>Nosso tempo juntos</h2>
                     <p>Cada segundo ao seu lado se tornou parte da nossa história.</p>
                 </div>
                 <div class="contador">
-                    <div class="tempo"><strong id="anos">0</strong><span>Anos</span></div>
-                    <div class="tempo"><strong id="meses">0</strong><span>Meses</span></div>
-                    <div class="tempo"><strong id="dias">0</strong><span>Dias</span></div>
-                    <div class="tempo"><strong id="horas">0</strong><span>Horas</span></div>
+                    <div class="tempo rv"><strong id="anos" data-count="0">0</strong><span>Anos</span></div>
+                    <div class="tempo rv"><strong id="meses" data-count="0">0</strong><span>Meses</span></div>
+                    <div class="tempo rv"><strong id="dias" data-count="0">0</strong><span>Dias</span></div>
+                    <div class="tempo rv"><strong id="horas" data-count="0">0</strong><span>Horas</span></div>
                 </div>
             </div>
         </section>
-
         <section class="historia">
-            <div class="polaroid polaroid-right" style="top: 30px; --rot: 4deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-right rv" style="top:30px;--rot:4deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="titulo">
+                <div class="titulo rv">
                     <span>Era uma vez...</span>
                     <h2>A nossa história</h2>
                     <p>Alguns momentos que fizeram nossa história chegar até aqui.</p>
@@ -214,42 +88,32 @@
                 <div class="timeline" id="timeline"></div>
             </div>
         </section>
-
         <section class="galeria-section" id="secGaleria">
-            <div class="polaroid polaroid-left" style="top: 18px; --rot: -3deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-left rv" style="top:18px;--rot:-3deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="titulo">
+                <div class="titulo rv">
                     <span>Nossos momentos</span>
                     <h2>Um álbum só nosso</h2>
-                    <p>Alguns pedacinhos da nossa história, guardados como pequenas Polaroids. ❤️</p>
+                    <p>Alguns pedacinhos da nossa história.</p>
                 </div>
                 <div class="galeria" id="galeria"></div>
             </div>
         </section>
-
         <section class="momentos" id="secMomentos">
-            <div class="polaroid polaroid-right" style="top: 34px; --rot: 5deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-right rv" style="top:34px;--rot:5deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="titulo">
-                    <span>Pequenas coisas</span>
-                    <h2 id="amoTitulo"></h2>
-                </div>
+                <div class="titulo rv"><span>Pequenas coisas</span><h2 id="amoTitulo"></h2></div>
                 <div class="cards" id="cards"></div>
             </div>
         </section>
-
         <section class="video-section" id="secVideo">
             <div class="container video-container">
-                <div class="titulo">
+                <div class="titulo rv">
                     <span>Um momento só nosso</span>
                     <h2>Nosso Momento</h2>
                     <p>Algumas lembranças que eu guardaria para sempre. ❤️</p>
                 </div>
-                <div class="story-card" id="storyCard">
+                <div class="story-card rv" id="storyCard">
                     <div class="story-header">
                         <div class="story-progress-bar" id="progressBarContainer"></div>
                         <div class="story-profile">
@@ -263,13 +127,10 @@
                 </div>
             </div>
         </section>
-
         <section class="carta-section">
-            <div class="polaroid polaroid-left" style="top: 22px; --rot: -4deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-left rv" style="top:22px;--rot:-4deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="carta">
+                <div class="carta rv">
                     <div class="aspas">“</div>
                     <h2>Para você</h2>
                     <p id="carta"></p>
@@ -277,17 +138,14 @@
                 </div>
             </div>
         </section>
-
         <section class="musica-section" id="secMusica">
-            <div class="polaroid polaroid-right" style="top: 26px; --rot: 3deg;">
-                <img class="pol" alt="Nossa foto">
-            </div>
+            <div class="polaroid polaroid-right rv" style="top:26px;--rot:3deg;"><img class="pol" alt=""></div>
             <div class="container">
-                <div class="titulo">
+                <div class="titulo rv">
                     <span>A nossa música</span>
                     <h2>Uma música para nós</h2>
                 </div>
-                <div class="player">
+                <div class="player rv">
                     <div class="disco" id="disco"></div>
                     <h3 id="musicaNome"></h3>
                     <p id="musicaArtista"></p>
@@ -297,7 +155,6 @@
                 </div>
             </div>
         </section>
-
         <footer>
             <div class="coracao">❤️</div>
             <p id="rodape"></p>
@@ -305,15 +162,236 @@
         </footer>
     </div>
 
-    <!-- =====================================================
-         LAYOUT NETFLIX
-    ====================================================== -->
-    <div id="layoutNetflix" class="nf" style="display:none">
+    <!-- CARTA ANTIGA -->
+    <div id="layoutCartaAntiga" style="display:none">
+        <div class="ca-envelope">
+            <div class="ca-carimbo">POSTA<br>1950</div>
+            <div class="ca-envelope-top">
+                <div class="ca-selo-postal"></div>
+                <small id="caPequeno">Uma carta guardada no tempo</small>
+                <strong>Para você</strong>
+            </div>
+        </div>
+        <section class="ca-hero">
+            <h1 id="caTitulo">Querida...</h1>
+            <p id="caDuracao"></p>
+        </section>
+        <div class="ca-ornamento">❦ ❦ ❦</div>
+        <section class="ca-contador">
+            <div class="ca-contador-item"><strong id="caAnos">0</strong><span>Anos</span></div>
+            <div class="ca-contador-item"><strong id="caMeses">0</strong><span>Meses</span></div>
+            <div class="ca-contador-item"><strong id="caDias">0</strong><span>Dias</span></div>
+            <div class="ca-contador-item"><strong id="caHoras">0</strong><span>Horas</span></div>
+        </section>
+        <section class="ca-papel">
+            <span class="ca-eyebrow">Para você</span>
+            <p class="ca-carta-texto" id="caCarta"></p>
+            <div class="ca-assinatura" id="caAssinatura">Com amor,</div>
+            <span class="ca-ps" id="caPS">P.S.: Sempre seu.</span>
+        </section>
+        <div class="ca-ornamento">❦ ❦ ❦</div>
+        <section class="ca-timeline" id="caTimeline"></section>
+        <section class="ca-galeria" id="caGaleria"></section>
+        <div class="ca-footer" id="caRodape">Sempre seu</div>
+    </div>
+
+    <!-- SCRAPBOOK -->
+    <div id="layoutScrapbook" style="display:none">
+        <span class="sc-sticker" style="top:30px;left:10%;--r:-15deg;">⭐</span>
+        <span class="sc-sticker" style="top:150px;right:8%;--r:20deg;animation-delay:.5s;">💝</span>
+        <span class="sc-sticker" style="top:400px;left:5%;--r:8deg;animation-delay:1s;">🌸</span>
+        <span class="sc-sticker" style="top:700px;right:5%;--r:-10deg;animation-delay:1.5s;">✨</span>
+        <span class="sc-sticker" style="bottom:100px;left:8%;--r:25deg;animation-delay:2s;">💫</span>
+
+        <section class="sc-hero">
+            <div class="sc-titulo-card">
+                <small id="scPequeno">Recortes da nossa vida...</small>
+                <h1 id="scTitulo">Recortes</h1>
+            </div>
+            <p id="scDuracao"></p>
+        </section>
+        <section class="sc-contador">
+            <div class="sc-contador-item"><strong id="scAnos">0</strong><span>Anos</span></div>
+            <div class="sc-contador-item"><strong id="scMeses">0</strong><span>Meses</span></div>
+            <div class="sc-contador-item"><strong id="scDias">0</strong><span>Dias</span></div>
+            <div class="sc-contador-item"><strong id="scHoras">0</strong><span>Horas</span></div>
+        </section>
+        <section class="sc-carta">
+            <h2 class="sc-carta-titulo">Para você ♥</h2>
+            <p id="scCarta"></p>
+            <div class="sc-carta-assin" id="scAssinatura">Com amor,</div>
+            <div class="sc-hashtags">
+                <span class="sc-hashtag">#NossaHistória</span>
+                <span class="sc-hashtag">#TBT</span>
+                <span class="sc-hashtag">#NuncaEsqueci</span>
+            </div>
+        </section>
+        <section class="sc-timeline">
+            <h2 class="sc-timeline-titulo">Nossa história em recortes</h2>
+            <div id="scTimeline"></div>
+        </section>
+        <section class="sc-galeria" id="scGaleria"></section>
+        <section class="sc-amo">
+            <h2 class="sc-amo-titulo">Meus recortes favoritos</h2>
+            <div class="sc-chips" id="scChips"></div>
+        </section>
+        <div class="sc-musica">
+            <div class="sc-postit">
+                <small>Nossa trilha sonora</small>
+                <b id="scMusNome">—</b>
+                <span id="scMusArtista">—</span>
+            </div>
+        </div>
+        <div class="sc-footer" id="scRodape">Feito com carinho</div>
+    </div>
+
+    <!-- JARDIM SECRETO -->
+    <div id="layoutJardim" style="display:none">
+        <svg class="ja-flor tl" width="60" height="100" viewBox="0 0 60 100" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M30 50 Q 20 30 30 10 Q 40 30 30 50"/><path d="M30 50 L 30 100"/><path d="M30 65 Q 15 60 10 70"/><path d="M30 80 Q 45 75 50 85"/></svg>
+        <svg class="ja-flor tr" width="60" height="100" viewBox="0 0 60 100" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M30 50 Q 20 30 30 10 Q 40 30 30 50"/><path d="M30 50 L 30 100"/></svg>
+        <svg class="ja-flor bl" width="50" height="80" viewBox="0 0 50 80" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M25 40 Q 15 25 25 10 Q 35 25 25 40"/><path d="M25 40 L 25 80"/></svg>
+        <svg class="ja-flor br" width="50" height="80" viewBox="0 0 50 80" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M25 40 Q 15 25 25 10 Q 35 25 25 40"/><path d="M25 40 L 25 80"/></svg>
+        <span class="ja-borboleta" style="top:200px;left:15%;">🦋</span>
+        <span class="ja-borboleta" style="top:600px;right:12%;animation-delay:3s;">🦋</span>
+
+        <section class="ja-hero">
+            <div class="ja-monograma">❦</div>
+            <small id="jaPequeno">Floresceu em meu coração...</small>
+            <h1 id="jaTitulo">Jardim Secreto</h1>
+            <p id="jaDuracao"></p>
+            <span class="ja-latim">Sub rosa · MMXXIV</span>
+        </section>
+        <div class="ja-divisor"><span>❦</span></div>
+        <section class="ja-contador">
+            <div class="ja-contador-item"><strong id="jaAnos">0</strong><span>Anos</span></div>
+            <div class="ja-contador-item"><strong id="jaMeses">0</strong><span>Meses</span></div>
+            <div class="ja-contador-item"><strong id="jaDias">0</strong><span>Dias</span></div>
+            <div class="ja-contador-item"><strong id="jaHoras">0</strong><span>Horas</span></div>
+        </section>
+        <section class="ja-papel">
+            <span class="ja-eyebrow">Para você</span>
+            <h2>Uma carta do meu jardim</h2>
+            <p class="ja-carta-texto" id="jaCarta"></p>
+            <div class="ja-assinatura" id="jaAssinatura">Com amor,</div>
+        </section>
+        <section class="ja-timeline" id="jaTimeline"></section>
+        <section class="ja-galeria" id="jaGaleria"></section>
+        <section class="ja-amo">
+            <h2 class="ja-amo-titulo">Flores do meu jardim</h2>
+            <div class="ja-chips" id="jaChips"></div>
+        </section>
+        <div class="ja-musica" id="jaMusica" style="display:none;">
+            <div class="ja-musica-card">
+                <div class="ja-musica-onda"><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="ja-musica-info">
+                    <b id="jaMusNome">—</b>
+                    <span id="jaMusArtista">—</span>
+                </div>
+            </div>
+        </div>
+        <div class="ja-footer" id="jaRodape">Cultivado com amor</div>
+    </div>
+
+    <!-- CINEMA -->
+    <div id="layoutCinema" style="display:none">
+        <div class="ci-marquee">
+            <div class="ci-marquee-text">★ EM CARTAZ ★</div>
+        </div>
+        <section class="ci-hero">
+            <div class="ci-refletor"></div>
+            <span class="ci-badge">SESSÃO DA TARDE</span>
+            <small id="ciPequeno">Uma história digna de Oscar...</small>
+            <h1 id="ciTitulo">Nossa História</h1>
+            <p id="ciDuracao"></p>
+        </section>
+        <div class="ci-claquete">
+            <div class="ci-claquete-topo"></div>
+            <div class="ci-claquete-info">
+                <div><small>Cena</small><b>01</b></div>
+                <div><small>Take</small><b>01</b></div>
+                <div><small>Direção</small><b>Amor</b></div>
+            </div>
+        </div>
+        <section class="ci-contador">
+            <div class="ci-contador-item"><strong id="ciAnos">0</strong><span>Anos</span></div>
+            <div class="ci-contador-item"><strong id="ciMeses">0</strong><span>Meses</span></div>
+            <div class="ci-contador-item"><strong id="ciDias">0</strong><span>Dias</span></div>
+            <div class="ci-contador-item"><strong id="ciHoras">0</strong><span>Horas</span></div>
+        </section>
+        <section class="ci-cartaz">
+            <span class="ci-eyebrow">Roteiro original</span>
+            <h2 id="ciCartaTitulo">Sinopse</h2>
+            <p class="ci-carta-texto" id="ciCarta"></p>
+            <div class="ci-assinatura" id="ciAssinatura">FIM</div>
+        </section>
+        <section class="ci-critica">
+            <div class="ci-critica-estrelas">★★★★★</div>
+            <p class="ci-critica-quote">"Uma obra-prima do coração. Impossível não se emocionar."</p>
+            <div class="ci-critica-autor">— O Crítico Apaixonado</div>
+        </section>
+        <section class="ci-cenas" id="ciTimeline"></section>
+        <section class="ci-galeria" id="ciGaleria"></section>
+        <div class="ci-footer" id="ciRodape">
+            <span class="ci-fim">FIM</span>
+            Uma produção do coração
+        </div>
+    </div>
+
+    <!-- RETRÔ -->
+    <div id="layoutRetro" style="display:none">
+        <div class="re-janela">
+            <div class="re-janela-topo">
+                <span>C:\AMOR.EXE</span>
+                <div class="re-janela-botoes"><span>_</span><span>□</span><span>×</span></div>
+            </div>
+            <div class="re-janela-conteudo">
+                <section class="re-hero">
+                    <div class="re-cassete">
+                        <div class="re-cassete-dot"></div>
+                        <span>▮▮ REC ●</span>
+                    </div>
+                    <small id="rePequeno">Rewind para o nosso amor...</small>
+                    <h1 id="reTitulo" data-text="Nosso Mix">Nosso Mix</h1>
+                    <p id="reDuracao"></p>
+                </section>
+                <div class="re-loading"><span></span><span></span><span></span><span></span></div>
+                <section class="re-contador">
+                    <div class="re-contador-item"><strong id="reAnos">0</strong><span>Anos</span></div>
+                    <div class="re-contador-item"><strong id="reMeses">0</strong><span>Meses</span></div>
+                    <div class="re-contador-item"><strong id="reDias">0</strong><span>Dias</span></div>
+                    <div class="re-contador-item"><strong id="reHoras">0</strong><span>Horas</span></div>
+                </section>
+                <section class="re-carta">
+                    <h2>PLAY_</h2>
+                    <p id="reCarta"></p>
+                    <div class="re-assin" id="reAssinatura">Com amor,</div>
+                </section>
+                <section class="re-timeline" id="reTimeline"></section>
+                <section class="re-galeria" id="reGaleria"></section>
+                <section class="re-amo">
+                    <h2 class="re-amo-titulo">Faixas do mixtape</h2>
+                    <div class="re-chips" id="reChips"></div>
+                </section>
+                <div class="re-musica" id="reMusica" style="display:none;">
+                    <div class="re-musica-tag">TOCANDO AGORA</div>
+                    <div class="re-musica-info">
+                        <b id="reMusNome">—</b>
+                        <span id="reMusArtista">—</span>
+                    </div>
+                    <div class="re-musica-eq"><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+                <div class="re-start">Press START to continue</div>
+            </div>
+        </div>
+        <div class="re-footer" id="reRodape">▮▮ STOP ●</div>
+    </div>
+
+    <!-- NETFLIX -->
+    <div id="layoutNetflix" style="display:none">
         <section class="nf-hero" id="nfHero">
-            <div class="nf-hero-grad"></div>
             <div class="nf-hero-inner">
                 <div class="nf-badge"><span id="nfBadge">NAMORO</span> ORIGINAL</div>
-                <h1 class="nf-title" id="nfTitulo">EU TE AMO PARA SEMPRE!</h1>
+                <h1 class="nf-title" id="nfTitulo">Eu te amo para sempre!</h1>
                 <div class="nf-meta">
                     <span class="nf-match">98% compatível</span>
                     <span id="nfAno">2023</span>
@@ -324,342 +402,126 @@
                 <div class="nf-actions">
                     <button class="nf-btn-play" id="nfPlay">▶ Reproduzir</button>
                     <button class="nf-btn-sec" id="nfLista">＋ Minha lista</button>
-                    <button class="nf-icon" title="Curtir">👍</button>
-                    <button class="nf-icon" title="Compartilhar" id="nfShare">🔗</button>
                 </div>
             </div>
         </section>
-
         <section class="nf-stats">
             <div class="nf-stat"><strong id="nfStatAnos">0</strong><span>Anos Juntos</span></div>
             <div class="nf-stat"><strong id="nfStatDias">0</strong><span>Dias de História</span></div>
             <div class="nf-stat"><strong id="nfStatData">—</strong><span>Data Especial</span></div>
         </section>
-
         <section class="nf-sec">
-            <div class="nf-sec-head">
-                <h2>Episódios</h2>
-                <span class="nf-sec-tab">Temporada 1 ▾</span>
-            </div>
-            <div class="nf-episodios" id="nfEpisodios"></div>
+            <div class="nf-sec-head"><h2>Episódios</h2><span class="nf-sec-tab">Temporada 1 ▾</span></div>
+            <div class="nf-eps" id="nfEpisodios"></div>
         </section>
-
-        <section class="nf-sec" id="nfSecGaleria">
-            <h2>Momentos</h2>
-            <div class="nf-galeria" id="nfGaleria"></div>
-        </section>
-
-        <section class="nf-sec nf-carta">
-            <h2>Sinopse</h2>
-            <p id="nfCarta"></p>
-            <div class="nf-assin" id="nfAssin"></div>
-        </section>
-
+        <section class="nf-sec"><h2>Momentos</h2><div class="nf-galeria" id="nfGaleria"></div></section>
+        <section class="nf-sec nf-carta"><h2>Sinopse</h2><p id="nfCarta"></p><div class="nf-assin" id="nfAssin"></div></section>
         <section class="nf-sec" id="nfSecMusica" style="display:none">
             <h2>Trilha sonora</h2>
             <div class="nf-musica">
                 <div class="nf-mus-cover" id="nfMusCover"></div>
-                <div class="nf-mus-info">
-                    <b id="nfMusNome">—</b>
-                    <span id="nfMusArtista"></span>
-                </div>
-                <button class="nf-btn-play" id="nfMusBtn">▶</button>
-                <audio id="nfAudio" preload="auto"></audio>
+                <div class="nf-mus-info"><b id="nfMusNome">—</b><span id="nfMusArtista"></span></div>
+                <audio id="nfAudio" preload="auto" controls></audio>
             </div>
         </section>
+        <footer class="nf-footer"><div class="nf-logo">NOSSO<span>AMOR</span></div><p id="nfRodape"></p></footer>
+    </div>
 
-        <footer class="nf-footer">
-            <div class="nf-logo">NOSSO<span>AMOR</span></div>
-            <p id="nfRodape"></p>
-        </footer>
+    <!-- SPOTIFY -->
+    <div id="layoutSpotify" style="display:none">
+        <div class="sp-app">
+            <header class="sp-header">
+                <img class="sp-cover" id="spCover" alt="">
+                <div class="sp-header-info">
+                    <div class="sp-type">Playlist</div>
+                    <h1 class="sp-title" id="spTitulo">Nós dois</h1>
+                    <div class="sp-meta" id="spMeta"></div>
+                </div>
+            </header>
+            <div class="sp-actions">
+                <button class="sp-play-big" id="spPlayBig" type="button">▶</button>
+                <button class="sp-icon-btn" id="spHeart" type="button">♡</button>
+            </div>
+            <div class="sp-tracklist">
+                <div class="sp-track-head"><span>#</span><span>Título</span><span>Data</span><span>♥</span></div>
+                <div id="spTracks"></div>
+            </div>
+            <section class="sp-section"><h2>Álbuns & Singles</h2><div class="sp-albums" id="spAlbums"></div></section>
+            <section class="sp-section" id="spSecAmo"><h2 id="spAmoTitulo">Faixas favoritas</h2><div class="sp-chips" id="spChips"></div></section>
+            <section class="sp-bio"><h2>Sobre</h2><p id="spCarta"></p><div class="sp-bio-assin" id="spAssin"></div></section>
+        </div>
+        <div class="sp-player" id="spPlayer">
+            <div class="sp-player-left">
+                <img class="sp-player-cover" id="spPlayerCover" alt="">
+                <div class="sp-player-info"><b id="spMusNome">—</b><span id="spMusArtista">—</span></div>
+            </div>
+            <div class="sp-player-center">
+                <button class="sp-player-btn" id="spPlayBtn" type="button">▶</button>
+                <div class="sp-player-bar"><div class="sp-player-bar-fill" id="spBarFill"></div></div>
+            </div>
+            <div class="sp-player-right" id="spTime">0:00</div>
+            <audio id="spAudio" preload="auto"></audio>
+        </div>
+    </div>
+
+    <!-- VINIL -->
+    <div id="layoutVinil" style="display:none">
+        <div class="lv-app">
+            <header class="lv-hero">
+                <div class="lv-vinyl-wrap">
+                    <div class="lv-vinyl" id="lvVinyl"><div class="lv-label" id="lvLabel"></div></div>
+                </div>
+                <div class="lv-hero-info">
+                    <div class="lv-badge"><span id="lvBadge">Lado A</span></div>
+                    <h1 class="lv-title" id="lvTitulo">Nós Dois</h1>
+                    <div class="lv-meta" id="lvMeta"></div>
+                    <p class="lv-desc" id="lvDesc"></p>
+                    <div class="lv-actions">
+                        <button class="lv-btn-play" id="lvPlayBig" type="button">▶ Tocar disco</button>
+                    </div>
+                </div>
+            </header>
+            <section class="lv-stats">
+                <div class="lv-stat"><strong id="lvStatFaixas">0</strong><span>Faixas</span></div>
+                <div class="lv-stat"><strong id="lvStatAnos">0</strong><span>Anos juntos</span></div>
+                <div class="lv-stat"><strong id="lvStatDias">0</strong><span>Dias de história</span></div>
+            </section>
+            <section class="lv-sec">
+                <div class="lv-sec-head"><h2>Lado A — Nossa história</h2><span class="lv-sec-tag">33⅓ RPM</span></div>
+                <div class="lv-tracks" id="lvTracks"></div>
+            </section>
+            <section class="lv-sec" id="lvSecGaleria">
+                <div class="lv-sec-head"><h2>Capa & encarte</h2><span class="lv-sec-tag">Colecionador</span></div>
+                <div class="lv-galeria" id="lvGaleria"></div>
+            </section>
+            <section class="lv-sec lv-side-b" id="lvSecSideB">
+                <div class="lv-sec-head"><h2>Lado B — Favoritas</h2><span class="lv-sec-tag">Bônus</span></div>
+                <div class="lv-chips" id="lvChips"></div>
+            </section>
+            <section class="lv-liner">
+                <div class="lv-liner-inner">
+                    <span class="lv-liner-tag">Liner notes</span>
+                    <h2>Notas do disco</h2>
+                    <p id="lvCarta"></p>
+                    <div class="lv-liner-assin" id="lvAssin"></div>
+                </div>
+            </section>
+            <footer class="lv-footer"><div class="lv-footer-logo">NOSSO<span>AMOR</span></div><p id="lvRodape"></p></footer>
+        </div>
+        <div class="lv-player" id="lvPlayer">
+            <div class="lv-player-left">
+                <div class="lv-player-disc" id="lvPlayerDisc"></div>
+                <div class="lv-player-info"><b id="lvMusNome">—</b><span id="lvMusArtista">—</span></div>
+            </div>
+            <div style="text-align:center;"><button class="lv-player-btn" id="lvPlayBtn" type="button">▶</button></div>
+            <div style="text-align:right;color:#a0845a;font-family:monospace;" id="lvTime">0:00</div>
+            <audio id="lvAudio" preload="auto"></audio>
+        </div>
     </div>
 
 </div>
 
 <script src="app.js"></script>
-<script>
-    const $ = (x) => document.getElementById(x);
-
-    function mostrarMensagem(txt) {
-        $("msg").textContent = txt;
-        $("msg").style.display = "flex";
-    }
-
-    /* =====================================================
-       LAYOUT NETFLIX
-    ===================================================== */
-    function renderNetflix(p, tema) {
-        const t = tempoJuntos(p.inicio);
-        const urls = p.fotos.map(f => URL.createObjectURL(f));
-
-        /* Hero */
-        $("nfHero").style.backgroundImage =
-            "linear-gradient(180deg, rgba(11,11,11,.2) 0%, rgba(11,11,11,.55) 45%, #0b0b0b 100%), url('" + urls[0] + "')";
-        $("nfBadge").textContent = (tema.nome || "Namoro").toUpperCase();
-        $("nfTitulo").textContent = p.titulo || "Eu te amo para sempre!";
-
-        const anos = Math.max(1, Math.floor(t.meses / 12));
-        const temp = Math.max(1, Math.ceil(t.meses / 12));
-        $("nfAno").textContent = (p.inicio || "").split("-")[0] || "—";
-        $("nfTemp").textContent = temp + (temp === 1 ? " Temporada" : " Temporadas");
-
-        const primeiraLinha = (p.carta || "").split("\n\n")[0] || "";
-        $("nfDesc").textContent =
-            (p.frase || tema.sufixo) + (primeiraLinha ? "\n\n" + primeiraLinha : "");
-
-        /* Stats */
-        $("nfStatAnos").textContent = t.anos || Math.floor(t.meses / 12);
-        $("nfStatDias").textContent = t.dias.toLocaleString("pt-BR");
-        const partes = (p.inicio || "").split("-");
-        $("nfStatData").textContent = partes.length === 3
-            ? partes[2] + "/" + partes[1]
-            : "—";
-
-        /* Episódios */
-        const epsWrap = $("nfEpisodios");
-        epsWrap.innerHTML = "";
-        const eventos = [...(p.eventos || [])];
-        eventos.push({
-            data: new Date().toLocaleDateString("pt-BR"),
-            titulo: "Hoje",
-            texto: textoDuracao(t) + " construindo nossa história."
-        });
-
-        eventos.forEach((ev, i) => {
-            const ep = document.createElement("div");
-            ep.className = "nf-ep";
-            ep.innerHTML =
-                '<div class="nf-ep-num"></div>' +
-                '<div class="nf-ep-thumb"><img alt=""></div>' +
-                '<div class="nf-ep-info">' +
-                    '<div class="nf-ep-head"><h3></h3><span class="nf-ep-data"></span></div>' +
-                    '<p></p>' +
-                '</div>';
-            ep.querySelector(".nf-ep-num").textContent = (i + 1);
-            ep.querySelector("h3").textContent = ev.titulo || ("Episódio " + (i + 1));
-            ep.querySelector(".nf-ep-data").textContent = ev.data || "";
-            ep.querySelector("p").textContent = ev.texto || "";
-            ep.querySelector("img").src = urls[(i + 1) % urls.length];
-            epsWrap.appendChild(ep);
-        });
-
-        /* Galeria */
-        const gal = $("nfGaleria");
-        gal.innerHTML = "";
-        urls.forEach(u => {
-            const img = document.createElement("img");
-            img.src = u;
-            img.alt = "Momento";
-            gal.appendChild(img);
-        });
-
-        /* Carta */
-        $("nfCarta").textContent = p.carta || "";
-        $("nfAssin").textContent = "Com todo meu amor, " + (p.de || "");
-
-        /* Música */
-        if (p.musica) {
-            $("nfSecMusica").style.display = "block";
-            $("nfMusNome").textContent = p.musicaNome || "Nossa música";
-            $("nfMusArtista").textContent = p.musicaArtista || "";
-            $("nfMusCover").style.backgroundImage = "url('" + urls[0] + "')";
-
-            const a = $("nfAudio");
-            a.src = URL.createObjectURL(p.musica);
-            const btn = $("nfMusBtn");
-            btn.addEventListener("click", () => {
-                a.paused ? a.play().catch(() => {}) : a.pause();
-            });
-            a.addEventListener("play", () => btn.textContent = "❚❚");
-            a.addEventListener("pause", () => btn.textContent = "▶");
-        }
-
-        /* Rodapé */
-        $("nfRodape").textContent = textoDuracao(t) + " — a história continua...";
-
-        /* Botão reproduzir → rola pros episódios */
-        $("nfPlay").addEventListener("click", () => {
-            document.querySelector(".nf-episodios").scrollIntoView({ behavior: "smooth" });
-        });
-
-        /* Compartilhar */
-        $("nfShare").addEventListener("click", () => {
-            if (navigator.share) {
-                navigator.share({ title: document.title, url: location.href }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(location.href).catch(() => {});
-                $("nfShare").textContent = "✓";
-                setTimeout(() => $("nfShare").textContent = "🔗", 1500);
-            }
-        });
-    }
-
-    /* =====================================================
-       LAYOUT PADRÃO
-    ===================================================== */
-    function renderPadrao(p, tema) {
-        const urls = p.fotos.map(f => URL.createObjectURL(f));
-        const t = tempoJuntos(p.inicio);
-
-        /* Capa */
-        const hero = $("hero");
-        hero.classList.add("hero-foto");
-        hero.style.background =
-            "linear-gradient(rgba(80,25,43,.35),rgba(80,25,43,.45)), url('" + urls[0] + "') center/cover";
-        $("pequeno").textContent = tema.pequeno;
-        $("titulo").textContent = p.titulo;
-        $("duracao").textContent = textoDuracao(t) + " " + (p.frase || tema.sufixo);
-
-        /* Polaroids decorativas */
-        document.querySelectorAll(".pol").forEach((img, i) => {
-            img.src = urls[(i + 1) % urls.length];
-        });
-
-        /* Contador */
-        $("anos").textContent = t.anos;
-        $("meses").textContent = t.meses;
-        $("dias").textContent = t.dias.toLocaleString("pt-BR");
-        $("horas").textContent = t.horas.toLocaleString("pt-BR");
-
-        /* Linha do tempo */
-        function addEvento(data, titulo, texto) {
-            const d = document.createElement("div");
-            d.className = "evento";
-            d.innerHTML = '<div class="evento-data"></div><h3></h3><p></p>';
-            if (data) d.children[0].textContent = data; else d.children[0].remove();
-            d.querySelector("h3").textContent = titulo;
-            d.querySelector("p").textContent = texto;
-            $("timeline").appendChild(d);
-        }
-        (p.eventos || []).forEach(e => addEvento(e.data, e.titulo || "", e.texto || ""));
-        addEvento(
-            new Date().toLocaleDateString("pt-BR"),
-            "Hoje",
-            "E depois de tudo isso, estamos aqui.\n" + textoDuracao(t) + " construindo nossa história."
-        );
-
-        /* Galeria */
-        urls.forEach(u => {
-            const d = document.createElement("div");
-            d.className = "foto";
-            d.innerHTML = '<img alt="Nossa foto">';
-            d.firstChild.src = u;
-            $("galeria").appendChild(d);
-        });
-
-        /* Pequenas coisas */
-        const amo = p.amo || [];
-        if (!amo.length) {
-            $("secMomentos").style.display = "none";
-        } else {
-            $("amoTitulo").textContent = tema.amoTitulo || "O que eu amo em você";
-            const emojis = ["😁", "😋", "❤️"];
-            amo.forEach((txt, i) => {
-                const c = document.createElement("div");
-                c.className = "card";
-                c.innerHTML = '<div class="card-icon"></div><h3></h3>';
-                c.children[0].textContent = emojis[i % emojis.length];
-                c.children[1].textContent = txt;
-                $("cards").appendChild(c);
-            });
-        }
-
-        /* Carta */
-        $("carta").textContent = p.para + "\n\n" + p.carta;
-        $("assinatura").textContent = "Com todo meu amor, " + p.de;
-        $("rodape").textContent = textoDuracao(t) + "...";
-
-        /* Vídeos estilo Story */
-        if (!p.videos.length) {
-            $("secVideo").style.display = "none";
-        } else {
-            $("avatar").src = urls[0];
-            $("storyUser").textContent = p.de.toLowerCase().replace(/\s+/g, "");
-            const vids = [], fills = [];
-            p.videos.forEach((f) => {
-                const seg = document.createElement("div");
-                seg.className = "progress-segment";
-                seg.innerHTML = '<div class="progress-fill"></div>';
-                $("progressBarContainer").appendChild(seg);
-                fills.push(seg.firstChild);
-
-                const v = document.createElement("video");
-                v.className = "story-video";
-                v.src = URL.createObjectURL(f);
-                v.playsInline = true;
-                v.muted = true;
-                $("videosWrap").appendChild(v);
-                vids.push(v);
-            });
-
-            let atual = 0;
-            function carregar(i) {
-                vids.forEach((v, k) => {
-                    if (k === i) { v.classList.add("active"); v.currentTime = 0; v.play().catch(() => {}); }
-                    else { v.classList.remove("active"); v.pause(); }
-                });
-                fills.forEach((f, k) => { if (k < i) f.style.width = "100%"; else if (k > i) f.style.width = "0%"; });
-            }
-            vids.forEach((v, i) => {
-                v.addEventListener("timeupdate", () => {
-                    if (i === atual && v.duration) fills[i].style.width = (v.currentTime / v.duration * 100) + "%";
-                });
-                v.addEventListener("ended", () => { fills[i].style.width = "100%"; atual = (atual + 1) % vids.length; carregar(atual); });
-            });
-            $("storyCard").addEventListener("click", (e) => {
-                const r = $("storyCard").getBoundingClientRect();
-                atual = (e.clientX - r.left > r.width / 2) ? (atual + 1) % vids.length : (atual - 1 + vids.length) % vids.length;
-                carregar(atual);
-            });
-            carregar(0);
-        }
-
-        /* Música */
-        if (!p.musica) {
-            $("secMusica").style.display = "none";
-        } else {
-            const audio = $("audio"), botao = $("botaoMusica"), disco = $("disco");
-            audio.src = URL.createObjectURL(p.musica);
-            $("musicaNome").textContent = p.musicaNome || "Nossa música";
-            $("musicaArtista").textContent = p.musicaArtista || "";
-
-            audio.addEventListener("play", () => { botao.textContent = "❚❚ Pausar nossa música"; disco.classList.add("tocando"); });
-            audio.addEventListener("pause", () => { botao.textContent = "▶ Tocar nossa música"; disco.classList.remove("tocando"); });
-            botao.addEventListener("click", (e) => { e.stopPropagation(); audio.paused ? audio.play().catch(() => {}) : audio.pause(); });
-
-            const primeiro = () => {
-                document.removeEventListener("click", primeiro);
-                document.removeEventListener("touchstart", primeiro);
-                if (audio.paused) audio.play().catch(() => {});
-            };
-            document.addEventListener("click", primeiro);
-            document.addEventListener("touchstart", primeiro, { passive: true });
-        }
-    }
-
-    /* =====================================================
-       BOOT
-    ===================================================== */
-    (async function () {
-        const id = parametro("id");
-        const p = id ? await buscarPedido(id) : null;
-
-        if (!p) return mostrarMensagem("Presente não encontrado.");
-        if (p.status !== "pago") return mostrarMensagem("Este presente ainda não foi liberado.");
-
-        aplicarTema(p.tema);
-        const tema = THEMES[p.tema] || THEMES.namoro;
-        document.title = "Uma surpresa de " + p.de + " ❤️";
-        $("conteudo").style.display = "block";
-
-        if (p.tema === "netflix") {
-            $("layoutNetflix").style.display = "block";
-            renderNetflix(p, tema);
-        } else {
-            $("layoutPadrao").style.display = "block";
-            renderPadrao(p, tema);
-        }
-    })();
-</script>
+<script src="js/pages/ver.js"></script>
 </body>
 </html>

@@ -1,0 +1,289 @@
+/* =====================================================
+   BASE — TOKENS, RESET E COMPONENTES COMPARTILHADOS
+   Carregado por todas as paginas antes do CSS especifico.
+   ===================================================== */
+
+/* ---------- TOKENS GLOBAIS ---------- */
+:root {
+  --rosa: #d96c8a;
+  --rosa-claro: #f8dce5;
+  --rosa-pastel: #fff1f5;
+  --vinho: #7d3048;
+  --vinho-escuro: #4d1e2d;
+  --texto: #4b3740;
+  --branco: #ffffff;
+  --sombra: 0 15px 40px rgba(125, 48, 72, 0.12);
+
+  --ouro: #c9a86a;
+  --ouro-claro: #e6cfa0;
+  --creme: #faf6f1;
+  --grafite: #1a1512;
+
+  --sombra-suave: 0 4px 24px rgba(75, 55, 64, 0.06);
+  --sombra-media: 0 12px 40px rgba(75, 55, 64, 0.12);
+  --sombra-forte: 0 30px 70px rgba(75, 55, 64, 0.18);
+
+  --erro: #b3263e;
+  --erro-claro: #fde8ec;
+
+  /* Medidas reutilizadas pelos componentes compartilhados */
+  --nav-altura: 64px;
+  --nav-altura-scrolled: 58px;
+  --nav-largura: min(1120px, calc(100% - 32px));
+}
+
+/* ---------- RESET ---------- */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--texto);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- BARRA DE PROGRESSO DO SCROLL ---------- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ouro), var(--rosa), var(--ouro));
+  z-index: 10000;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 15px rgba(201, 168, 106, 0.8);
+  pointer-events: none;
+}
+
+/* ---------- NAVBAR ---------- */
+.nav {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--nav-largura);
+  z-index: 100;
+  background: rgba(255, 252, 248, 0.72);
+  backdrop-filter: blur(22px) saturate(1.6);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  border: 1px solid rgba(201, 168, 106, 0.3);
+  border-radius: 999px;
+  box-shadow: 0 10px 40px rgba(75, 55, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: top 0.5s cubic-bezier(0.2, 0.8, 0.3, 1), background 0.5s, box-shadow 0.5s;
+  animation: navIn 1s cubic-bezier(0.19, 1, 0.22, 1) 0.1s backwards;
+}
+
+.nav.scrolled {
+  top: 10px;
+  background: rgba(255, 252, 248, 0.92);
+  box-shadow: 0 18px 50px rgba(75, 55, 64, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.nav .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 0 22px;
+  height: var(--nav-altura);
+  transition: height 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.nav.scrolled .wrap {
+  height: var(--nav-altura-scrolled);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 25px;
+  color: var(--vinho);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.logo::before {
+  content: "♥";
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ouro), #a9812f);
+  box-shadow: 0 6px 16px rgba(201, 168, 106, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  animation: heartPulse 2s ease-in-out infinite;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.nav-links a:not(.b) {
+  color: #5d4650;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  transition: color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+
+.nav-links a:not(.b):hover {
+  color: var(--vinho);
+  background: rgba(201, 168, 106, 0.12);
+}
+
+.nav-links .b {
+  margin-left: 12px;
+}
+
+/* ---------- BOTAO .b ---------- */
+.b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  background: var(--vinho);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(125, 48, 72, 0.25);
+}
+
+.b:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(125, 48, 72, 0.35);
+}
+
+.b.ouro {
+  background: linear-gradient(135deg, var(--ouro), #b08d4a);
+  box-shadow: 0 8px 25px rgba(201, 168, 106, 0.4);
+  background-size: 200% auto;
+  animation: goldShift 6s ease infinite;
+}
+
+.b.ouro:hover {
+  box-shadow: 0 16px 36px rgba(201, 168, 106, 0.6);
+}
+
+.b.peq {
+  padding: 10px 20px;
+  font-size: 12.5px;
+}
+
+.b .seta {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.b:hover .seta {
+  transform: translateX(4px);
+}
+
+/* ---------- EFEITO RIPPLE ---------- */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---------- ANIMACOES COMPARTILHADAS ---------- */
+@keyframes navIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes heartPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.14);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.09);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+@keyframes goldShift {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

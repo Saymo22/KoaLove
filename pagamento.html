@@ -3,109 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento ❤️</title>
+    <title>Pagamento ❤️ — Nosso Amor</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="app.css">
+
+    <link rel="stylesheet" href="css/pagamento.css">
 </head>
 <body class="app">
 
-<main class="app-wrap">
+    <!-- Scroll progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
 
-    <div class="app-logo">Nosso Amor ❤️</div>
-    <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
-
-    <div class="passo ativo">
-        <h2>Finalizar pedido</h2>
-        <p class="sub">Falta pouco para o seu presente ficar pronto.</p>
-    </div>
-
-    <div class="caixa">
-        <ul class="resumo" id="resumo"></ul>
-        <div class="total">
-            <span>Total</span>
-            <strong id="total"></strong>
+    <!-- NAVBAR (mesma da home) -->
+    <nav class="nav" id="nav" aria-label="Principal">
+        <div class="wrap">
+            <a href="home.html" class="logo">Nosso Amor</a>
+            <div class="nav-links">
+                <a href="home.html#como">Como funciona</a>
+                <a href="home.html#temas">Temas</a>
+                <a href="home.html#preco">Preço</a>
+                <a href="home.html#duvidas">Dúvidas</a>
+                <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="aviso-teste" id="avisoTeste" style="display:none">
-        <b>Modo de teste:</b> nenhum pagamento real será cobrado. Para vender de verdade,
-        integre um gateway (Pix/cartão) na função <code>pagar()</code> deste arquivo e
-        coloque <code>CONFIG.modoTeste = false</code> em <code>app.js</code>.
-    </div>
+    <main class="pg-wrap">
 
-    <button class="btn grande" id="btnPagar">Pagar agora</button>
-    <div class="erro" id="erro"></div>
-    <div style="text-align:center;margin-top:10px">
-        <a href="criar.html" style="color:var(--rosa);font-size:13px">← Voltar e editar</a>
-    </div>
+        <!-- Cabeçalho -->
+        <div class="pg-hero">
+            <div class="pg-eyebrow">
+                <span class="dot"></span>
+                Último passo
+            </div>
+            <h1>Falta pouco para o seu <em>presente ficar pronto</em></h1>
+            <p>Revise o resumo, escolha a forma de pagamento e receba o link na hora.</p>
+        </div>
 
-</main>
+        <!-- Resumo do pedido -->
+        <div class="pg-card">
+            <div class="pg-card-titulo">Resumo do pedido</div>
 
-<script src="app.js"></script>
-<script>
-    const id = parametro("id");
-    let pedido = null;
-    const $ = (x) => document.getElementById(x);
+            <div class="pg-resumo">
+                <div class="pg-resumo-emoji" id="pgEmoji">🎁</div>
+                <div class="pg-resumo-txt">
+                    <b id="pgTitulo">Seu presente personalizado</b>
+                    <span id="pgSubtitulo">Feito com carinho para alguém especial</span>
+                </div>
+            </div>
 
-    (async function () {
-        pedido = id ? await buscarPedido(id) : null;
-        if (!pedido) { location.href = "criar.html"; return; }
-        if (pedido.status === "pago") { location.href = "resultado.html?id=" + id; return; }
+            <ul class="pg-lista" id="resumo"></ul>
 
-        aplicarTema(pedido.tema);
-        const t = THEMES[pedido.tema];
+            <div class="pg-total">
+                <span>Total a pagar</span>
+                <strong id="total">R$ 19,90</strong>
+            </div>
+        </div>
 
-        const linhas = [
-            ["Tema", t.emoji + " " + t.nome],
-            ["Para", pedido.para],
-            ["De", pedido.de],
-            ["Fotos", pedido.fotos.length],
-            ["Vídeos", pedido.videos.length],
-            ["Música", pedido.musica ? (pedido.musicaNome || "Enviada") : "—"]
-        ];
-        $("resumo").innerHTML = linhas.map(l => `<li><span>${l[0]}</span><span></span></li>`).join("");
-        [...$("resumo").children].forEach((li, i) => li.lastChild.textContent = linhas[i][1]);
-        $("total").textContent = formatarPreco(CONFIG.preco);
-        if (CONFIG.modoTeste) {
-            $("avisoTeste").style.display = "block";
-            $("btnPagar").textContent = "Simular pagamento aprovado";
-        }
-    })();
+        <!-- Método de pagamento -->
+        <div class="pg-card">
+            <div class="pg-card-titulo">Forma de pagamento</div>
+            <div class="pg-metodos" id="pgMetodos">
+                <div class="pg-metodo sel" data-metodo="pix">
+                    <span class="pg-metodo-icone">⚡</span>
+                    <div class="pg-metodo-nome">Pix</div>
+                    <div class="pg-metodo-desc">Aprovação imediata</div>
+                </div>
+                <div class="pg-metodo" data-metodo="cartao">
+                    <span class="pg-metodo-icone">💳</span>
+                    <div class="pg-metodo-nome">Cartão</div>
+                    <div class="pg-metodo-desc">Crédito ou débito</div>
+                </div>
+            </div>
+        </div>
 
-    async function pagar() {
-        /* ---------------------------------------------------------
-           INTEGRAÇÃO REAL (exemplo do que fazer):
-           1. Chamar SEU servidor: POST /api/criar-cobranca { pedidoId, valor }
-           2. O servidor cria a cobrança no gateway (Mercado Pago, Stripe,
-              Asaas, etc.) e devolve a URL de checkout / código Pix.
-           3. Redirecionar o cliente para lá.
-           4. O gateway avisa seu servidor por webhook quando o pagamento
-              for aprovado -> o servidor marca o pedido como "pago".
-           5. A página resultado.html só deve liberar o link se o servidor
-              confirmar o status "pago" (nunca confie só no navegador).
-        --------------------------------------------------------- */
-        if (!CONFIG.modoTeste) {
-            throw new Error("Gateway de pagamento ainda não integrado.");
-        }
-        pedido.status = "pago";
-        pedido.pagoEm = Date.now();
-        await salvarPedido(pedido);
-    }
+        <!-- Cupom -->
+        <div class="pg-card">
+            <div class="pg-card-titulo">Cupom de desconto</div>
+            <div class="pg-cupom">
+                <input type="text" id="pgCupom" placeholder="Digite seu código" maxlength="20" autocomplete="off">
+                <button type="button" id="pgCupomBtn">Aplicar</button>
+            </div>
+        </div>
 
-    $("btnPagar").addEventListener("click", async () => {
-        const b = $("btnPagar");
-        b.disabled = true;
-        b.textContent = "Processando...";
-        $("erro").textContent = "";
-        try {
-            await pagar();
-            location.href = "resultado.html?id=" + id;
-        } catch (e) {
-            $("erro").textContent = e.message || "Falha no pagamento.";
-            b.disabled = false;
-            b.textContent = CONFIG.modoTeste ? "Simular pagamento aprovado" : "Pagar agora";
-        }
-    });
-</script>
+        <!-- Aviso modo teste -->
+        <div class="pg-teste" id="avisoTeste">
+            <div class="pg-teste-icone">⚡</div>
+            <div class="pg-teste-txt">
+                <b>Modo de demonstração</b>
+                Nenhum pagamento real será cobrado. Clique abaixo para simular a aprovação e ver o resultado final.
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="pg-cta-wrap">
+            <button class="btn-pagar" id="btnPagar" type="button">
+                <span id="btnPagarTxt">🔒 Pagar agora com segurança</span>
+            </button>
+            <div class="pg-erro" id="erro"></div>
+        </div>
+
+        <!-- Selos -->
+        <div class="pg-selos">
+            <div class="pg-selo" data-icon="🔒">Pagamento seguro</div>
+            <div class="pg-selo" data-icon="⚡">Liberação imediata</div>
+            <div class="pg-selo" data-icon="💛">Feito no Brasil</div>
+        </div>
+
+        <!-- Voltar -->
+        <div class="pg-voltar">
+            <a href="criar.html">Voltar e editar</a>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+    <script src="js/pages/pagamento.js"></script>
 </body>
 </html>

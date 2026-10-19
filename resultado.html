@@ -4,74 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seu presente está pronto ❤️</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="app.css">
+
+    <link rel="stylesheet" href="css/resultado.css">
 </head>
 <body class="app">
 
-<main class="app-wrap">
+    <!-- Scroll progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
 
-    <div class="app-logo">Nosso Amor ❤️</div>
-
-    <div class="passo ativo">
-        <h2>Pagamento confirmado! 🎉</h2>
-        <p class="sub">Seu presente está pronto. Envie o link ou o QR Code para quem você ama.</p>
-    </div>
-
-    <div class="caixa qr-box">
-        <div id="qr"></div>
-        <div class="link-row">
-            <input type="text" id="link" readonly>
-            <button class="btn" id="btnCopiar" type="button">Copiar link</button>
+    <!-- NAVBAR -->
+    <nav class="nav" id="nav" aria-label="Principal">
+        <div class="wrap">
+            <a href="home.html" class="logo">Nosso Amor</a>
+            <div class="nav-links">
+                <a href="home.html#como">Como funciona</a>
+                <a href="home.html#temas">Temas</a>
+                <a href="home.html#preco">Preço</a>
+                <a href="home.html#duvidas">Dúvidas</a>
+                <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
+            </div>
         </div>
-        <div class="share-row">
-            <a class="btn wpp" id="btnWpp" target="_blank" rel="noopener" style="text-decoration:none">Enviar no WhatsApp</a>
-            <button class="btn sec" id="btnBaixar" type="button">Baixar QR Code</button>
-            <a class="btn sec" id="btnVer" target="_blank" style="text-decoration:none">Ver presente</a>
+    </nav>
+
+    <main class="rs-wrap">
+
+        <!-- ============================================
+             HERO — SUCESSO
+        ============================================= -->
+        <div class="rs-hero">
+            <div class="rs-check">
+                <div class="rs-check-circulo"></div>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <svg viewBox="0 0 52 52" aria-hidden="true">
+                    <path d="M14 27 L23 36 L39 18"/>
+                </svg>
+            </div>
+            <h1 class="rs-titulo">Pagamento <em>confirmado!</em></h1>
+            <p class="rs-sub">Seu presente está pronto. Dê uma olhada abaixo antes de compartilhar.</p>
         </div>
-    </div>
 
-    <div style="text-align:center">
-        <a href="criar.html" style="color:var(--rosa);font-size:13px">Criar outro presente</a>
-    </div>
+        <!-- ============================================
+             PREVIEW INLINE DO PRESENTE
+        ============================================= -->
+        <div class="rs-card">
+            <div class="rs-card-titulo">Veja como ficou</div>
 
-</main>
+            <div class="rs-preview">
+                <div class="rs-preview-browser">
+                    <div class="rs-preview-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+                    <div class="rs-preview-url">nossoamor.com/sua-historia</div>
+                    <a class="rs-preview-full" id="btnFullPreview" target="_blank" rel="noopener">↗ Tela cheia</a>
+                </div>
+                <div class="rs-preview-body">
+                    <iframe id="rsPreviewIframe" title="Prévia do seu presente"></iframe>
+                </div>
+            </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="app.js"></script>
-<script>
-    const id = parametro("id");
-    const $ = (x) => document.getElementById(x);
+            <p class="rs-preview-hint">
+                Role dentro do preview para ver cada seção. <b>Tudo pronto pra emocionar.</b>
+            </p>
+        </div>
 
-    (async function () {
-        const pedido = id ? await buscarPedido(id) : null;
-        if (!pedido) { location.href = "criar.html"; return; }
-        if (pedido.status !== "pago") { location.href = "pagamento.html?id=" + id; return; }
+        <!-- ============================================
+             QR CODE
+        ============================================= -->
+        <div class="rs-card">
+            <div class="rs-card-titulo">QR Code do presente</div>
+            <div class="rs-qr-box">
+                <div class="rs-qr-frame">
+                    <div id="qr"></div>
+                </div>
+                <p class="rs-qr-hint">
+                    Aponte a câmera ou <b>imprima em um cartão</b> para entregar pessoalmente.
+                </p>
+            </div>
+        </div>
 
-        aplicarTema(pedido.tema);
+        <!-- ============================================
+             LINK + COMPARTILHAR
+        ============================================= -->
+        <div class="rs-card">
+            <div class="rs-card-titulo">Link para compartilhar</div>
 
-        const url = new URL("ver.html?id=" + id, location.href).href;
-        $("link").value = url;
-        $("btnVer").href = url;
-        $("btnWpp").href = "https://wa.me/?text=" + encodeURIComponent("Fiz uma surpresa para você ❤️ " + url);
+            <div class="rs-link-row">
+                <input type="text" id="link" readonly>
+                <button type="button" id="btnCopiar">Copiar</button>
+            </div>
 
-        new QRCode($("qr"), { text: url, width: 220, height: 220, colorDark: "#7d3048", colorLight: "#ffffff" });
+            <div class="rs-share">
+                <a class="rs-btn wpp" id="btnWpp" target="_blank" rel="noopener">
+                    <span>💬</span><span>WhatsApp</span>
+                </a>
+                <a class="rs-btn ver" id="btnVer" target="_blank" rel="noopener">
+                    <span>👁️</span><span>Ver presente</span>
+                </a>
+                <button class="rs-btn baixar" id="btnBaixar" type="button">
+                    <span>⬇️</span><span>Baixar QR</span>
+                </button>
+                <a class="rs-btn copiar" id="btnCopiar2" role="button">
+                    <span>🔗</span><span>Copiar link</span>
+                </a>
+            </div>
+        </div>
 
-        $("btnCopiar").addEventListener("click", async () => {
-            try { await navigator.clipboard.writeText(url); }
-            catch (e) { $("link").select(); document.execCommand("copy"); }
-            $("btnCopiar").textContent = "Copiado ✓";
-            setTimeout(() => $("btnCopiar").textContent = "Copiar link", 2000);
-        });
+        <!-- ============================================
+             COMO ENTREGAR
+        ============================================= -->
+        <div class="rs-card">
+            <div class="rs-card-titulo">Como entregar</div>
+            <ul class="rs-dicas">
+                <li>
+                    <span class="rs-dicas-icon">💬</span>
+                    <span><b>Mande pelo WhatsApp</b> — envie direto.</span>
+                </li>
+                <li>
+                    <span class="rs-dicas-icon">🖨️</span>
+                    <span><b>Imprima o QR Code</b> em um cartão.</span>
+                </li>
+                <li>
+                    <span class="rs-dicas-icon">✨</span>
+                    <span><b>Assista a reação</b> — cada abertura é uma surpresa.</span>
+                </li>
+            </ul>
 
-        $("btnBaixar").addEventListener("click", () => {
-            const canvas = $("qr").querySelector("canvas");
-            const a = document.createElement("a");
-            a.download = "qrcode-presente.png";
-            a.href = canvas ? canvas.toDataURL("image/png") : $("qr").querySelector("img").src;
-            a.click();
-        });
-    })();
-</script>
+            <div class="rs-selos">
+                <div class="rs-selo" data-icon="🔒">Link privado</div>
+                <div class="rs-selo" data-icon="♾️">Para sempre</div>
+                <div class="rs-selo" data-icon="💛">Feito com carinho</div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             CRIAR OUTRO
+        ============================================= -->
+        <div class="rs-outro">
+            <a href="criar.html">Criar outro presente</a>
+        </div>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/pages/resultado.js"></script>
 </body>
 </html>
