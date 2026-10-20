@@ -13,12 +13,14 @@
 </head>
 <body>
 
+    <!-- ✅ NAVBAR INJETADA -->
+    <div id="navbar"></div>
+
     <div class="bg-mesh"></div>
     <div class="particles" id="particles"></div>
 
     <main class="auth-container">
 
-        <!-- Lado Esquerdo: Visual / Branding -->
         <div class="auth-visual">
             <div class="auth-visual-content">
                 <a href="home.html" class="auth-logo">Nosso Amor</a>
@@ -27,13 +29,10 @@
             </div>
         </div>
 
-        <!-- Lado Direito: Formulário -->
         <div class="auth-form-side">
-            <a href="home.html" class="btn-back">← Voltar</a>
-
             <div class="auth-card" id="authCard">
                 <div class="auth-logo-mobile">Nosso Amor</div>
-                
+
                 <h1 class="auth-title" id="authTitle">Bem-vindo de volta</h1>
                 <p class="auth-sub" id="authSub">Acesse sua conta para gerenciar suas surpresas.</p>
 
@@ -69,6 +68,7 @@
     </main>
 
     <script src="js/core/auth.js"></script>
+    <script src="js/core/navbar.js"></script>
     <script src="js/pages/login.js"></script>
 </body>
 </html>

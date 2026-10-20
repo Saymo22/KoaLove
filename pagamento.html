@@ -4,37 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagamento ❤️ — Nosso Amor</title>
-    
+
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/pagamento.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 </head>
 <body class="app">
 
-    <!-- Scroll progress -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
-    <!-- NAVBAR (mesma da home) -->
-    <nav class="nav" id="nav" aria-label="Principal">
-        <div class="wrap">
-            <a href="home.html" class="logo">Nosso Amor</a>
-            <div class="nav-links">
-                <a href="home.html#como">Como funciona</a>
-                <a href="home.html#temas">Temas</a>
-                <a href="home.html#preco">Preço</a>
-                <a href="home.html#duvidas">Dúvidas</a>
-                <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
-            </div>
-        </div>
-    </nav>
+    <!-- ✅ NAVBAR INJETADA -->
+    <div id="navbar"></div>
 
     <main class="pg-wrap">
 
-        <!-- Cabeçalho -->
         <div class="pg-hero">
             <div class="pg-eyebrow">
                 <span class="dot"></span>
@@ -44,7 +30,6 @@
             <p>Revise o resumo, escolha a forma de pagamento e receba o link na hora.</p>
         </div>
 
-        <!-- Resumo do pedido -->
         <div class="pg-card">
             <div class="pg-card-titulo">Resumo do pedido</div>
 
@@ -64,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Método de pagamento -->
         <div class="pg-card">
             <div class="pg-card-titulo">Forma de pagamento</div>
             <div class="pg-metodos" id="pgMetodos">
@@ -81,7 +65,6 @@
             </div>
         </div>
 
-        <!-- Cupom -->
         <div class="pg-card">
             <div class="pg-card-titulo">Cupom de desconto</div>
             <div class="pg-cupom">
@@ -91,7 +74,6 @@
             </div>
         </div>
 
-        <!-- Aviso modo teste -->
         <div class="pg-teste" id="avisoTeste">
             <div class="pg-teste-icone">⚡</div>
             <div class="pg-teste-txt">
@@ -100,7 +82,6 @@
             </div>
         </div>
 
-        <!-- CTA -->
         <div class="pg-cta-wrap">
             <button class="btn-pagar" id="btnPagar" type="button">
                 <span id="btnPagarTxt">🔒 Pagar agora com segurança</span>
@@ -108,14 +89,12 @@
             <div class="pg-erro" id="erro"></div>
         </div>
 
-        <!-- Selos -->
         <div class="pg-selos">
             <div class="pg-selo" data-icon="🔒">Pagamento seguro</div>
             <div class="pg-selo" data-icon="⚡">Liberação imediata</div>
             <div class="pg-selo" data-icon="💛">Feito no Brasil</div>
         </div>
 
-        <!-- Voltar -->
         <div class="pg-voltar">
             <a href="criar.html">Voltar e editar</a>
         </div>
@@ -123,6 +102,7 @@
     </main>
 
     <script src="app.js"></script>
+    <script src="js/core/navbar.js"></script>
     <script src="js/pages/pagamento.js"></script>
 
 </body>

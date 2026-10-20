@@ -11,32 +11,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 </head>
 <body class="app">
 
-    <!-- Scroll progress -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
-    <!-- NAVBAR -->
-    <nav class="nav" id="nav" aria-label="Principal">
-        <div class="wrap">
-            <a href="home.html" class="logo">Nosso Amor</a>
-            <div class="nav-links">
-                <a href="home.html#como">Como funciona</a>
-                <a href="home.html#temas">Temas</a>
-                <a href="home.html#preco">Preço</a>
-                <a href="home.html#duvidas">Dúvidas</a>
-                <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
-            </div>
-        </div>
-    </nav>
+    <!-- ✅ NAVBAR INJETADA -->
+    <div id="navbar"></div>
 
     <main class="rs-wrap">
 
-        <!-- ============================================
-             HERO — SUCESSO
-        ============================================= -->
         <div class="rs-hero">
             <div class="rs-check">
                 <div class="rs-check-circulo"></div>
@@ -54,12 +38,8 @@
             <p class="rs-sub">Seu presente está pronto. Dê uma olhada abaixo antes de compartilhar.</p>
         </div>
 
-        <!-- ============================================
-             PREVIEW INLINE DO PRESENTE
-        ============================================= -->
         <div class="rs-card">
             <div class="rs-card-titulo">Veja como ficou</div>
-
             <div class="rs-preview">
                 <div class="rs-preview-browser">
                     <div class="rs-preview-dots" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -70,15 +50,11 @@
                     <iframe id="rsPreviewIframe" title="Prévia do seu presente"></iframe>
                 </div>
             </div>
-
             <p class="rs-preview-hint">
                 Role dentro do preview para ver cada seção. <b>Tudo pronto pra emocionar.</b>
             </p>
         </div>
 
-        <!-- ============================================
-             QR CODE
-        ============================================= -->
         <div class="rs-card">
             <div class="rs-card-titulo">QR Code do presente</div>
             <div class="rs-qr-box">
@@ -91,17 +67,12 @@
             </div>
         </div>
 
-        <!-- ============================================
-             LINK + COMPARTILHAR
-        ============================================= -->
         <div class="rs-card">
             <div class="rs-card-titulo">Link para compartilhar</div>
-
             <div class="rs-link-row">
                 <input type="text" id="link" readonly>
                 <button type="button" id="btnCopiar">Copiar</button>
             </div>
-
             <div class="rs-share">
                 <a class="rs-btn wpp" id="btnWpp" target="_blank" rel="noopener">
                     <span>💬</span><span>WhatsApp</span>
@@ -118,9 +89,6 @@
             </div>
         </div>
 
-        <!-- ============================================
-             COMO ENTREGAR
-        ============================================= -->
         <div class="rs-card">
             <div class="rs-card-titulo">Como entregar</div>
             <ul class="rs-dicas">
@@ -137,7 +105,6 @@
                     <span><b>Assista a reação</b> — cada abertura é uma surpresa.</span>
                 </li>
             </ul>
-
             <div class="rs-selos">
                 <div class="rs-selo" data-icon="🔒">Link privado</div>
                 <div class="rs-selo" data-icon="♾️">Para sempre</div>
@@ -145,9 +112,6 @@
             </div>
         </div>
 
-        <!-- ============================================
-             CRIAR OUTRO
-        ============================================= -->
         <div class="rs-outro">
             <a href="criar.html">Criar outro presente</a>
         </div>
@@ -156,6 +120,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="app.js"></script>
+    <script src="js/core/navbar.js"></script>
     <script src="js/pages/resultado.js"></script>
 </body>
 </html>

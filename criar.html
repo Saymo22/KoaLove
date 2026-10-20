@@ -17,18 +17,8 @@
   <body class="app">
     <div class="scroll-progress" id="scrollProgress"></div>
 
-    <nav class="nav" id="nav" aria-label="Principal">
-      <div class="wrap">
-        <a href="home.html" class="logo">Nosso Amor</a>
-        <div class="nav-links">
-          <a href="home.html#como">Como funciona</a>
-          <a href="home.html#temas">Temas</a>
-          <a href="home.html#preco">Preço</a>
-          <a href="home.html#duvidas">Dúvidas</a>
-          <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
-        </div>
-      </div>
-    </nav>
+    <!-- ✅ NAVBAR INJETADA -->
+    <div id="navbar"></div>
 
     <div class="criar-layout">
       <main class="app-wrap">
@@ -543,6 +533,7 @@
     <button class="preview-btn" id="previewBtn" type="button">👁 Ver prévia</button>
 
     <script src="app.js"></script>
+    <script src="js/core/navbar.js"></script>
     <script src="js/pages/criar.js"></script>
   </body>
 </html>
