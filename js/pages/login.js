@@ -1,41 +1,60 @@
 /* js/pages/login.js */
 document.addEventListener("DOMContentLoaded", () => {
-    // Se já estiver logado, vai direto para a conta
     if (estaLogado()) {
         window.location.href = "minha-conta.html";
         return;
     }
 
-    // Gerar Partículas
+    // Partículas
     const particlesContainer = document.getElementById("particles");
-    const symbols = ["♥", "♡", "✦", "✧"];
-    for (let i = 0; i < 20; i++) {
-        const p = document.createElement("div");
-        p.className = "particle";
-        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        p.style.left = Math.random() * 100 + "vw";
-        p.style.animationDuration = (8 + Math.random() * 10) + "s";
-        p.style.animationDelay = (Math.random() * 10) + "s";
-        p.style.fontSize = (10 + Math.random() * 20) + "px";
-        particlesContainer.appendChild(p);
+    if (particlesContainer) {
+        const symbols = ["♥", "♡", "✦", "✧"];
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement("div");
+            p.className = "particle";
+            p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            p.style.left = Math.random() * 100 + "vw";
+            p.style.animationDuration = (8 + Math.random() * 10) + "s";
+            p.style.animationDelay = (Math.random() * 10) + "s";
+            p.style.fontSize = (10 + Math.random() * 20) + "px";
+            particlesContainer.appendChild(p);
+        }
     }
 
-    // Lógica de Alternância
     let isLogin = true;
     const btnToggle = document.getElementById("btnToggle");
     const toggleText = document.getElementById("toggleText");
     const groupName = document.getElementById("groupName");
     const inputName = document.getElementById("inputName");
+    const inputEmail = document.getElementById("inputEmail");
+    const inputPass = document.getElementById("inputPass");
     const authTitle = document.getElementById("authTitle");
     const authSub = document.getElementById("authSub");
     const btnSubmit = document.getElementById("btnSubmit");
     const btnText = btnSubmit.querySelector(".btn-text");
+    const form = document.getElementById("authForm");
+
+    // Elemento de erro
+    let erroEl = document.getElementById("authErro");
+    if (!erroEl) {
+        erroEl = document.createElement("div");
+        erroEl.id = "authErro";
+        erroEl.style.cssText = "color:#ff9ba8;font-size:13px;text-align:center;margin-top:4px;min-height:18px;font-weight:500;line-height:1.4;";
+        btnSubmit.parentElement.insertBefore(erroEl, btnSubmit.nextSibling);
+    }
+
+    function limparErro() {
+        erroEl.textContent = "";
+        inputEmail.style.borderColor = "";
+        inputPass.style.borderColor = "";
+        if (inputName) inputName.style.borderColor = "";
+    }
 
     btnToggle.addEventListener("click", () => {
         isLogin = !isLogin;
-        
+        limparErro();
+
         if (isLogin) {
-            // Mudar para Login
             authTitle.textContent = "Bem-vindo de volta";
             authSub.textContent = "Acesse sua conta para gerenciar suas surpresas.";
             btnText.textContent = "Entrar na conta";
@@ -44,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
             groupName.classList.add("hidden");
             inputName.required = false;
         } else {
-            // Mudar para Cadastro
             authTitle.textContent = "Crie sua conta";
             authSub.textContent = "Leva menos de um minuto para eternizar suas histórias.";
             btnText.textContent = "Criar minha conta";
@@ -55,32 +73,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Submit do Formulário
-    const form = document.getElementById("authForm");
+    [inputEmail, inputPass, inputName].forEach(el => {
+        if (!el) return;
+        el.addEventListener("input", limparErro);
+    });
+
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-        
-        const email = document.getElementById("inputEmail").value.trim();
-        const pass = document.getElementById("inputPass").value;
-        const name = isLogin ? (email.split("@")[0]) : inputName.value.trim(); // Se login, pega o nome do email ou salva o antigo
+        limparErro();
 
-        if (!email || !pass) return;
+        const email = inputEmail.value.trim().toLowerCase();
+        const pass = inputPass.value;
+        const name = inputName ? inputName.value.trim() : "";
 
-        // Simula um carregamento
+        if (!email || !pass) {
+            erroEl.textContent = "Preencha e-mail e senha.";
+            return;
+        }
+        if (!isLogin && !name) {
+            erroEl.textContent = "Preencha seu nome.";
+            inputName.style.borderColor = "#ff9ba8";
+            return;
+        }
+        if (pass.length < 4) {
+            erroEl.textContent = "A senha precisa ter pelo menos 4 caracteres.";
+            inputPass.style.borderColor = "#ff9ba8";
+            return;
+        }
+
         const originalText = btnText.textContent;
         btnText.textContent = "Carregando...";
         btnSubmit.disabled = true;
 
         setTimeout(() => {
-            // Se for login, tenta recuperar o nome salvo ou usa o começo do email
-            let finalName = name;
-            if (isLogin) {
-                const saved = localStorage.getItem("nossoamor_session");
-                if (saved) finalName = JSON.parse(saved).name;
+            const res = isLogin ? tentarLogin(email, pass) : criarConta(name, email, pass);
+
+            if (!res.ok) {
+                erroEl.textContent = res.error;
+                inputEmail.style.borderColor = "#ff9ba8";
+                inputPass.style.borderColor = "#ff9ba8";
+                btnText.textContent = originalText;
+                btnSubmit.disabled = false;
+                return;
             }
 
-            fazerLogin(finalName, email);
             window.location.href = "minha-conta.html";
-        }, 1200);
+        }, 700);
     });
 });

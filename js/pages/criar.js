@@ -9,9 +9,9 @@ let draggedIdx = null,
   layoutAtual = null,
   transicaoEmAndamento = false;
 
-// Variáveis para o modo de EDIÇÃO
 let pedidoEditandoId = null;
 let pedidoAntigo = null;
+let musicaPreviewURL = null;
 
 const MAX_EVENTOS = 6;
 
@@ -216,6 +216,9 @@ function criarCardTema(chave, t) {
   el.dataset.categoria = t.categoria || "classico";
   el.style.setProperty("--t-rosa", cores.rosa);
   el.style.setProperty("--t-vinho", cores.vinho);
+  el.setAttribute("role", "button");
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("aria-label", "Escolher tema: " + t.nome);
 
   el.innerHTML =
     '<div class="tema-prev">' +
@@ -255,16 +258,29 @@ function criarCardTema(chave, t) {
     el.addEventListener("mouseleave", () => { el.style.transform = ""; });
   }
 
-  el.addEventListener("click", () => {
+  function selecionar() {
     tema = chave;
-    document.querySelectorAll(".tema").forEach((x) => x.classList.remove("sel"));
+    document.querySelectorAll(".tema").forEach((x) => {
+      x.classList.remove("sel");
+      x.setAttribute("aria-pressed", "false");
+    });
     el.classList.add("sel");
+    el.setAttribute("aria-pressed", "true");
     document.body.classList.toggle("tema-escuro", temaEscuro(chave));
     aplicarTemaPreview(chave);
     if (!fraseEditada) $("frase").value = t.sufixo;
     $("erro1").textContent = "";
     atualizarPreview();
+  }
+
+  el.addEventListener("click", selecionar);
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      selecionar();
+    }
   });
+
   return el;
 }
 
@@ -404,10 +420,21 @@ function renderPreviewPadrao(tempo, t) {
   g.innerHTML = "";
   if (fotoURLs.length) {
     $("pvSecGaleria").style.display = "";
-    fotoURLs.slice(0, 6).forEach((u) => {
+    fotoURLs.slice(0, 6).forEach((u, i) => {
+      const wrap = document.createElement("div");
+      wrap.className = "pv-photo-wrap";
       const img = document.createElement("img");
       img.src = u;
-      g.appendChild(img);
+      img.loading = "lazy";
+      wrap.appendChild(img);
+      const leg = (legendasValores[i] || "").trim();
+      if (leg) {
+        const span = document.createElement("span");
+        span.className = "pv-photo-leg";
+        span.textContent = leg;
+        wrap.appendChild(span);
+      }
+      g.appendChild(wrap);
     });
   } else $("pvSecGaleria").style.display = "none";
   
@@ -472,6 +499,7 @@ function renderFotosGrid() {
     img.className = "foto-thumb";
     img.src = url;
     img.alt = "Foto " + (i + 1);
+    img.loading = "lazy";
     
     const actions = document.createElement("div");
     actions.className = "foto-actions";
@@ -479,6 +507,7 @@ function renderFotosGrid() {
     btnCapa.type = "button";
     btnCapa.className = "foto-btn capa-btn" + (i === capaIdx ? " on" : "");
     btnCapa.textContent = "★";
+    btnCapa.setAttribute("aria-label", "Definir como capa");
     btnCapa.addEventListener("click", (e) => {
       e.stopPropagation();
       $("fotoCapa").value = i;
@@ -491,6 +520,7 @@ function renderFotosGrid() {
     btnRem.type = "button";
     btnRem.className = "foto-btn remover-btn";
     btnRem.textContent = "✕";
+    btnRem.setAttribute("aria-label", "Remover foto");
     btnRem.addEventListener("click", (e) => {
       e.stopPropagation();
       removerFoto(i);
@@ -525,7 +555,10 @@ function renderFotosGrid() {
     input.placeholder = "Legenda da foto";
     input.value = legendasValores[i] || "";
     input.dataset.idx = i;
-    input.addEventListener("input", (e) => { legendasValores[i] = e.target.value; });
+    input.addEventListener("input", (e) => { 
+      legendasValores[i] = e.target.value;
+      agendarAtualizacao();
+    });
     overlay.appendChild(input);
     
     card.appendChild(img);
@@ -735,7 +768,20 @@ $("videos").addEventListener("change", (e) => {
 });
 
 $("musica").addEventListener("change", (e) => {
-  $("qtdMusica").textContent = e.target.files[0] ? e.target.files[0].name : "";
+  const file = e.target.files[0];
+  $("qtdMusica").textContent = file ? file.name : "";
+  
+  const wrap = $("musicaPreviewWrap");
+  const preview = $("musicaPreview");
+  if (musicaPreviewURL) { URL.revokeObjectURL(musicaPreviewURL); musicaPreviewURL = null; }
+  if (file) {
+    musicaPreviewURL = URL.createObjectURL(file);
+    preview.src = musicaPreviewURL;
+    wrap.style.display = "block";
+  } else {
+    preview.removeAttribute("src");
+    wrap.style.display = "none";
+  }
   atualizarPreview();
 });
 
@@ -757,15 +803,11 @@ document.querySelectorAll(".btn, .b").forEach((btn) => {
   });
 });
 
-// ==========================================
-// ENVIO DO FORMULÁRIO
-// ==========================================
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!validar(4)) return;
 
-  // Se estiver editando, usa os arquivos antigos caso o usuário não envie novos
-  const fotos = fotoFiles.length > 0 ? fotoFiles.slice(0, 12) : (pedidoAntigo ? pedidoAntigo.fotos : []);
+  const fotos = fotoFiles.slice(0, 12);
   const videos = $("videos").files.length > 0 ? [...$("videos").files].slice(0, 4) : (pedidoAntigo ? pedidoAntigo.videos : []);
   const musica = $("musica").files[0] || (pedidoAntigo ? pedidoAntigo.musica : null);
 
@@ -791,7 +833,7 @@ $("form").addEventListener("submit", async (e) => {
   btn.textContent = "Salvando...";
 
   const pedido = {
-    id: pedidoEditandoId || novoId(), // Se estiver editando, mantém o ID original
+    id: pedidoEditandoId || novoId(),
     tema,
     de: $("de").value.trim(),
     para: $("para").value.trim(),
@@ -811,7 +853,7 @@ $("form").addEventListener("submit", async (e) => {
     usarIntro,
     autoplay,
     rodapeCustom,
-    status: pedidoAntigo ? pedidoAntigo.status : "rascunho", // Mantém o status se editando
+    status: pedidoAntigo ? pedidoAntigo.status : "rascunho",
     criadoEm: pedidoAntigo ? pedidoAntigo.criadoEm : Date.now(),
   };
 
@@ -844,12 +886,9 @@ $("previewClose").addEventListener("click", () => $("previewCol").classList.remo
   });
 })();
 
-// ==========================================
-// CARREGAR DADOS PARA EDIÇÃO (?id=...)
-// ==========================================
 async function carregarPedidoParaEdicao() {
   const id = parametro("id");
-  if (!id) return; // Se não tem ID, é criação normal
+  if (!id) return;
   
   if (typeof buscarPedido !== "function") return;
   
@@ -859,17 +898,14 @@ async function carregarPedidoParaEdicao() {
   pedidoEditandoId = pedido.id;
   pedidoAntigo = pedido;
   
-  // Altera textos da tela
   document.querySelector(".criar-eyebrow").innerHTML = '<span class="dot"></span> Editando presente';
   document.querySelector(".criar-titulo").innerHTML = 'Editando a <em>história</em>';
   $("btnFinal").textContent = "Salvar alterações →";
 
-  // 1. Tema
   tema = pedido.tema;
   const cardTema = document.querySelector(`.tema[data-chave="${tema}"]`);
-  if (cardTema) setTimeout(() => cardTema.click(), 100); // Simula o clique para carregar as cores
+  if (cardTema) setTimeout(() => cardTema.click(), 100);
 
-  // 2. Textos
   $("de").value = pedido.de || "";
   $("para").value = pedido.para || "";
   $("titulo").value = pedido.titulo || "";
@@ -882,8 +918,7 @@ async function carregarPedidoParaEdicao() {
   $("autoplay").checked = !!pedido.autoplay;
   $("rodapeCustom").value = pedido.rodapeCustom || "";
 
-  // 3. Eventos (Timeline)
-  wrapEv.innerHTML = ""; // Limpa os 2 que vieram por padrão
+  wrapEv.innerHTML = "";
   if (pedido.eventos && pedido.eventos.length > 0) {
     pedido.eventos.forEach(ev => {
       addEvento();
@@ -893,16 +928,14 @@ async function carregarPedidoParaEdicao() {
       last.querySelector(".ev-texto").value = ev.texto || "";
     });
   } else {
-    addEvento(); // Adiciona um vazio por padrão
+    addEvento();
   }
 
-  // 4. Amo (Pequenas coisas)
   const amoInputs = document.querySelectorAll(".amo");
   if (pedido.amo) {
     pedido.amo.forEach((val, i) => { if (amoInputs[i]) amoInputs[i].value = val; });
   }
 
-  // 5. Mídias (Fotos, Vídeos, Música)
   if (pedido.fotos && pedido.fotos.length > 0) {
     fotoFiles = pedido.fotos;
     fotoURLs = fotoFiles.map(f => URL.createObjectURL(f));
@@ -919,17 +952,19 @@ async function carregarPedidoParaEdicao() {
 
   if (pedido.musica) {
     $("qtdMusica").textContent = "Música carregada";
+    const wrap = $("musicaPreviewWrap");
+    const preview = $("musicaPreview");
+    if (musicaPreviewURL) { URL.revokeObjectURL(musicaPreviewURL); }
+    musicaPreviewURL = URL.createObjectURL(pedido.musica);
+    preview.src = musicaPreviewURL;
+    wrap.style.display = "block";
   }
 
-  // Marca que a frase foi editada (para não sobrescrever com o padrão do tema)
   fraseEditada = true;
-  
-  // Atualiza a prévia final
   setTimeout(atualizarPreview, 150);
 }
 
-// Inicialização
 addEvento();
-addEvento(); // Cria dois momentos vazios por padrão na criação
+addEvento();
 atualizarPreview();
-carregarPedidoParaEdicao(); // Verifica se é edição
+carregarPedidoParaEdicao();

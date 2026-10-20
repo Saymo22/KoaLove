@@ -1076,8 +1076,7 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
         .tema-card[data-categoria="especial"]:hover {
-            border-color: rgba(var(--c-rosa), 0.5);
-            box-shadow: 0 30px 70px rgba(0,0,0,0.4), 0 0 0 1px var(--c-rosa);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.4), 0 0 0 1px var(--c-rosa);
         }
         .tema-card[data-categoria="especial"] .tema-prev {
             background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
@@ -1699,3 +1698,650 @@
                 transition-duration: .01ms !important;
             }
         }
+/* =====================================================
+   PREMIUM UPGRADE — v2
+   Adicionado no final para sobrescrever os estilos
+   originais com uma camada visual mais refinada.
+   ===================================================== */
+
+/* ─────────────────────────────────────────────────────
+   HERO: GRADIENTE DOURADO + ROSA
+   ───────────────────────────────────────────────────── */
+.hero-home {
+    background:
+        radial-gradient(ellipse 85% 75% at 8% 18%, rgba(201, 168, 106, 0.48) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 70% at 92% 82%, rgba(233, 166, 184, 0.45) 0%, transparent 55%),
+        radial-gradient(ellipse 65% 45% at 50% 50%, rgba(230, 207, 160, 0.2) 0%, transparent 65%),
+        linear-gradient(165deg, #fdf4de 0%, #fbe8dd 35%, #f7e4e9 70%, #fdfaf7 100%);
+}
+
+.hero-home::before {
+    background:
+        radial-gradient(circle at 18% 28%, rgba(201, 168, 106, 0.32) 0%, transparent 38%),
+        radial-gradient(circle at 82% 72%, rgba(233, 166, 184, 0.32) 0%, transparent 38%),
+        radial-gradient(circle at 50% 95%, rgba(217, 108, 138, 0.12) 0%, transparent 45%);
+}
+
+/* ─────────────────────────────────────────────────────
+   SELO DE TOPO
+   ───────────────────────────────────────────────────── */
+.selo {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(253, 247, 234, 0.85));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201, 168, 106, 0.55);
+    padding: 10px 26px;
+    font-size: 10.5px;
+    letter-spacing: 4.5px;
+    box-shadow: 0 10px 32px rgba(201, 168, 106, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    margin-bottom: 26px;
+}
+
+/* ─────────────────────────────────────────────────────
+   HERO: PONTOS DE DESTAQUE
+   ───────────────────────────────────────────────────── */
+.hero-pontos {
+    margin-top: 32px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(201, 168, 106, 0.35);
+    gap: 16px 34px;
+}
+
+.hero-pontos span {
+    font-size: 11.5px;
+    letter-spacing: 2.2px;
+    color: #6b525c;
+    font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────
+   TRUST BAR
+   ───────────────────────────────────────────────────── */
+.trust-bar {
+    padding: 30px 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(253, 247, 234, 0.55) 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(201, 168, 106, 0.22);
+}
+
+.trust-label {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #8a6c50;
+    font-weight: 500;
+}
+
+.trust-avatars span {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    border-width: 2.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    margin-left: -12px;
+}
+
+.trust-avatars span:first-child {
+    margin-left: 0;
+}
+
+.trust-rating .stars {
+    font-size: 15px;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+}
+
+.trust-rating p {
+    font-size: 13px;
+    color: #5d4650;
+}
+
+/* ─────────────────────────────────────────────────────
+   TÍTULOS DE SEÇÃO — REFINADOS
+   ───────────────────────────────────────────────────── */
+.tit h2 {
+    letter-spacing: -0.025em;
+    margin-bottom: 22px;
+    line-height: 1;
+}
+
+.tit p {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #6b525c;
+}
+
+.divisor {
+    font-size: 11.5px;
+    letter-spacing: 7px;
+    margin-bottom: 22px;
+    color: var(--ouro);
+    font-weight: 600;
+}
+
+.divisor::before,
+.divisor::after {
+    width: 50px;
+    opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────────────
+   NÚMEROS
+   ───────────────────────────────────────────────────── */
+.numero {
+    padding: 38px 20px;
+}
+
+.numero-icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+    opacity: 0.9;
+}
+
+.numero strong {
+    letter-spacing: -0.04em;
+    text-shadow: 0 4px 30px rgba(201, 168, 106, 0.4);
+}
+
+.numero span {
+    font-size: 11.5px;
+    letter-spacing: 4.5px;
+    margin-top: 16px;
+    color: #e0c8d2;
+}
+
+/* ─────────────────────────────────────────────────────
+   COMO FUNCIONA — CARDS
+   ───────────────────────────────────────────────────── */
+.passo-card {
+    padding: 48px 36px;
+    border-radius: 30px;
+    background: linear-gradient(180deg, #fffdfa 0%, #fdf9f2 100%);
+    border: 1px solid rgba(201, 168, 106, 0.14);
+    box-shadow: 0 4px 16px rgba(125, 48, 72, 0.03);
+}
+
+.passo-card:hover {
+    border-color: rgba(201, 168, 106, 0.45);
+    box-shadow: 0 32px 70px rgba(125, 48, 72, 0.14);
+    background: #fff;
+}
+
+.passo-ico {
+    width: 74px;
+    height: 74px;
+    border-radius: 22px;
+    font-size: 36px;
+    margin-bottom: 24px;
+}
+
+.passo-num {
+    width: 64px;
+    height: 64px;
+    font-size: 30px;
+    margin-bottom: 28px;
+    border: 6px solid #fff;
+}
+
+.passo-card h3 {
+    font-size: 32px;
+    margin-bottom: 18px;
+    letter-spacing: -0.015em;
+}
+
+.passo-card p {
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.passo-tag {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    margin-top: 22px;
+    color: var(--ouro);
+}
+
+/* ─────────────────────────────────────────────────────
+   ★★★ CARDS DE TEMA — PREMIUM ★★★
+   ───────────────────────────────────────────────────── */
+.tema-card {
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+    border: 1px solid rgba(201, 168, 106, 0.15);
+    box-shadow:
+        0 1px 3px rgba(75, 55, 64, 0.03),
+        0 12px 32px rgba(75, 55, 64, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition:
+        transform 0.6s cubic-bezier(0.2, 0.8, 0.3, 1),
+        box-shadow 0.5s cubic-bezier(0.2, 0.8, 0.3, 1),
+        border-color 0.4s;
+}
+
+.tema-card:hover {
+    border-color: rgba(201, 168, 106, 0.45);
+    box-shadow:
+        0 4px 12px rgba(75, 55, 64, 0.05),
+        0 32px 70px rgba(125, 48, 72, 0.14),
+        0 0 0 1px rgba(201, 168, 106, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Área de preview */
+.tema-prev {
+    padding: 32px 26px 26px;
+    min-height: 260px;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.24) 0%, transparent 45%),
+        radial-gradient(circle at 88% 92%, rgba(0, 0, 0, 0.2) 0%, transparent 45%),
+        linear-gradient(135deg, var(--c-rosa) 0%, var(--c-vinho) 100%);
+    background-size: 200% 200%;
+}
+
+/* Mock dentro do preview */
+.tema-mock {
+    background: rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 18px;
+    padding: 22px 20px;
+    gap: 12px;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.tema-mock-titulo {
+    font-size: 9px;
+    letter-spacing: 3.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.tema-mock-titulo-grande {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.tema-mock-cont {
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.tema-mock-cont div {
+    padding: 11px 4px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.tema-mock-cont strong {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.tema-mock-cont span {
+    font-size: 7px;
+    letter-spacing: 2px;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+/* Badge de categoria */
+.tema-badge {
+    padding: 8px 15px;
+    font-size: 9px;
+    letter-spacing: 2.4px;
+    font-weight: 700;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.tema-badge.destaque {
+    background: linear-gradient(135deg, #ffd970, #f0b23a);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #4a2f14;
+    box-shadow:
+        0 6px 20px rgba(255, 217, 112, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Favorito */
+.tema-fav {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.tema-fav:hover {
+    background: rgba(255, 255, 255, 0.32);
+    transform: scale(1.1) rotate(-8deg);
+}
+
+.tema-fav.on {
+    background: linear-gradient(135deg, #ff4d6d, #c41e3a);
+    border-color: transparent;
+    box-shadow: 0 6px 18px rgba(255, 77, 109, 0.5);
+    animation: favPop 0.4s cubic-bezier(0.2, 1.4, 0.5, 1);
+}
+
+@keyframes favPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+/* Info (embaixo do preview) */
+.tema-info {
+    padding: 32px 28px 34px;
+    gap: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+}
+
+.tema-info h3 {
+    font-size: 30px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    gap: 10px;
+}
+
+.tema-info h3 .emoji {
+    font-size: 26px;
+    display: inline-block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.tema-info p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #796068;
+    margin-bottom: 14px;
+}
+
+/* Botão CTA do card */
+.tema-info .b {
+    padding: 16px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(125, 48, 72, 0.18);
+    background: transparent;
+    color: var(--c-vinho);
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+    box-shadow: none;
+}
+
+.tema-info .b:hover {
+    background: var(--c-vinho);
+    color: #fff;
+    border-color: var(--c-vinho);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    transform: translateY(-2px);
+}
+
+.tema-info .b .arrow {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.tema-info .b:hover .arrow {
+    transform: translateX(5px);
+}
+
+/* Shine mais sutil e dourado */
+.tema-card .shine {
+    background: linear-gradient(
+        105deg,
+        transparent 32%,
+        rgba(230, 207, 160, 0.35) 50%,
+        transparent 68%
+    );
+}
+
+/* Glow do mouse (mantém tracking) */
+.tema-card::after {
+    background: radial-gradient(
+        700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(201, 168, 106, 0.14),
+        transparent 45%
+    );
+}
+
+/* ───── TEMAS ESPECIAIS (categoria) ───── */
+.tema-card[data-categoria="especial"] {
+    background: linear-gradient(180deg, #0f0f0f 0%, #080808 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.tema-card[data-categoria="especial"]:hover {
+    border-color: var(--c-rosa);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 32px 80px rgba(0, 0, 0, 0.55),
+        0 0 40px var(--c-rosa);
+}
+
+.tema-card[data-categoria="especial"] .tema-info {
+    background: linear-gradient(180deg, #0f0f0f 0%, #080808 100%);
+}
+
+.tema-card[data-categoria="especial"] .tema-info h3 {
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 2px 12px rgba(255, 255, 255, 0.05);
+}
+
+.tema-card[data-categoria="especial"] .tema-info p {
+    color: #a8a8a8;
+}
+
+.tema-card[data-categoria="especial"] .tema-info .b {
+    background: transparent;
+    border: 1.5px solid var(--c-rosa);
+    color: var(--c-rosa);
+    box-shadow: none;
+}
+
+.tema-card[data-categoria="especial"] .tema-info .b:hover {
+    background: var(--c-rosa);
+    color: #000;
+    box-shadow: 0 12px 28px var(--c-rosa);
+    transform: translateY(-2px);
+}
+
+.tema-card[data-categoria="especial"][data-chave="netflix"] .tema-info .b:hover,
+.tema-card[data-categoria="especial"][data-chave="vinil"] .tema-info .b:hover {
+    color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────
+   FILTROS DE TEMA
+   ───────────────────────────────────────────────────── */
+.filtro {
+    padding: 13px 30px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 50px;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.filtro:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+/* ─────────────────────────────────────────────────────
+   DIFERENCIAIS
+   ───────────────────────────────────────────────────── */
+.dif {
+    padding: 52px 36px;
+    border-radius: 28px;
+}
+
+.dif .icon {
+    width: 86px;
+    height: 86px;
+    border-radius: 26px;
+    font-size: 40px;
+    margin-bottom: 26px;
+}
+
+.dif h3 {
+    font-size: 28px;
+    margin-bottom: 14px;
+    letter-spacing: -0.015em;
+}
+
+.dif p {
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+/* ─────────────────────────────────────────────────────
+   DEPOIMENTOS
+   ───────────────────────────────────────────────────── */
+.depo {
+    padding: 46px 40px;
+    border-radius: 28px;
+}
+
+.depo::before {
+    font-size: 130px;
+    opacity: 0.1;
+    top: 5px;
+    left: 30px;
+}
+
+.depo-stars {
+    font-size: 16px;
+    letter-spacing: 4px;
+    margin-bottom: 22px;
+}
+
+.depo p {
+    font-size: 15.5px;
+    line-height: 1.95;
+    margin-bottom: 32px;
+}
+
+.depo-avatar {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+}
+
+.depo-info b {
+    font-size: 16px;
+}
+
+.depo-info span {
+    font-size: 13px;
+}
+
+/* ─────────────────────────────────────────────────────
+   CTA FINAL
+   ───────────────────────────────────────────────────── */
+.cta-final {
+    padding: 160px 24px;
+}
+
+.cta-final h2 {
+    font-size: clamp(44px, 6.5vw, 76px);
+    letter-spacing: -0.025em;
+    margin-bottom: 22px;
+}
+
+.cta-final p {
+    font-size: 17px;
+    margin-bottom: 52px;
+}
+
+.cta-final .b {
+    padding: 22px 58px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ─────────────────────────────────────────────────────
+   RODAPÉ
+   ───────────────────────────────────────────────────── */
+.rodape {
+    padding: 90px 24px 40px;
+}
+
+.rodape-brand {
+    font-size: 34px;
+    letter-spacing: -0.01em;
+}
+
+.rodape-brand-desc {
+    font-size: 14.5px;
+    line-height: 1.85;
+}
+
+.rodape-col h4 {
+    font-size: 11.5px;
+    letter-spacing: 3.5px;
+}
+
+.rodape-col a {
+    font-size: 14.5px;
+    padding: 8px 0;
+}
+
+.rodape-social a {
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
+}
+
+/* ─────────────────────────────────────────────────────
+   RESPONSIVO
+   ───────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+    .tema-card .tema-prev {
+        padding: 26px 22px 22px;
+        min-height: 220px;
+    }
+    .tema-info {
+        padding: 26px 24px 28px;
+    }
+    .tema-info h3 {
+        font-size: 26px;
+    }
+    .depo {
+        padding: 36px 30px;
+    }
+}
+
+@media (max-width: 520px) {
+    .tema-mock-titulo-grande {
+        font-size: 24px;
+    }
+    .trust-bar .wrap {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+}

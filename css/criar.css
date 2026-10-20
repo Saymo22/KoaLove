@@ -721,10 +721,9 @@
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
       }
       .tema[data-categoria="especial"]:hover {
-        border-color: rgba(var(--t-rosa), 0.5);
-        box-shadow:
-          0 30px 70px rgba(0, 0, 0, 0.4),
-          0 0 0 1px var(--t-rosa);
+    box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.4),
+        0 0 0 1px var(--t-rosa);
       }
       .tema[data-categoria="especial"] .tema-prev {
         background: linear-gradient(
@@ -3736,3 +3735,1048 @@
           transition-duration: 0.001ms !important;
         }
       }
+
+      /* =====================================================
+   PREVIEW DE MÚSICA
+===================================================== */
+#musicaPreviewWrap {
+    animation: fadeUp .4s cubic-bezier(.2, .8, .3, 1);
+}
+#musicaPreviewWrap label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--ouro);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+#musicaPreview {
+    display: block;
+    border-radius: 14px;
+    background: #faf6f1;
+    border: 1.5px solid rgba(201, 168, 106, 0.22);
+    outline: none;
+}
+#musicaPreview:focus {
+    border-color: var(--ouro);
+    box-shadow: 0 0 0 4px rgba(201, 168, 106, 0.12);
+}
+body.tema-escuro #musicaPreview {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* =====================================================
+   LEGENDAS NAS FOTOS DO PREVIEW
+===================================================== */
+.pv-photos {
+    gap: 6px;
+}
+.pv-photo-wrap {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(125, 48, 72, 0.15);
+    aspect-ratio: 1;
+    background: #000;
+}
+.pv-photo-wrap img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: none;
+    border-radius: 0;
+}
+.pv-photo-leg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 5px 6px 4px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 8px;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+/* =====================================================
+   FOCO VISÍVEL EM TEMAS
+===================================================== */
+.tema:focus-visible {
+    outline: 2px solid var(--ouro);
+    outline-offset: 3px;
+}
+/* =====================================================
+   PREMIUM UPGRADE — criar.css v2
+   Adicionado no final para sobrescrever os estilos
+   originais com uma camada visual mais refinada.
+   ===================================================== */
+
+/* ─────────────────────────────────────────────────────
+   FUNDO
+   ───────────────────────────────────────────────────── */
+body.app {
+    background:
+        radial-gradient(ellipse 80% 60% at 12% 8%, rgba(201, 168, 106, 0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 75% 55% at 88% 92%, rgba(233, 166, 184, 0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(230, 207, 160, 0.05) 0%, transparent 65%),
+        linear-gradient(180deg, #fdfaf3 0%, #fbf6ee 50%, #fdfaf6 100%);
+}
+
+/* ─────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────── */
+.criar-header {
+    margin-bottom: 52px;
+}
+
+.criar-eyebrow {
+    padding: 9px 24px;
+    font-size: 10.5px;
+    letter-spacing: 4px;
+    margin-bottom: 26px;
+    box-shadow: 0 8px 24px rgba(201, 168, 106, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.criar-titulo {
+    letter-spacing: -0.03em;
+    margin: 0 0 18px;
+    line-height: 1;
+}
+
+.criar-sub {
+    font-size: 15px;
+    line-height: 1.85;
+    max-width: 520px;
+    margin: 0 auto 40px;
+    color: #796068;
+}
+
+/* ─────────────────────────────────────────────────────
+   STEPS — mais enxuto e elegante
+   ───────────────────────────────────────────────────── */
+.steps {
+    max-width: 520px;
+    gap: 4px;
+}
+
+.step-num {
+    width: 44px;
+    height: 44px;
+    font-size: 17px;
+    border-width: 1.5px;
+    background: #fff;
+}
+
+.step-item.on .step-num {
+    transform: scale(1.08);
+    box-shadow: 0 10px 26px rgba(201, 168, 106, 0.45);
+}
+
+.step-label {
+    font-size: 10.5px;
+    letter-spacing: 2.2px;
+    font-weight: 600;
+}
+
+.step-line {
+    margin: 0 10px;
+    margin-bottom: 24px;
+    height: 1px;
+    background: rgba(201, 168, 106, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────
+   PASSO HEADER
+   ───────────────────────────────────────────────────── */
+.passo-header {
+    margin-bottom: 40px;
+}
+
+.passo-header h2 {
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+    line-height: 1;
+}
+
+.passo-header p {
+    font-size: 14.5px;
+    line-height: 1.75;
+    max-width: 480px;
+}
+
+/* ─────────────────────────────────────────────────────
+   TEMAS: grupos
+   ───────────────────────────────────────────────────── */
+.temas-grupo {
+    margin-bottom: 44px;
+}
+
+.temas-grupo-titulo {
+    font-size: 22px;
+    margin-bottom: 22px;
+    padding-left: 0;
+}
+
+.temas-grupo-titulo::before {
+    width: 30px;
+    background: linear-gradient(90deg, var(--ouro), transparent);
+}
+
+/* ─────────────────────────────────────────────────────
+   ★★★ CARDS DE TEMA — PREMIUM ★★★
+   ───────────────────────────────────────────────────── */
+.temas {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.tema {
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+    border: 1px solid rgba(201, 168, 106, 0.15);
+    box-shadow:
+        0 1px 3px rgba(75, 55, 64, 0.03),
+        0 10px 28px rgba(75, 55, 64, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+}
+
+.tema:hover {
+    border-color: rgba(201, 168, 106, 0.45);
+    box-shadow:
+        0 4px 12px rgba(75, 55, 64, 0.05),
+        0 28px 60px rgba(125, 48, 72, 0.14),
+        0 0 0 1px rgba(201, 168, 106, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+    transform: translateY(-8px) !important;
+}
+
+.tema.sel {
+    border-color: var(--ouro);
+    box-shadow:
+        0 4px 12px rgba(201, 168, 106, 0.1),
+        0 28px 60px rgba(201, 168, 106, 0.32),
+        0 0 0 2px var(--ouro),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.tema.sel::after {
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+}
+
+/* Área de preview */
+.tema-prev {
+    padding: 24px 20px 20px;
+    min-height: 150px;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 88% 92%, rgba(0, 0, 0, 0.18) 0%, transparent 50%),
+        linear-gradient(135deg, var(--t-rosa) 0%, var(--t-vinho) 100%);
+    background-size: 200% 200%;
+}
+
+/* Badge */
+.tema-badge {
+    padding: 5px 12px;
+    font-size: 8px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.tema-badge.destaque {
+    background: linear-gradient(135deg, #ffd970, #f0b23a);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #4a2f14;
+    box-shadow: 0 4px 14px rgba(255, 217, 112, 0.5);
+}
+
+/* Mock */
+.tema-mock {
+    background: rgba(0, 0, 0, 0.26);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    padding: 14px 12px;
+    gap: 8px;
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.tema-mock-titulo {
+    font-size: 7.5px;
+    letter-spacing: 2.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.tema-mock-grande {
+    font-size: 22px;
+    font-style: italic;
+    letter-spacing: -0.015em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tema-mock-cont {
+    gap: 5px;
+    margin-top: auto;
+}
+
+.tema-mock-cont div {
+    padding: 7px 3px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tema-mock-cont strong {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tema-mock-cont span {
+    font-size: 5.5px;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+}
+
+/* Info */
+.tema-info {
+    padding: 20px 22px 22px;
+    gap: 6px;
+}
+
+.tema-info h3 {
+    font-size: 21px;
+    gap: 8px;
+    letter-spacing: -0.01em;
+}
+
+.tema-info h3 .emoji {
+    font-size: 20px;
+}
+
+.tema-info p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #796068;
+}
+
+/* Temas especiais (Netflix, Vinil, Cinema, Retrô…) */
+.tema[data-categoria="especial"] {
+    background: linear-gradient(180deg, #0f0f0f 0%, #080808 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.tema[data-categoria="especial"]:hover {
+    border-color: var(--t-rosa);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 32px 80px rgba(0, 0, 0, 0.55),
+        0 0 40px var(--t-rosa);
+}
+
+.tema[data-categoria="especial"] .tema-info {
+    background: linear-gradient(180deg, #0f0f0f 0%, #080808 100%);
+}
+
+.tema[data-categoria="especial"] .tema-info h3 {
+    color: #fff;
+    font-weight: 700;
+}
+
+.tema[data-categoria="especial"] .tema-info p {
+    color: #a8a8a8;
+}
+
+/* ─────────────────────────────────────────────────────
+   CAMPOS
+   ───────────────────────────────────────────────────── */
+.campo {
+    margin-bottom: 24px;
+}
+
+.campo label {
+    font-size: 10.5px;
+    letter-spacing: 2.2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.campo input[type="text"],
+.campo input[type="date"],
+.campo textarea {
+    padding: 16px 18px;
+    border-radius: 16px;
+    font-size: 15px;
+    border-width: 1.5px;
+    border-color: rgba(201, 168, 106, 0.20);
+    background: rgba(255, 255, 255, 0.85);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.campo input:focus,
+.campo textarea:focus {
+    background: #fff;
+    border-color: var(--ouro);
+    box-shadow:
+        0 0 0 5px rgba(201, 168, 106, 0.12),
+        0 6px 18px rgba(201, 168, 106, 0.08);
+    transform: translateY(-1px);
+}
+
+.campo textarea {
+    min-height: 170px;
+    line-height: 1.75;
+}
+
+.campo small {
+    font-size: 12px;
+    margin-top: 8px;
+    color: #a08a93;
+}
+
+/* ─────────────────────────────────────────────────────
+   PRÉVIA CONTADOR
+   ───────────────────────────────────────────────────── */
+.previa-contador {
+    padding: 28px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #fffdf8 0%, #fdf9f2 100%);
+    border: 1px solid rgba(201, 168, 106, 0.20);
+    margin: 8px 0 32px;
+    box-shadow:
+        0 4px 16px rgba(201, 168, 106, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.previa-tag {
+    font-size: 10px;
+    letter-spacing: 3.5px;
+    margin-bottom: 14px;
+}
+
+.previa-frase {
+    font-size: 22px;
+    margin-bottom: 22px;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+}
+
+.previa-grid {
+    gap: 10px;
+}
+
+.previa-grid div {
+    padding: 16px 4px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(201, 168, 106, 0.15);
+}
+
+.previa-grid strong {
+    font-size: 26px;
+}
+
+.previa-grid span {
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin-top: 6px;
+}
+
+/* ─────────────────────────────────────────────────────
+   EVENTOS
+   ───────────────────────────────────────────────────── */
+.ev-item {
+    padding: 24px 26px 8px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+    border: 1px solid rgba(201, 168, 106, 0.15);
+    margin-bottom: 18px;
+    box-shadow: 0 4px 14px rgba(75, 55, 64, 0.04);
+}
+
+.ev-topo {
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.ev-rem {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+}
+
+/* ─────────────────────────────────────────────────────
+   UPLOADS
+   ───────────────────────────────────────────────────── */
+.upload {
+    padding: 28px 24px;
+    border-radius: 20px;
+    border-width: 1.5px;
+    border-color: rgba(201, 168, 106, 0.35);
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+}
+
+.upload:hover {
+    background: linear-gradient(135deg, #fff, #fdf9f1);
+    border-color: var(--ouro);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(201, 168, 106, 0.18);
+}
+
+.upload-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.upload b {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.upload span {
+    font-size: 12.5px;
+}
+
+.upload .qtd {
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+/* ─────────────────────────────────────────────────────
+   BOTÕES
+   ───────────────────────────────────────────────────── */
+.btn {
+    padding: 16px 34px;
+    font-size: 14.5px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+}
+
+.btn.ouro {
+    box-shadow:
+        0 10px 28px rgba(201, 168, 106, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn.ouro:hover {
+    box-shadow:
+        0 18px 42px rgba(201, 168, 106, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px) scale(1.02);
+}
+
+.btn.sec {
+    border-color: rgba(201, 168, 106, 0.30);
+    color: #796068;
+}
+
+.btn.sec:hover {
+    background: rgba(201, 168, 106, 0.08);
+    border-color: var(--ouro);
+    color: var(--vinho);
+}
+
+.acoes {
+    gap: 14px;
+    margin-top: 40px;
+}
+
+/* ─────────────────────────────────────────────────────
+   BLOCO TÍTULO
+   ───────────────────────────────────────────────────── */
+.bloco-titulo {
+    font-size: 28px;
+    margin: 48px 0 8px;
+    letter-spacing: -0.015em;
+}
+
+.nota {
+    font-size: 12.5px;
+    margin-bottom: 22px;
+}
+
+/* ─────────────────────────────────────────────────────
+   FOTOS GRID
+   ───────────────────────────────────────────────────── */
+.fotos-grid {
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.foto-card {
+    border-radius: 14px;
+    border-width: 2px;
+    border-color: rgba(201, 168, 106, 0.18);
+    box-shadow: 0 4px 14px rgba(75, 55, 64, 0.08);
+}
+
+.foto-card.capa {
+    border-color: var(--ouro);
+    box-shadow:
+        0 0 0 3px rgba(201, 168, 106, 0.22),
+        0 6px 20px rgba(201, 168, 106, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────
+   TOGGLES
+   ───────────────────────────────────────────────────── */
+.toggle-field {
+    padding: 18px 22px;
+    border-radius: 16px;
+    border-color: rgba(201, 168, 106, 0.15);
+    background: rgba(255, 255, 255, 0.7);
+    margin-bottom: 14px;
+}
+
+.toggle-field:hover {
+    background: #fff;
+    border-color: rgba(201, 168, 106, 0.35);
+}
+
+.toggle-field span {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────
+   ★★★ CELULAR ENDIREITADO ★★★
+   ───────────────────────────────────────────────────── */
+.preview-col {
+    position: sticky;
+    top: 100px;
+    height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-wrap {
+    gap: 18px;
+}
+
+.preview-label {
+    padding: 10px 24px;
+    font-size: 10.5px;
+    letter-spacing: 4px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(201, 168, 106, 0.35);
+    box-shadow: 0 8px 24px rgba(201, 168, 106, 0.15);
+}
+
+.phone-stage {
+    width: 380px;
+}
+
+/* Remove as polaroids decorativas ao redor do celular (mais enxuto) */
+.phone-pol {
+    display: none !important;
+}
+
+/* Celular reto, sem tilt, com sombra premium */
+.preview-phone {
+    width: 340px;
+    height: min(720px, calc(100vh - 200px));
+    border-radius: 52px;
+    padding: 14px;
+    background: linear-gradient(160deg, #2a1a1f 0%, #1a1014 100%);
+    box-shadow:
+        0 50px 100px rgba(125, 48, 72, 0.20),
+        0 25px 50px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(201, 168, 106, 0.15),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+    transform: none !important;
+    transition: box-shadow 0.5s;
+}
+
+.preview-phone:hover {
+    box-shadow:
+        0 55px 110px rgba(125, 48, 72, 0.24),
+        0 28px 55px rgba(0, 0, 0, 0.14),
+        0 0 0 1px rgba(201, 168, 106, 0.22),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.preview-phone::after {
+    right: -3px;
+    top: 120px;
+    height: 65px;
+}
+
+.preview-phone::before {
+    left: -3px;
+    top: 100px;
+    height: 45px;
+}
+
+.preview-screen {
+    border-radius: 38px;
+}
+
+.phone-island {
+    width: 108px;
+    height: 28px;
+}
+
+.phone-glow {
+    inset: -40px;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(217, 108, 138, 0.20) 0%,
+        rgba(201, 168, 106, 0.10) 40%,
+        transparent 70%
+    );
+    opacity: 0.7;
+    filter: blur(50px);
+}
+
+/* ─────────────────────────────────────────────────────
+   RESPONSIVO
+   ───────────────────────────────────────────────────── */
+@media (max-width: 1150px) {
+    .phone-stage {
+        width: min(340px, 90vw);
+    }
+    .preview-phone {
+        width: min(320px, 90vw);
+        height: min(660px, calc(100vh - 180px));
+    }
+}
+
+@media (max-width: 720px) {
+    .criar-layout {
+        padding: 100px 16px 70px;
+    }
+    .criar-header {
+        margin-bottom: 36px;
+    }
+    .passo-header {
+        margin-bottom: 30px;
+    }
+    .previa-grid strong {
+        font-size: 22px;
+    }
+    .steps {
+        max-width: 100%;
+    }
+    .step-label {
+        font-size: 9.5px;
+        letter-spacing: 1.8px;
+    }
+    .temas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+    .tema-prev {
+        padding: 18px 16px 14px;
+        min-height: 120px;
+    }
+    .tema-mock-grande {
+        font-size: 18px;
+    }
+    .tema-info {
+        padding: 16px 18px 18px;
+    }
+    .tema-info h3 {
+        font-size: 18px;
+    }
+    .tema-info p {
+        font-size: 11px;
+    }
+    .grid2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .acoes {
+        flex-direction: column-reverse;
+    }
+    .acoes .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .temas {
+        grid-template-columns: 1fr;
+    }
+    .preview-phone {
+        width: min(300px, 92vw);
+        height: min(620px, calc(100vh - 130px));
+    }
+}
+/* =====================================================
+   AJUSTE v2.1 — CELULAR COM POLAROIDS + MAIS ALTO
+   Sobrescreve o "v2" que desativou as polaroids.
+   ===================================================== */
+
+/* ─────────────────────────────────────────────────────
+   PALCO DO CELULAR
+   ───────────────────────────────────────────────────── */
+.phone-stage {
+    width: 440px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1500px;
+}
+
+.preview-wrap {
+    gap: 22px;
+}
+
+/* ─────────────────────────────────────────────────────
+   ★★★ CELULAR — mais alto, com tilt restaurado ★★★
+   ───────────────────────────────────────────────────── */
+.preview-phone {
+    width: 340px;
+    height: min(780px, calc(100vh - 180px));
+    border-radius: 52px;
+    padding: 14px;
+    background: linear-gradient(160deg, #2a1a1f 0%, #1a1014 100%);
+    box-shadow:
+        0 55px 120px rgba(125, 48, 72, 0.22),
+        0 28px 55px rgba(0, 0, 0, 0.14),
+        0 0 0 1px rgba(201, 168, 106, 0.18),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+    transform: none;
+    transition:
+        transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1),
+        box-shadow 0.6s;
+    will-change: transform;
+}
+
+.preview-phone.tilting {
+    box-shadow:
+        0 45px 100px rgba(125, 48, 72, 0.18),
+        0 22px 45px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(201, 168, 106, 0.18),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.preview-phone::after {
+    right: -3px;
+    top: 130px;
+    height: 68px;
+}
+
+.preview-phone::before {
+    left: -3px;
+    top: 110px;
+    height: 48px;
+}
+
+.preview-screen {
+    border-radius: 38px;
+}
+
+.phone-island {
+    width: 108px;
+    height: 28px;
+}
+
+.phone-glow {
+    inset: -40px;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(217, 108, 138, 0.22) 0%,
+        rgba(201, 168, 106, 0.12) 40%,
+        transparent 70%
+    );
+    opacity: 0.65;
+    filter: blur(50px);
+    transition: opacity 0.8s;
+}
+
+.preview-wrap:hover .phone-glow {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────
+   ★★★ POLAROIDS — REATIVADAS E MELHORADAS ★★★
+   ───────────────────────────────────────────────────── */
+.phone-pol {
+    display: block !important;
+    position: absolute;
+    width: 96px;
+    padding: 9px 9px 26px;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf5 100%);
+    border-radius: 4px;
+    box-shadow:
+        0 12px 28px rgba(75, 55, 64, 0.18),
+        0 2px 6px rgba(75, 55, 64, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    z-index: 2;
+    pointer-events: none;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+/* Fita adesiva no topo da polaroid */
+.phone-pol::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 52px;
+    height: 18px;
+    background: rgba(230, 207, 160, 0.85);
+    border: 1px solid rgba(201, 168, 106, 0.35);
+    box-shadow: 0 2px 6px rgba(201, 168, 106, 0.18);
+    z-index: 3;
+}
+
+/* Foto dentro da polaroid */
+.phone-pol div {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+        linear-gradient(135deg, var(--t-rosa, #d96c8a), var(--t-vinho, #7d3048));
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Legenda fake embaixo da polaroid */
+.phone-pol::after {
+    content: "♥";
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--ouro);
+    opacity: 0.6;
+}
+
+/* Polaroid esquerda — cima */
+.phone-pol.p1 {
+    left: -66px;
+    top: 80px;
+    animation: polFloat1 7s ease-in-out infinite;
+    transform: rotate(-8deg);
+}
+
+/* Polaroid direita — baixo */
+.phone-pol.p2 {
+    right: -66px;
+    bottom: 110px;
+    animation: polFloat2 8s ease-in-out infinite;
+    transform: rotate(7deg);
+}
+
+/* Polaroid pequena — cima direita */
+.phone-pol.p3 {
+    right: -46px;
+    top: 110px;
+    width: 74px;
+    padding: 7px 7px 20px;
+    animation: polFloat3 9s ease-in-out infinite;
+    transform: rotate(6deg);
+}
+
+.phone-pol.p3::before {
+    width: 40px;
+    height: 14px;
+}
+
+.phone-pol.p3::after {
+    font-size: 9px;
+    bottom: 5px;
+}
+
+/* Animações de flutuação (mais sutis) */
+@keyframes polFloat1 {
+    0%, 100% {
+        transform: rotate(-8deg) translateY(0);
+    }
+    50% {
+        transform: rotate(-6deg) translateY(-14px);
+    }
+}
+
+@keyframes polFloat2 {
+    0%, 100% {
+        transform: rotate(7deg) translateY(0);
+    }
+    50% {
+        transform: rotate(5deg) translateY(-16px);
+    }
+}
+
+@keyframes polFloat3 {
+    0%, 100% {
+        transform: rotate(6deg) translateY(0);
+    }
+    50% {
+        transform: rotate(4deg) translateY(-10px);
+    }
+}
+
+/* ─────────────────────────────────────────────────────
+   DOTS DE NAVEGAÇÃO
+   ───────────────────────────────────────────────────── */
+.preview-dots {
+    right: -32px;
+}
+
+.preview-dot {
+    width: 9px;
+    height: 9px;
+}
+
+.preview-dot.on {
+    height: 26px;
+}
+
+/* ─────────────────────────────────────────────────────
+   RESPONSIVO
+   ───────────────────────────────────────────────────── */
+@media (max-width: 1150px) {
+    .phone-stage {
+        width: min(360px, 92vw);
+    }
+    .preview-phone {
+        width: min(320px, 92vw);
+        height: min(700px, calc(100vh - 160px));
+    }
+    .phone-pol {
+        display: none !important;
+    }
+    .preview-dots {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .preview-phone {
+        width: min(300px, 94vw);
+        height: min(640px, calc(100vh - 130px));
+    }
+}

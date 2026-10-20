@@ -6,6 +6,7 @@
     <title>Criar presente ❤️ — Nosso Amor</title>
     <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos." />
 
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/criar.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -210,6 +211,11 @@
                 <span>Arquivo MP3</span>
                 <span class="qtd" id="qtdMusica"></span>
               </label>
+            </div>
+
+            <div class="campo" id="musicaPreviewWrap" style="display:none">
+              <label>Prévia da música</label>
+              <audio id="musicaPreview" controls preload="metadata" style="width:100%; border-radius:12px;"></audio>
             </div>
 
             <div class="grid2">

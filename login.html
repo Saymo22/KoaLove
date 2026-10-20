@@ -4,66 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar — Nosso Amor</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 
-    <!-- Background Animado -->
     <div class="bg-mesh"></div>
     <div class="particles" id="particles"></div>
 
-    <!-- Botão Voltar -->
-    <a href="home.html" class="btn-back">← Voltar para a Home</a>
-
     <main class="auth-container">
-        <div class="auth-card" id="authCard">
-            
-            <!-- Logo -->
-            <div class="auth-logo">
-                <span class="heart">♥</span>
-                <div class="logo-glow"></div>
+
+        <!-- Lado Esquerdo: Visual / Branding -->
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <a href="home.html" class="auth-logo">Nosso Amor</a>
+                <h2 class="auth-quote">"Uma história de amor<br>em uma página."</h2>
+                <p class="auth-visual-sub">Transforme suas memórias em um presente inesquecível. Crie, personalize e compartilhe em minutos.</p>
             </div>
-
-            <!-- Título Dinâmico -->
-            <h1 class="auth-title" id="authTitle">Bem-vindo de volta</h1>
-            <p class="auth-sub" id="authSub">Acesse sua conta para gerenciar suas surpresas.</p>
-
-            <!-- Formulário -->
-            <form id="authForm" class="auth-form">
-                <!-- Campo Nome (só aparece no cadastro) -->
-                <div class="input-group hidden" id="groupName">
-                    <label for="inputName">Seu nome</label>
-                    <input type="text" id="inputName" placeholder="Como quer ser chamado?">
-                </div>
-
-                <div class="input-group">
-                    <label for="inputEmail">Seu e-mail</label>
-                    <input type="email" id="inputEmail" placeholder="seu@email.com" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="inputPass">Sua senha</label>
-                    <input type="password" id="inputPass" placeholder="••••••••" required minlength="4">
-                </div>
-
-                <button type="submit" class="btn-auth" id="btnSubmit">
-                    <span class="btn-text">Entrar na conta</span>
-                    <span class="btn-icon">→</span>
-                </button>
-            </form>
-
-            <!-- Alternador -->
-            <div class="auth-toggle">
-                <span id="toggleText">Ainda não tem uma conta?</span>
-                <button type="button" id="btnToggle">Criar conta</button>
-            </div>
-
         </div>
+
+        <!-- Lado Direito: Formulário -->
+        <div class="auth-form-side">
+            <a href="home.html" class="btn-back">← Voltar</a>
+
+            <div class="auth-card" id="authCard">
+                <div class="auth-logo-mobile">Nosso Amor</div>
+                
+                <h1 class="auth-title" id="authTitle">Bem-vindo de volta</h1>
+                <p class="auth-sub" id="authSub">Acesse sua conta para gerenciar suas surpresas.</p>
+
+                <form id="authForm" class="auth-form">
+                    <div class="input-group hidden" id="groupName">
+                        <label for="inputName">Seu nome</label>
+                        <input type="text" id="inputName" placeholder="Como quer ser chamado?">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inputEmail">Seu e-mail</label>
+                        <input type="email" id="inputEmail" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="inputPass">Sua senha</label>
+                        <input type="password" id="inputPass" placeholder="••••••••" required minlength="4">
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btnSubmit">
+                        <span class="btn-text">Entrar na conta</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+
+                <div class="auth-toggle">
+                    <span id="toggleText">Ainda não tem uma conta?</span>
+                    <button type="button" id="btnToggle">Criar conta</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script src="js/core/auth.js"></script>

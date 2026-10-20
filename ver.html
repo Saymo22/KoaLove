@@ -4,13 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uma surpresa para você ❤️</title>
+    <meta name="description" content="Alguém preparou uma página especial para você. Clique para abrir.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Uma surpresa para você ❤️">
+    <meta property="og:description" content="Alguém preparou uma página especial para você. Clique para abrir.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80">
+    <meta property="og:url" content="">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Uma surpresa para você ❤️">
+    <meta name="twitter:description" content="Alguém preparou uma página especial para você.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80">
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/tema-padrao.css" id="cssPadrao">
     <link rel="stylesheet" href="css/ver.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700;800;900&family=Bebas+Neue&family=IM+Fell+English:ital@0;1&family=Gochi+Hand&family=Permanent+Marker&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -124,6 +137,7 @@
                             </div>
                         </div>
                     </div>
+                    <button class="story-mute-btn" id="storyMuteBtn" type="button" aria-label="Ativar som" title="Ativar som">🔇</button>
                     <div id="videosWrap"></div>
                 </div>
             </div>
@@ -163,133 +177,220 @@
         </footer>
     </div>
 
-    <!-- CARTA ANTIGA -->
+    <!-- ═══════════════ CARTA ANTIGA — "A CARTA LACRADA" ═══════════════ -->
     <div id="layoutCartaAntiga" style="display:none">
-        <div class="ca-envelope">
-            <div class="ca-carimbo">POSTA<br>1950</div>
-            <div class="ca-envelope-top">
-                <div class="ca-selo-postal"></div>
-                <small id="caPequeno">Uma carta guardada no tempo</small>
-                <strong>Para você</strong>
+        <div class="ca-stage" id="caStage">
+            <p class="ca-stage-top" id="caStageDe">Uma carta para você</p>
+            <div class="ca-envelope" id="caEnvelope" role="button" tabindex="0" aria-label="Abrir a carta">
+                <div class="ca-env-back"></div>
+                <div class="ca-env-paper"></div>
+                <div class="ca-env-front">
+                    <div class="ca-env-addr"><small>Para</small><strong id="caPara">você</strong></div>
+                </div>
+                <div class="ca-env-flap"></div>
+                <div class="ca-stamp" aria-hidden="true"><span>♥</span></div>
+                <div class="ca-postmark" id="caPostmark" aria-hidden="true"></div>
+                <div class="ca-seal" aria-hidden="true"><span id="caSealIni">♥</span></div>
             </div>
+            <p class="ca-stage-hint" id="caHint">Toque no lacre para abrir</p>
         </div>
-        <section class="ca-hero">
-            <h1 id="caTitulo">Querida...</h1>
-            <p id="caDuracao"></p>
-        </section>
-        <div class="ca-ornamento">❦ ❦ ❦</div>
-        <section class="ca-contador">
-            <div class="ca-contador-item"><strong id="caAnos">0</strong><span>Anos</span></div>
-            <div class="ca-contador-item"><strong id="caMeses">0</strong><span>Meses</span></div>
-            <div class="ca-contador-item"><strong id="caDias">0</strong><span>Dias</span></div>
-            <div class="ca-contador-item"><strong id="caHoras">0</strong><span>Horas</span></div>
-        </section>
-        <section class="ca-papel">
-            <span class="ca-eyebrow">Para você</span>
-            <p class="ca-carta-texto" id="caCarta"></p>
-            <div class="ca-assinatura" id="caAssinatura">Com amor,</div>
-            <span class="ca-ps" id="caPS">P.S.: Sempre seu.</span>
-        </section>
-        <div class="ca-ornamento">❦ ❦ ❦</div>
-        <section class="ca-timeline" id="caTimeline"></section>
-        <section class="ca-galeria" id="caGaleria"></section>
-        <div class="ca-footer" id="caRodape">Sempre seu</div>
+
+        <div class="ca-reader" id="caReader" style="display:none">
+            <header class="ca-head">
+                <small id="caPequeno">Uma carta guardada no tempo</small>
+                <h1 id="caTitulo">Querida...</h1>
+                <p id="caDuracao"></p>
+            </header>
+
+            <article class="ca-paper cl-rv" id="caPaper" title="Toque para ler tudo de uma vez">
+                <div class="ca-paper-top"><span id="caData"></span><span>com carinho</span></div>
+                <p class="ca-salut" id="caSalut"></p>
+                <p class="ca-body" id="caCarta"></p>
+                <div class="ca-sign" id="caAssinatura">Com amor,</div>
+                <span class="ca-ps" id="caPS">P.S.: Sempre seu.</span>
+            </article>
+
+            <section class="ca-sec">
+                <h2 class="ca-h2 cl-rv">Carimbos do tempo</h2>
+                <div class="ca-carimbos cl-rv">
+                    <div class="ca-carimbo"><strong id="caAnos">0</strong><span>Anos</span></div>
+                    <div class="ca-carimbo"><strong id="caMeses">0</strong><span>Meses</span></div>
+                    <div class="ca-carimbo"><strong id="caDias">0</strong><span>Dias</span></div>
+                    <div class="ca-carimbo"><strong id="caHoras">0</strong><span>Horas</span></div>
+                </div>
+            </section>
+
+            <section class="ca-sec">
+                <h2 class="ca-h2 cl-rv">Cartas guardadas</h2>
+                <div class="ca-arquivo" id="caTimeline"></div>
+            </section>
+
+            <section class="ca-sec" id="caSecGaleria">
+                <h2 class="ca-h2 cl-rv">Retratos</h2>
+                <div class="ca-galeria" id="caGaleria"></div>
+            </section>
+
+            <section class="ca-sec" id="caSecAmo">
+                <h2 class="ca-h2 cl-rv">Palavras que eu guardo</h2>
+                <div class="ca-chips" id="caChips"></div>
+            </section>
+
+            <footer class="ca-footer cl-rv">
+                <div class="ca-lacre-mini" aria-hidden="true"><span>♥</span></div>
+                <p id="caRodape">Sempre seu</p>
+                <div class="ca-musica" id="caMusica" style="display:none">
+                    <button id="caMusBtn" type="button" aria-label="Tocar música">▶</button>
+                    <span id="caMusNome"></span>
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <!-- SCRAPBOOK -->
+    <!-- ═══════════════ SCRAPBOOK — "DIÁRIO DE COLAGENS" ═══════════════ -->
     <div id="layoutScrapbook" style="display:none">
-        <span class="sc-sticker" style="top:30px;left:10%;--r:-15deg;">⭐</span>
-        <span class="sc-sticker" style="top:150px;right:8%;--r:20deg;animation-delay:.5s;">💝</span>
-        <span class="sc-sticker" style="top:400px;left:5%;--r:8deg;animation-delay:1s;">🌸</span>
-        <span class="sc-sticker" style="top:700px;right:5%;--r:-10deg;animation-delay:1.5s;">✨</span>
-        <span class="sc-sticker" style="bottom:100px;left:8%;--r:25deg;animation-delay:2s;">💫</span>
+        <span class="sc-sticker" style="top:2%;left:8%;--r:-15deg;">⭐</span>
+        <span class="sc-sticker" style="top:14%;right:6%;--r:20deg;animation-delay:.5s;">💝</span>
+        <span class="sc-sticker" style="top:36%;left:3%;--r:8deg;animation-delay:1s;">🌸</span>
+        <span class="sc-sticker" style="top:57%;right:4%;--r:-10deg;animation-delay:1.5s;">✨</span>
+        <span class="sc-sticker" style="top:78%;left:5%;--r:25deg;animation-delay:2s;">💫</span>
+        <span class="sc-sticker" style="top:93%;right:8%;--r:-18deg;animation-delay:2.5s;">🎞️</span>
 
         <section class="sc-hero">
-            <div class="sc-titulo-card">
-                <small id="scPequeno">Recortes da nossa vida...</small>
-                <h1 id="scTitulo">Recortes</h1>
-            </div>
-            <p id="scDuracao"></p>
+            <div class="sc-fita" id="scPequeno">Recortes da nossa vida</div>
+            <h1 class="sc-ransom" id="scTitulo">Recortes</h1>
+            <p class="sc-duracao"><span id="scDuracao"></span></p>
         </section>
-        <section class="sc-contador">
-            <div class="sc-contador-item"><strong id="scAnos">0</strong><span>Anos</span></div>
-            <div class="sc-contador-item"><strong id="scMeses">0</strong><span>Meses</span></div>
-            <div class="sc-contador-item"><strong id="scDias">0</strong><span>Dias</span></div>
-            <div class="sc-contador-item"><strong id="scHoras">0</strong><span>Horas</span></div>
-        </section>
-        <section class="sc-carta">
-            <h2 class="sc-carta-titulo">Para você ♥</h2>
-            <p id="scCarta"></p>
-            <div class="sc-carta-assin" id="scAssinatura">Com amor,</div>
-            <div class="sc-hashtags">
-                <span class="sc-hashtag">#NossaHistória</span>
-                <span class="sc-hashtag">#TBT</span>
-                <span class="sc-hashtag">#NuncaEsqueci</span>
+
+        <section class="sc-sec">
+            <h2 class="sc-h2 cl-rv">Nosso tempo, etiquetado</h2>
+            <div class="sc-labels cl-rv">
+                <div class="sc-label"><strong id="scAnos">0</strong><span>Anos</span></div>
+                <div class="sc-label"><strong id="scMeses">0</strong><span>Meses</span></div>
+                <div class="sc-label"><strong id="scDias">0</strong><span>Dias</span></div>
+                <div class="sc-label"><strong id="scHoras">0</strong><span>Horas</span></div>
             </div>
         </section>
-        <section class="sc-timeline">
-            <h2 class="sc-timeline-titulo">Nossa história em recortes</h2>
-            <div id="scTimeline"></div>
+
+        <section class="sc-sec" id="scSecFotos">
+            <h2 class="sc-h2 cl-rv">Nosso baralho de fotos</h2>
+            <p class="sc-dica">toque na foto para virar a próxima ↻</p>
+            <div class="sc-stack cl-rv" id="scStack"></div>
+            <div class="sc-ctrl">
+                <button type="button" id="scPrev" aria-label="Foto anterior">‹</button>
+                <span id="scCount">1 / 1</span>
+                <button type="button" id="scNext" aria-label="Próxima foto">›</button>
+                <button type="button" id="scZoom" class="sc-zoom">ampliar</button>
+            </div>
         </section>
-        <section class="sc-galeria" id="scGaleria"></section>
-        <section class="sc-amo">
-            <h2 class="sc-amo-titulo">Meus recortes favoritos</h2>
+
+        <section class="sc-sec">
+            <article class="sc-notebook cl-rv">
+                <h2 class="sc-carta-titulo" id="scCartaTitulo">Para você ♥</h2>
+                <p id="scCarta"></p>
+                <div class="sc-carta-assin" id="scAssinatura">Com amor,</div>
+                <div class="sc-hashtags"><span>#NossaHistória</span><span>#TBT</span><span>#NuncaEsqueci</span></div>
+            </article>
+        </section>
+
+        <section class="sc-sec">
+            <h2 class="sc-h2 cl-rv">Nossa história em post-its</h2>
+            <div class="sc-notes" id="scTimeline"></div>
+        </section>
+
+        <section class="sc-sec" id="scSecAmo">
+            <h2 class="sc-h2 cl-rv">Meus adesivos favoritos</h2>
             <div class="sc-chips" id="scChips"></div>
         </section>
-        <div class="sc-musica">
-            <div class="sc-postit">
+
+        <div class="sc-sec sc-musica" id="scMusica" style="display:none">
+            <button class="sc-postit" id="scPlay" type="button">
                 <small>Nossa trilha sonora</small>
                 <b id="scMusNome">—</b>
                 <span id="scMusArtista">—</span>
-            </div>
+                <i id="scPlayIco">▶ tocar</i>
+            </button>
         </div>
+
         <div class="sc-footer" id="scRodape">Feito com carinho</div>
     </div>
 
-    <!-- JARDIM SECRETO -->
+    <!-- ═══════════════ JARDIM SECRETO — "HERBÁRIO QUE FLORESCE" ═══════════════ -->
     <div id="layoutJardim" style="display:none">
-        <svg class="ja-flor tl" width="60" height="100" viewBox="0 0 60 100" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M30 50 Q 20 30 30 10 Q 40 30 30 50"/><path d="M30 50 L 30 100"/><path d="M30 65 Q 15 60 10 70"/><path d="M30 80 Q 45 75 50 85"/></svg>
-        <svg class="ja-flor tr" width="60" height="100" viewBox="0 0 60 100" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M30 50 Q 20 30 30 10 Q 40 30 30 50"/><path d="M30 50 L 30 100"/></svg>
-        <svg class="ja-flor bl" width="50" height="80" viewBox="0 0 50 80" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M25 40 Q 15 25 25 10 Q 35 25 25 40"/><path d="M25 40 L 25 80"/></svg>
-        <svg class="ja-flor br" width="50" height="80" viewBox="0 0 50 80" fill="none" stroke="#2d4a2d" stroke-width="1.5"><path d="M25 40 Q 15 25 25 10 Q 35 25 25 40"/><path d="M25 40 L 25 80"/></svg>
-        <span class="ja-borboleta" style="top:200px;left:15%;">🦋</span>
-        <span class="ja-borboleta" style="top:600px;right:12%;animation-delay:3s;">🦋</span>
+        <svg class="ja-vine" id="jaVine" viewBox="0 0 60 1000" aria-hidden="true">
+            <path id="jaVinePath" class="ja-vine-main" d="M30 0 C10 70 50 130 30 200 S10 330 30 400 S50 530 30 600 S10 730 30 800 S50 930 30 1000"/>
+            <g id="jaLeaves"></g>
+        </svg>
 
         <section class="ja-hero">
-            <div class="ja-monograma">❦</div>
+            <svg class="ja-bloom" viewBox="0 0 200 230" aria-hidden="true">
+                <path class="ja-b-stem" d="M100 228 C100 190 95 150 100 100"/>
+                <path class="ja-b-leaf" style="--d:.5s" d="M99 190 q-36 -4 -48 -34 q36 -4 48 34z"/>
+                <path class="ja-b-leaf" style="--d:.7s" d="M101 164 q36 -4 48 -34 q-36 -4 -48 34z"/>
+                <g transform="translate(100 82)">
+                    <g transform="rotate(0)"><ellipse class="ja-petal" style="--i:0" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(45)"><ellipse class="ja-petal" style="--i:1" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(90)"><ellipse class="ja-petal" style="--i:2" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(135)"><ellipse class="ja-petal" style="--i:3" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(180)"><ellipse class="ja-petal" style="--i:4" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(225)"><ellipse class="ja-petal" style="--i:5" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(270)"><ellipse class="ja-petal" style="--i:6" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <g transform="rotate(315)"><ellipse class="ja-petal" style="--i:7" cx="0" cy="-30" rx="13" ry="30"/></g>
+                    <circle class="ja-b-core" r="14"/>
+                </g>
+            </svg>
             <small id="jaPequeno">Floresceu em meu coração...</small>
             <h1 id="jaTitulo">Jardim Secreto</h1>
             <p id="jaDuracao"></p>
-            <span class="ja-latim">Sub rosa · MMXXIV</span>
+            <span class="ja-latim" id="jaLatim">Amoris perpetuus</span>
         </section>
-        <div class="ja-divisor"><span>❦</span></div>
-        <section class="ja-contador">
-            <div class="ja-contador-item"><strong id="jaAnos">0</strong><span>Anos</span></div>
-            <div class="ja-contador-item"><strong id="jaMeses">0</strong><span>Meses</span></div>
-            <div class="ja-contador-item"><strong id="jaDias">0</strong><span>Dias</span></div>
-            <div class="ja-contador-item"><strong id="jaHoras">0</strong><span>Horas</span></div>
+
+        <section class="ja-sec">
+            <h2 class="ja-h2 cl-rv">O tamanho do nosso jardim</h2>
+            <div class="ja-contador">
+                <div class="ja-cont-item cl-rv"><strong id="jaAnos">0</strong><span>anos<em>de raízes</em></span></div>
+                <div class="ja-cont-item cl-rv"><strong id="jaMeses">0</strong><span>meses<em>de brotos</em></span></div>
+                <div class="ja-cont-item cl-rv"><strong id="jaDias">0</strong><span>dias<em>de sol</em></span></div>
+                <div class="ja-cont-item cl-rv"><strong id="jaHoras">0</strong><span>horas<em>de orvalho</em></span></div>
+            </div>
         </section>
-        <section class="ja-papel">
-            <span class="ja-eyebrow">Para você</span>
-            <h2>Uma carta do meu jardim</h2>
-            <p class="ja-carta-texto" id="jaCarta"></p>
-            <div class="ja-assinatura" id="jaAssinatura">Com amor,</div>
+
+        <section class="ja-sec">
+            <article class="ja-papel cl-rv">
+                <span class="ja-eyebrow">Anotações de campo</span>
+                <h2>Uma carta do meu jardim</h2>
+                <p class="ja-salut" id="jaSalut"></p>
+                <p class="ja-carta-texto" id="jaCarta"></p>
+                <div class="ja-assinatura" id="jaAssinatura">Com amor,</div>
+            </article>
         </section>
-        <section class="ja-timeline" id="jaTimeline"></section>
-        <section class="ja-galeria" id="jaGaleria"></section>
-        <section class="ja-amo">
-            <h2 class="ja-amo-titulo">Flores do meu jardim</h2>
+
+        <section class="ja-sec">
+            <h2 class="ja-h2 cl-rv">Como tudo floresceu</h2>
+            <div class="ja-timeline" id="jaTimeline"></div>
+        </section>
+
+        <section class="ja-sec" id="jaSecGaleria">
+            <h2 class="ja-h2 cl-rv">Pranchas do herbário</h2>
+            <div class="ja-galeria" id="jaGaleria"></div>
+        </section>
+
+        <section class="ja-sec" id="jaSecAmo">
+            <h2 class="ja-h2 cl-rv">Placas do meu jardim</h2>
             <div class="ja-chips" id="jaChips"></div>
         </section>
-        <div class="ja-musica" id="jaMusica" style="display:none;">
+
+        <div class="ja-sec ja-musica cl-rv" id="jaMusica" style="display:none;">
             <div class="ja-musica-card">
-                <div class="ja-musica-onda"><span></span><span></span><span></span><span></span><span></span></div>
+                <button class="ja-play" id="jaPlay" type="button" aria-label="Tocar música">▶</button>
                 <div class="ja-musica-info">
+                    <small>Canto do jardim</small>
                     <b id="jaMusNome">—</b>
                     <span id="jaMusArtista">—</span>
                 </div>
+                <div class="ja-musica-onda"><span></span><span></span><span></span><span></span><span></span></div>
             </div>
         </div>
+
         <div class="ja-footer" id="jaRodape">Cultivado com amor</div>
     </div>
 

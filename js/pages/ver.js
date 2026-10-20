@@ -10,21 +10,20 @@ const demoTema = new URLSearchParams(location.search).get("tema") || "namoro";
 
 function getFotoURL(f) { return typeof f === "string" ? f : URL.createObjectURL(f); }
 
-// Função que ESCONDE a tela de intro APENAS se houver erro.
 function forcarFimDoIntro() {
     const ov = $("introOverlay");
-    if (ov) { 
-        ov.classList.add("done"); 
-        ov.style.display = "none"; 
-    }
+    if (ov) { ov.classList.add("done"); ov.style.display = "none"; }
     const skel = $("skeletonLoader");
     if (skel) skel.classList.remove("on", "out");
 }
 
 function mostrarMensagem(txt) {
-    forcarFimDoIntro(); // Impede o bug do "coração infinito"
+    forcarFimDoIntro();
     const msgEl = $("msg");
-    msgEl.innerHTML = txt;
+    msgEl.innerHTML = txt +
+        '<div style="margin-top:30px">' +
+            '<a href="home.html" style="font-family:Poppins,sans-serif;font-size:14px;color:#7d3048;text-decoration:none;padding:12px 26px;background:#fff;border-radius:50px;box-shadow:0 4px 15px rgba(0,0,0,.08);display:inline-block;transition:all .3s">← Voltar ao início</a>' +
+        '</div>';
     msgEl.classList.add("on");
     $("conteudo").style.display = "none";
 }
@@ -38,26 +37,54 @@ function mostrarErro(etapa, err) {
             "<div style='font-size:42px;margin-bottom:16px'>⚠️</div>" +
             "<div style='font-size:26px;margin-bottom:14px'>" + etapa + "</div>" +
             (detalhe ? "<div style='font-size:13px;font-family:monospace;background:rgba(0,0,0,.06);padding:12px 18px;border-radius:8px;max-width:520px;line-height:1.6;word-break:break-word;margin:0 auto'>" + detalhe + "</div>" : "") +
-            "<div style='font-size:13px;margin-top:24px;opacity:.7;font-family:Poppins,sans-serif'>Abra o DevTools (F12) → Console para mais detalhes.</div>" +
+            "<div style='margin-top:24px'><a href='home.html' style='font-family:Poppins,sans-serif;font-size:14px;color:#7d3048;text-decoration:none;padding:12px 26px;background:#fff;border-radius:50px;box-shadow:0 4px 15px rgba(0,0,0,.08);display:inline-block'>← Voltar ao início</a></div>" +
         "</div>";
     msgEl.classList.add("on");
     console.error("[ver] Erro em:", etapa, err);
 }
 
 /* =====================================================
-   INTRO (CORTAÇÃO E ANIMAÇÃO DOS NOMES)
+   OG TAGS DINÂMICAS
+===================================================== */
+function atualizarOG(p, urls) {
+    const setMeta = (attr, key, content) => {
+        if (!content) return;
+        let el = document.querySelector(`meta[${attr}="${key}"]`);
+        if (!el) {
+            el = document.createElement("meta");
+            el.setAttribute(attr, key);
+            document.head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+    };
+    const titulo = "Uma surpresa de " + (p.de || "alguém") + " ❤️";
+    const desc = p.titulo
+        ? "\"" + p.titulo + "\" — abra para descobrir."
+        : "Alguém preparou uma página especial para você. Clique para abrir.";
+    const img = (urls && urls[0]) ? urls[0] : "";
+    
+    document.title = titulo;
+    setMeta("property", "og:title", titulo);
+    setMeta("property", "og:description", desc);
+    setMeta("property", "og:url", location.href);
+    if (img) setMeta("property", "og:image", img);
+    setMeta("name", "twitter:title", titulo);
+    setMeta("name", "twitter:description", desc);
+    if (img) setMeta("name", "twitter:image", img);
+}
+
+/* =====================================================
+   INTRO
 ===================================================== */
 function mostrarIntro(p) {
     const overlay = $("introOverlay");
     
-    // Se for demo, embed ou o usuário desativou a intro, apenas fecha
     if (p.usarIntro === false || isDemo || isEmbed) {
         overlay.classList.add("done");
         if (!isDemo && !isEmbed) setTimeout(gerarCoracoesAmbiente, 300);
         return;
     }
     
-    // Preenche os nomes
     const paraEl = overlay.querySelector(".intro-para");
     const deEl = overlay.querySelector(".intro-de");
     const lineEl = overlay.querySelector(".intro-line");
@@ -65,17 +92,15 @@ function mostrarIntro(p) {
     paraEl.textContent = "Para " + (p.para || "você");
     deEl.textContent = "de " + (p.de || "quem te ama");
     
-    // Força a animação a recomeçar AGORA que os nomes estão preenchidos
     paraEl.style.animation = 'none';
     deEl.style.animation = 'none';
     lineEl.style.animation = 'none';
-    void paraEl.offsetWidth; // Truque para forçar o navegador a recalcular o layout
+    void paraEl.offsetWidth;
     
     paraEl.classList.add("animate");
     deEl.classList.add("animate");
     lineEl.classList.add("animate");
     
-    // Esconde o coração depois que a animação terminar
     setTimeout(() => { 
         overlay.classList.add("done"); 
         setTimeout(gerarCoracoesAmbiente, 800); 
@@ -101,6 +126,7 @@ function gerarCoracoesAmbiente() {
 ===================================================== */
 (function () {
     const progress = $("scrollProgress"), controls = $("floatControls");
+    if (!progress || !controls) return;
     window.addEventListener("scroll", () => {
         const h = document.documentElement;
         const st = h.scrollTop || document.body.scrollTop;
@@ -127,6 +153,7 @@ function getActiveAudio() {
 }
 function atualizarBotaoMusica() {
     const btn = $("btnMusic");
+    if (!btn) return;
     if (!hasMusic || isDemo) { btn.style.display = "none"; return; }
     btn.style.display = "flex";
     const audio = getActiveAudio();
@@ -153,6 +180,27 @@ document.addEventListener("play", (e) => {
         if (audio && !audio.paused) audio.pause();
     }
 }, true);
+
+/* =====================================================
+   BOTÃO DE SOM DO STORY
+===================================================== */
+function initStoryMute() {
+    const btn = $("storyMuteBtn");
+    if (!btn) return;
+    const videos = document.querySelectorAll("#videosWrap video");
+    if (!videos.length) { btn.style.display = "none"; return; }
+    let muted = true;
+    videos.forEach(v => v.muted = true);
+    btn.textContent = "🔇";
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        muted = !muted;
+        videos.forEach(v => v.muted = muted);
+        btn.textContent = muted ? "🔇" : "🔊";
+        btn.setAttribute("aria-label", muted ? "Ativar som" : "Silenciar");
+        btn.setAttribute("title", muted ? "Ativar som" : "Silenciar");
+    });
+}
 
 /* =====================================================
    LIGHTBOX
@@ -192,6 +240,20 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") $("lbPrev").click();
     if (e.key === "ArrowRight") $("lbNext").click();
 });
+
+// Swipe no lightbox (mobile)
+let _lbTouchStartX = 0;
+lb.el.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    _lbTouchStartX = e.touches[0].clientX;
+}, { passive: true });
+lb.el.addEventListener("touchend", (e) => {
+    if (!lb.el.classList.contains("on") || e.changedTouches.length !== 1) return;
+    const dx = e.changedTouches[0].clientX - _lbTouchStartX;
+    if (Math.abs(dx) < 50) return;
+    if (dx > 0) $("lbPrev").click(); else $("lbNext").click();
+}, { passive: true });
+
 document.addEventListener("click", (e) => {
     if (lb.el.classList.contains("on")) return;
     const img = e.target.closest("img");
@@ -265,7 +327,7 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 /* =====================================================
-   HELPERS DE RENDERIZAÇÃO COMPARTILHADOS
+   HELPERS DE RENDERIZAÇÃO
 ===================================================== */
 function _fillContador(prefixo, t) {
     $(prefixo + "Anos").textContent = t.anos;
@@ -287,6 +349,7 @@ function _renderGaleria(containerId, urls, classes) {
         d.className = classes.foto;
         const img = document.createElement("img");
         img.src = u; img.alt = "Foto " + (i + 1); img.dataset.idxLegenda = i;
+        img.loading = i < 2 ? "eager" : "lazy";
         d.appendChild(img);
         if (classes.legenda) {
             const leg = document.createElement("div");
@@ -304,7 +367,7 @@ function _renderChips(containerId, chipClass, amo) {
 }
 
 /* =====================================================
-   RENDERIZADORES DOS TEMAS
+   RENDERIZADORES
 ===================================================== */
 function renderPadrao(p, tema) {
     const urls = p.fotos.map(getFotoURL);
@@ -329,7 +392,10 @@ function renderPadrao(p, tema) {
     urls.forEach((u, i) => {
         const d = document.createElement("div");
         d.className = "foto rv-scale rv"; d.style.transitionDelay = (i * 0.1) + "s";
-        d.innerHTML = '<img alt="Nossa foto">'; d.firstChild.src = u; d.firstChild.dataset.idxLegenda = i;
+        d.innerHTML = '<img alt="Nossa foto">'; 
+        d.firstChild.src = u; 
+        d.firstChild.dataset.idxLegenda = i;
+        d.firstChild.loading = i < 3 ? "eager" : "lazy";
         $("galeria").appendChild(d);
     });
     const amo = p.amo || [];
@@ -377,6 +443,7 @@ function renderPadrao(p, tema) {
             carregar(atual);
         });
         carregar(0);
+        initStoryMute();
     }
     if (!p.musica) $("secMusica").style.display = "none";
     else {
@@ -392,81 +459,406 @@ function renderPadrao(p, tema) {
     setTimeout(() => { initReveal(); initTilt(); initCounters(); }, 100);
 }
 
+/* =====================================================
+   HELPERS DOS TEMAS CLÁSSICOS
+===================================================== */
+const _MESES_ABR = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
+function _el(tag, cls, txt) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+}
+function _partesInicio(inicio) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(inicio || "");
+    return m ? { ano: m[1], mes: Number(m[2]), dia: m[3] } : null;
+}
+function _eventosComHoje(p, t) {
+    const evs = [...(p.eventos || [])];
+    evs.push({ data: new Date().toLocaleDateString("pt-BR"), titulo: "Hoje", texto: textoDuracao(t) + " construindo nossa história.", _hoje: true });
+    return evs;
+}
+function _marcarReveal(container) {
+    if (!container) return;
+    [...container.children].forEach(c => c.classList.add("cl-rv"));
+}
+function _initRevealClassico(root) {
+    const els = root.querySelectorAll(".cl-rv");
+    if (!els.length) return;
+    if (!("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    els.forEach(e => io.observe(e));
+}
+function _criarAudioClassico(id, file) {
+    const a = document.createElement("audio");
+    a.id = id; a.src = URL.createObjectURL(file); a.preload = "auto"; a.style.display = "none";
+    document.body.appendChild(a);
+    hasMusic = true; activeAudioId = id;
+    return a;
+}
+function _ligarMusica(audio, btn, onChange) {
+    const sync = () => onChange(audio.paused);
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+    });
+    audio.addEventListener("play", sync);
+    audio.addEventListener("pause", sync);
+    sync();
+}
+
+/* =====================================================
+   1) CARTA ANTIGA — A CARTA LACRADA
+===================================================== */
+function _datilografar(el, texto, done) {
+    const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.textContent = "";
+    const vis = _el("span"), caret = _el("span", "ca-caret"), rest = _el("span", "ca-rest", texto);
+    el.append(vis, caret, rest);
+    let i = 0, parado = false, timer = null;
+    const vel = Math.max(8, Math.min(30, Math.round(14000 / Math.max(texto.length, 1))));
+    function fim() {
+        if (parado) return;
+        parado = true; clearTimeout(timer);
+        el.textContent = texto;
+        if (done) done();
+    }
+    if (reduz) { fim(); return { skip: fim }; }
+    (function passo() {
+        if (parado) return;
+        i++;
+        vis.textContent = texto.slice(0, i);
+        rest.textContent = texto.slice(i);
+        if (i >= texto.length) { fim(); return; }
+        const c = texto[i - 1];
+        timer = setTimeout(passo, c === "\n" ? vel * 9 : /[.,!?;:]/.test(c) ? vel * 5 : vel);
+    })();
+    return { skip: fim };
+}
+
 function renderCartaAntiga(p, tema) {
     const urls = p.fotos.map(getFotoURL);
     const t = tempoJuntos(p.inicio);
+    const root = $("layoutCartaAntiga");
+    const de = p.de || "quem te ama", para = p.para || "você";
+    const texto = (p.carta || "Sua mensagem...").trim();
+
+    $("caStageDe").textContent = "Uma carta de " + de;
+    $("caPara").textContent = para;
+    $("caSealIni").textContent = (de.trim()[0] || "♥").toUpperCase();
+    const pi = _partesInicio(p.inicio);
+    $("caPostmark").innerHTML = pi
+        ? "<b>CORREIO</b><i>" + pi.dia + " " + _MESES_ABR[pi.mes - 1] + "</i><b>" + pi.ano + "</b>"
+        : "<b>CORREIO</b><i>♥</i><b>AMOR</b>";
+
     $("caPequeno").textContent = tema.pequeno;
     $("caTitulo").textContent = p.titulo || "Querida...";
     $("caDuracao").textContent = textoDuracao(t) + " " + (p.frase || tema.sufixo);
     _fillContador("ca", t);
-    $("caCarta").textContent = p.carta || "Sua mensagem...";
-    $("caAssinatura").textContent = "Com todo meu amor,\n" + p.de;
-    $("caPS").textContent = p.rodapeCustom || ("P.S.: Sempre seu, " + p.de);
-    $("caRodape").textContent = "Sempre seu, " + p.de;
-    _renderEventos("caTimeline", p.eventos || [], ev => `
-        <div class="ca-evento">
-            <div class="ca-evento-data">${ev.data || ""}</div>
-            <h3>${ev.titulo || ""}</h3>
-            <p>${ev.texto || ""}</p>
-        </div>`, true, t);
+    $("caData").textContent = new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" });
+    $("caSalut").textContent = "Para " + para + ",";
+    $("caCarta").textContent = "";
+    $("caCarta").appendChild(_el("span", "ca-rest", texto));
+    $("caAssinatura").textContent = "Com todo meu amor,\n" + de;
+    $("caPS").textContent = p.rodapeCustom || ("P.S.: Sempre seu, " + de);
+    $("caRodape").textContent = "Sempre seu, " + de;
+
+    const tl = $("caTimeline"); tl.innerHTML = "";
+    _eventosComHoje(p, t).forEach((ev, i) => {
+        const n = _el("article", "ca-note cl-rv");
+        n.style.setProperty("--r", (i % 2 ? 1.1 : -1.1) + "deg");
+        n.append(
+            _el("span", "ca-note-num", "Nº " + String(i + 1).padStart(2, "0")),
+            _el("div", "ca-note-data", ev.data || ""),
+            _el("h3", "", ev.titulo || ""),
+            _el("p", "", ev.texto || "")
+        );
+        tl.appendChild(n);
+    });
+
     _renderGaleria("caGaleria", urls, { foto: "ca-foto", legenda: "ca-foto-legenda" });
+    if (!urls.length) $("caSecGaleria").style.display = "none"; else _marcarReveal($("caGaleria"));
+    _renderChips("caChips", "ca-chip", p.amo);
+    if (!p.amo || !p.amo.length) $("caSecAmo").style.display = "none"; else _marcarReveal($("caChips"));
+
     if (p.musica) {
-        hasMusic = true; activeAudioId = "caAudio";
-        const a = document.createElement("audio"); a.id = "caAudio"; a.src = URL.createObjectURL(p.musica); a.preload = "auto"; a.style.display = "none";
-        document.body.appendChild(a);
+        const audio = _criarAudioClassico("caAudio", p.musica);
+        $("caMusica").style.display = "inline-flex";
+        $("caMusNome").textContent = "♪ " + (p.musicaNome || "Nossa música") + (p.musicaArtista ? " — " + p.musicaArtista : "");
+        _ligarMusica(audio, $("caMusBtn"), (pausado) => { $("caMusBtn").textContent = pausado ? "▶" : "❚❚"; });
     }
+
+    /* — palco do envelope — */
+    const stage = $("caStage"), env = $("caEnvelope"), reader = $("caReader");
+    let aberto = false;
+
+    function prepararDatilografia() {
+        const paper = $("caPaper"), corpo = $("caCarta");
+        let ctrl = null, iniciado = false;
+        const iniciar = () => { if (iniciado) return; iniciado = true; ctrl = _datilografar(corpo, texto); };
+        paper.addEventListener("click", () => { if (!iniciado) iniciar(); if (ctrl) ctrl.skip(); });
+        if ("IntersectionObserver" in window) {
+            const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); iniciar(); } }, { threshold: 0.3 });
+            io.observe(paper);
+        } else iniciar();
+    }
+    function mostrarCarta() {
+        stage.style.display = "none";
+        document.body.style.overflow = "";
+        reader.style.display = "block";
+        window.scrollTo(0, 0);
+        _initRevealClassico(root);
+        prepararDatilografia();
+    }
+    function abrir() {
+        if (aberto) return;
+        aberto = true;
+        env.classList.add("open");
+        $("caHint").textContent = "…";
+        if (p.autoplay && p.musica && !isDemo) { const a = $("caAudio"); if (a) a.play().catch(() => {}); }
+        setTimeout(() => stage.classList.add("leaving"), 1700);
+        setTimeout(mostrarCarta, 2500);
+    }
+
+    if (isEmbed) { aberto = true; mostrarCarta(); return; }
+    document.body.style.overflow = "hidden";
+    env.addEventListener("click", abrir);
+    env.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } });
+}
+
+/* =====================================================
+   2) SCRAPBOOK — DIÁRIO DE COLAGENS
+===================================================== */
+function _montarPilha(p, urls) {
+    const stack = $("scStack"); stack.innerHTML = "";
+    const rots = [-3, 4, -5, 3, -2, 5, -4, 2];
+    const pols = urls.slice(0, 12).map((u, i) => {
+        const d = _el("div", "sc-pol");
+        d.style.setProperty("--rot", rots[i % rots.length]);
+        const img = document.createElement("img");
+        img.src = u; img.alt = "Foto " + (i + 1); img.dataset.idxLegenda = i; img.draggable = false;
+        img.loading = i < 3 ? "eager" : "lazy";
+        d.appendChild(img);
+        d.appendChild(_el("div", "sc-pol-leg", (p.legendas && p.legendas[i]) || ""));
+        stack.appendChild(d);
+        return d;
+    });
+    const n = pols.length;
+    let ordem = pols.map((_, i) => i), ocupado = false;
+
+    function layout() {
+        ordem.forEach((idx, pos) => {
+            pols[idx].style.setProperty("--p", pos);
+            pols[idx].dataset.hid = pos > 3 ? "1" : "0";
+        });
+        $("scCount").textContent = (ordem[0] + 1) + " / " + n;
+    }
+    function proxima() {
+        if (ocupado || n < 2) return;
+        ocupado = true;
+        const topo = pols[ordem[0]];
+        topo.classList.add("fly");
+        setTimeout(() => { ordem.push(ordem.shift()); topo.classList.remove("fly"); layout(); ocupado = false; }, 380);
+    }
+    function anterior() {
+        if (ocupado || n < 2) return;
+        ocupado = true;
+        const ult = pols[ordem[n - 1]];
+        ult.classList.add("fly");
+        ordem.unshift(ordem.pop());
+        layout();
+        void ult.offsetWidth;
+        requestAnimationFrame(() => { ult.classList.remove("fly"); setTimeout(() => { ocupado = false; }, 420); });
+    }
+    pols.forEach(d => d.addEventListener("click", (e) => { e.stopPropagation(); proxima(); }));
+    $("scNext").addEventListener("click", proxima);
+    $("scPrev").addEventListener("click", anterior);
+    $("scZoom").addEventListener("click", () => {
+        const lista = getLightboxImages();
+        const img = pols[ordem[0]].querySelector("img");
+        const idx = lista.indexOf(img);
+        if (idx > -1) abrirLightbox(lista, idx);
+    });
+    let x0 = null;
+    stack.addEventListener("touchstart", (e) => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+    stack.addEventListener("touchend", (e) => {
+        if (x0 == null || e.changedTouches.length !== 1) return;
+        const dx = e.changedTouches[0].clientX - x0; x0 = null;
+        if (Math.abs(dx) < 45) return;
+        if (dx < 0) proxima(); else anterior();
+    }, { passive: true });
+    layout();
 }
 
 function renderScrapbook(p, tema) {
     const urls = p.fotos.map(getFotoURL);
     const t = tempoJuntos(p.inicio);
+    const root = $("layoutScrapbook");
+    const de = p.de || "", para = p.para || "você";
+
     $("scPequeno").textContent = tema.pequeno;
-    $("scTitulo").textContent = p.titulo || "Recortes";
+    const titulo = p.titulo || "Recortes";
+    const h = $("scTitulo");
+    h.setAttribute("aria-label", titulo); h.innerHTML = "";
+    titulo.split(/\s+/).filter(Boolean).forEach((palavra, wi) => {
+        const w = _el("span", "sc-word"); w.setAttribute("aria-hidden", "true");
+        [...palavra].forEach((ch, ci) => {
+            const s = _el("span", "sc-ch sc-ch-" + ((wi * 3 + ci) % 7), ch);
+            s.style.setProperty("--r", ((((wi * 5 + ci * 3) % 7) - 3) * 1.6) + "deg");
+            s.style.setProperty("--y", ((((ci * 7 + wi) % 4) - 1.5) * 3) + "px");
+            w.appendChild(s);
+        });
+        h.appendChild(w);
+    });
     $("scDuracao").textContent = textoDuracao(t) + " " + (p.frase || tema.sufixo);
     _fillContador("sc", t);
-    $("scCarta").textContent = (p.para ? p.para + ",\n\n" : "") + (p.carta || "Sua mensagem...");
-    $("scAssinatura").textContent = "Com todo meu amor, " + p.de;
-    $("scRodape").textContent = p.rodapeCustom || ("Feito com carinho — " + textoDuracao(t));
-    _renderEventos("scTimeline", p.eventos || [], (ev, i) => {
-        const num = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][i] || (i + 1);
-        return `<div class="sc-evento"><div class="sc-evento-num">${num}</div><div><div class="sc-evento-data">${ev.data || ""}</div><h3>${ev.titulo || ""}</h3><p>${ev.texto || ""}</p></div></div>`;
-    }, true, t);
-    _renderGaleria("scGaleria", urls, { foto: "sc-foto", legenda: "sc-foto-legenda" });
+
+    if (!urls.length) $("scSecFotos").style.display = "none"; else _montarPilha(p, urls);
+
+    $("scCartaTitulo").textContent = "Para " + para + " ♥";
+    $("scCarta").textContent = (p.carta || "Sua mensagem...").trim();
+    $("scAssinatura").textContent = "Com todo meu amor, " + de;
+
+    const tl = $("scTimeline"); tl.innerHTML = "";
+    const rom = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+    _eventosComHoje(p, t).forEach((ev, i) => {
+        const n = _el("article", "sc-note cl-rv" + (ev._hoje ? " sc-note-hoje" : ""));
+        n.style.setProperty("--r", (((i * 5) % 7) - 3) * 0.9 + "deg");
+        n.append(
+            _el("span", "sc-note-num", rom[i] || String(i + 1)),
+            _el("div", "sc-note-data", ev.data || ""),
+            _el("h3", "", ev.titulo || ""),
+            _el("p", "", ev.texto || "")
+        );
+        tl.appendChild(n);
+    });
+
     _renderChips("scChips", "sc-chip", p.amo);
-    $("scMusNome").textContent = p.musicaNome || "Nossa música";
-    $("scMusArtista").textContent = p.musicaArtista || "—";
+    if (!p.amo || !p.amo.length) $("scSecAmo").style.display = "none";
+    else [...$("scChips").children].forEach((c, i) => { c.classList.add("cl-rv"); c.style.setProperty("--r", (((i * 3) % 5) - 2) * 2 + "deg"); });
+
+    $("scRodape").textContent = p.rodapeCustom || ("Colado com carinho — " + textoDuracao(t));
+
     if (p.musica) {
-        hasMusic = true; activeAudioId = "scAudio";
-        const a = document.createElement("audio"); a.id = "scAudio"; a.src = URL.createObjectURL(p.musica); a.preload = "auto"; a.style.display = "none";
-        document.body.appendChild(a);
+        const audio = _criarAudioClassico("scAudio", p.musica);
+        $("scMusica").style.display = "block";
+        $("scMusNome").textContent = p.musicaNome || "Nossa música";
+        $("scMusArtista").textContent = p.musicaArtista || "—";
+        _ligarMusica(audio, $("scPlay"), (pausado) => {
+            $("scPlayIco").textContent = pausado ? "▶ tocar" : "❚❚ pausar";
+            $("scPlay").classList.toggle("playing", !pausado);
+        });
     }
+    _initRevealClassico(root);
+}
+
+/* =====================================================
+   3) JARDIM SECRETO — HERBÁRIO QUE FLORESCE
+===================================================== */
+function _jaIcone(est) {
+    const g = "#4f6b45", r = "#e39aa6", o = "#c9a24a";
+    const solo = '<path d="M10 52h40" stroke="#7a6a4a" stroke-width="1.5" stroke-linecap="round"/>';
+    const caule = (h) => '<path d="M30 52 C30 ' + (52 - h * 0.5) + ' 28 ' + (52 - h * 0.8) + ' 30 ' + (52 - h) + '" stroke="' + g + '" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    const folha = (y, dir, s) => '<path d="M30 ' + y + ' q' + (dir * 10 * s) + ' ' + (-9 * s) + ' ' + (dir * 16 * s) + ' ' + (-3 * s) + ' q' + (-dir * 6 * s) + ' ' + (9 * s) + ' ' + (-dir * 16 * s) + ' ' + (3 * s) + 'z" fill="' + g + '" opacity=".85"/>';
+    const flor = (cy, R, n) => {
+        let s = "";
+        for (let k = 0; k < n; k++) {
+            const a = (k / n) * Math.PI * 2;
+            s += '<circle cx="' + (30 + Math.cos(a) * R * 0.58).toFixed(1) + '" cy="' + (cy + Math.sin(a) * R * 0.58).toFixed(1) + '" r="' + (R * 0.42).toFixed(1) + '" fill="' + r + '" opacity=".92"/>';
+        }
+        return s + '<circle cx="30" cy="' + cy + '" r="' + (R * 0.3).toFixed(1) + '" fill="' + o + '"/>';
+    };
+    let corpo = solo;
+    if (est === 0) corpo += '<ellipse cx="30" cy="47" rx="5" ry="3.5" fill="#8a6a3a"/>';
+    else if (est === 1) corpo += caule(14) + folha(44, -1, .6) + folha(40, 1, .6);
+    else if (est === 2) corpo += caule(24) + folha(46, -1, .9) + folha(40, 1, .9) + folha(34, -1, .7);
+    else if (est === 3) corpo += caule(30) + folha(46, -1, .9) + folha(40, 1, .9) + '<ellipse cx="30" cy="20" rx="5" ry="7" fill="' + r + '"/>';
+    else if (est === 4) corpo += caule(32) + folha(46, -1, .9) + folha(40, 1, .9) + flor(18, 10, 5);
+    else corpo += caule(34) + folha(46, -1, 1) + folha(40, 1, 1) + folha(33, -1, .7) + flor(16, 13, 7) + '<ellipse cx="44" cy="40" rx="3" ry="4.5" fill="' + r + '"/>';
+    return '<svg viewBox="0 0 60 60" aria-hidden="true">' + corpo + '</svg>';
+}
+
+function _iniciarVinha() {
+    const path = $("jaVinePath"), g = $("jaLeaves");
+    if (!path || !g) return;
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+    const NS = "http://www.w3.org/2000/svg", folhas = [], N = 14;
+    for (let i = 1; i <= N; i++) {
+        const f = i / (N + 1), pt = path.getPointAtLength(len * f), lado = i % 2 ? 1 : -1;
+        const grupo = document.createElementNS(NS, "g");
+        grupo.setAttribute("transform", "translate(" + pt.x + " " + pt.y + ") rotate(" + (lado * -20) + ")");
+        const leaf = document.createElementNS(NS, "path");
+        leaf.setAttribute("d", "M0 0 q" + (lado * 14) + " -10 " + (lado * 24) + " -2 q" + (-lado * 10) + " 10 " + (-lado * 24) + " 2z");
+        leaf.setAttribute("class", "ja-leaf" + (i % 5 === 0 ? " rosa" : ""));
+        grupo.appendChild(leaf); g.appendChild(grupo);
+        folhas.push({ el: leaf, f });
+    }
+    const upd = () => {
+        const h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+        const pr = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        path.style.strokeDashoffset = len * (1 - pr);
+        folhas.forEach(o => o.el.classList.toggle("on", pr >= o.f));
+    };
+    window.addEventListener("scroll", upd, { passive: true });
+    window.addEventListener("resize", upd);
+    upd();
 }
 
 function renderJardim(p, tema) {
     const urls = p.fotos.map(getFotoURL);
     const t = tempoJuntos(p.inicio);
+    const root = $("layoutJardim");
+    const de = p.de || "", para = p.para || "você";
+
     $("jaPequeno").textContent = tema.pequeno;
     $("jaTitulo").textContent = p.titulo || "Jardim Secreto";
     $("jaDuracao").textContent = textoDuracao(t) + " " + (p.frase || tema.sufixo);
+    $("jaLatim").textContent = "Amoris perpetuus · " + (de ? de + " & " : "") + para;
     _fillContador("ja", t);
-    $("jaCarta").textContent = (p.para ? p.para + ",\n\n" : "") + (p.carta || "Sua mensagem...");
-    $("jaAssinatura").textContent = "Com todo meu amor, " + p.de;
+    $("jaSalut").textContent = "Para " + para + ",";
+    $("jaCarta").textContent = (p.carta || "Sua mensagem...").trim();
+    $("jaAssinatura").textContent = "Com todo meu amor, " + de;
     $("jaRodape").textContent = p.rodapeCustom || ("Cultivado com amor — " + textoDuracao(t));
-    const estacoes = ["Primavera", "Verão", "Outono", "Inverno", "Renascimento", "Colheita"];
-    _renderEventos("jaTimeline", p.eventos || [], (ev, i) => {
-        const est = estacoes[i % estacoes.length];
-        return `<div class="ja-estacao"><span class="ja-estacao-tag">${est}</span><div class="ja-estacao-data">${ev.data || ""}</div><h3>${ev.titulo || ""}</h3><p>${ev.texto || ""}</p></div>`;
-    }, true, t);
-    _renderGaleria("jaGaleria", urls, { foto: "ja-foto", legenda: "ja-foto-legenda" });
+
+    const estagios = ["Semente", "Broto", "Folhas", "Botão", "Flor", "Em plena flor"];
+    const tl = $("jaTimeline"); tl.innerHTML = "";
+    const evs = _eventosComHoje(p, t);
+    evs.forEach((ev, i) => {
+        const est = ev._hoje ? 5 : Math.min(4, Math.round((i / Math.max(1, evs.length - 1)) * 5));
+        const pl = _el("article", "ja-planta cl-rv");
+        const ic = _el("div", "ja-planta-icon"); ic.innerHTML = _jaIcone(est);
+        pl.append(
+            ic,
+            _el("span", "ja-estacao-tag", estagios[est]),
+            _el("div", "ja-estacao-data", ev.data || ""),
+            _el("h3", "", ev.titulo || ""),
+            _el("p", "", ev.texto || "")
+        );
+        tl.appendChild(pl);
+    });
+
+    _renderGaleria("jaGaleria", urls, { foto: "ja-prancha", legenda: "ja-prancha-leg" });
+    if (!urls.length) $("jaSecGaleria").style.display = "none"; else _marcarReveal($("jaGaleria"));
     _renderChips("jaChips", "ja-chip", p.amo);
+    if (!p.amo || !p.amo.length) $("jaSecAmo").style.display = "none"; else _marcarReveal($("jaChips"));
+
     if (p.musica) {
         $("jaMusica").style.display = "block";
         $("jaMusNome").textContent = p.musicaNome || "Nossa música";
         $("jaMusArtista").textContent = p.musicaArtista || "—";
-        hasMusic = true; activeAudioId = "jaAudio";
-        const a = document.createElement("audio"); a.id = "jaAudio"; a.src = URL.createObjectURL(p.musica); a.preload = "auto"; a.style.display = "none";
-        document.body.appendChild(a);
+        const audio = _criarAudioClassico("jaAudio", p.musica);
+        _ligarMusica(audio, $("jaPlay"), (pausado) => {
+            $("jaPlay").textContent = pausado ? "▶" : "❚❚";
+            $("jaMusica").classList.toggle("playing", !pausado);
+        });
     }
+
+    _iniciarVinha();
+    _initRevealClassico(root);
 }
 
 function renderCinema(p, tema) {
@@ -549,11 +941,12 @@ function renderNetflix(p, tema) {
         ep.querySelector(".nf-ep-data").textContent = ev.data || "";
         ep.querySelector("p").textContent = ev.texto || "";
         ep.querySelector("img").src = urls[(i + 1) % urls.length];
+        ep.querySelector("img").loading = "lazy";
         epsWrap.appendChild(ep);
     });
 
     const gal = $("nfGaleria"); gal.innerHTML = "";
-    urls.forEach(u => { const img = document.createElement("img"); img.src = u; gal.appendChild(img); });
+    urls.forEach((u, i) => { const img = document.createElement("img"); img.src = u; img.loading = i < 3 ? "eager" : "lazy"; gal.appendChild(img); });
     $("nfCarta").textContent = p.carta || "";
     $("nfAssin").textContent = "Com todo meu amor, " + (p.de || "");
 
@@ -588,7 +981,9 @@ function renderSpotify(p, tema) {
         tr.className = "sp-track";
         tr.innerHTML = '<div class="sp-track-num"></div><div class="sp-track-main"><img class="sp-track-thumb" alt=""><div class="sp-track-txt"><div class="sp-track-title"></div><div class="sp-track-desc"></div></div></div><div class="sp-track-data"></div><button class="sp-track-heart" type="button">♡</button>';
         tr.querySelector(".sp-track-num").textContent = (i + 1);
-        tr.querySelector(".sp-track-thumb").src = urls[(i + 1) % urls.length];
+        const thumb = tr.querySelector(".sp-track-thumb");
+        thumb.src = urls[(i + 1) % urls.length];
+        thumb.loading = "lazy";
         tr.querySelector(".sp-track-title").textContent = ev.titulo || ("Faixa " + (i + 1));
         tr.querySelector(".sp-track-desc").textContent = ev.texto || "";
         tr.querySelector(".sp-track-data").textContent = ev.data || "";
@@ -600,7 +995,9 @@ function renderSpotify(p, tema) {
         const card = document.createElement("div");
         card.className = "sp-album";
         card.innerHTML = '<img alt=""><b></b><span></span>';
-        card.querySelector("img").src = u;
+        const img = card.querySelector("img");
+        img.src = u;
+        img.loading = "lazy";
         card.querySelector("b").textContent = "Momento " + (i + 1);
         card.querySelector("span").textContent = (p.de || "Você") + " & " + (p.para || "");
         alb.appendChild(card);
@@ -673,11 +1070,12 @@ function renderVinil(p, tema) {
     });
 
     const gal = $("lvGaleria"); gal.innerHTML = "";
-    urls.forEach(u => {
+    urls.forEach((u, i) => {
         const d = document.createElement("div");
         d.className = "lv-sleeve";
         const img = document.createElement("img");
         img.src = u;
+        img.loading = i < 2 ? "eager" : "lazy";
         d.appendChild(img);
         gal.appendChild(d);
     });
@@ -709,9 +1107,8 @@ function renderVinil(p, tema) {
     }
 }
 
-
 /* =====================================================
-   INICIALIZAÇÃO (BOOT)
+   INICIALIZAÇÃO
 ===================================================== */
 let loadDone = false;
 
@@ -749,34 +1146,22 @@ const watchdog = setTimeout(() => {
             };
         } else {
             const id = new URLSearchParams(location.search).get("id");
-            if (!id) {
-                return mostrarMensagem("🔗 Link inválido.<br><br><small>O parâmetro <code>?id=</code> não foi encontrado na URL.</small>");
-            }
-
-            if (typeof buscarPedido !== "function") {
-                return mostrarErro("app.js não foi carregado.", new Error("A função 'buscarPedido' não está definida. O arquivo app.js está na mesma pasta?"));
-            }
-
+            if (!id) return mostrarMensagem("🔗 Link inválido.<br><br><small>O parâmetro <code>?id=</code> não foi encontrado na URL.</small>");
+            if (typeof buscarPedido !== "function") return mostrarErro("app.js não foi carregado.", new Error("A função 'buscarPedido' não está definida."));
             p = await buscarPedido(id);
-
-            if (!p) {
-                return mostrarMensagem("🔍 Presente não encontrado.<br><br><small>O ID <code>" + id + "</code> não existe no banco deste navegador. Isso acontece se o presente foi criado em outro celular/computador ou se o cache foi limpo.</small>");
-            }
-
-            if (p.status !== "pago") {
-                return mostrarMensagem("💳 Pagamento pendente.<br><br><small>Status atual: <code>" + p.status + "</code>.<br>Verifique o pagamento ou contate o suporte.</small>");
-            }
+            if (!p) return mostrarMensagem("🔍 Presente não encontrado.<br><br><small>O ID <code>" + id + "</code> não existe no banco deste navegador.</small>");
+            if (p.status !== "pago") return mostrarMensagem("💳 Pagamento pendente.<br><br><small>Status atual: <code>" + p.status + "</code>.</small>");
         }
 
-        if (typeof THEMES === "undefined") {
-            return mostrarErro("app.js incompleto.", new Error("A constante THEMES não foi encontrada no app.js."));
-        }
+        if (typeof THEMES === "undefined") return mostrarErro("app.js incompleto.", new Error("A constante THEMES não foi encontrada."));
 
         pedidoAtual = p;
         const tema = THEMES[p.tema] || THEMES.namoro;
         const layout = tema.layout || "padrao";
+        const urlsOG = p.fotos.map(getFotoURL);
 
-        document.title = "Uma surpresa de " + p.de + " ❤️";
+        atualizarOG(p, urlsOG);
+
         $("conteudo").style.display = "block";
 
         if (isDemo || isEmbed) {
@@ -796,14 +1181,21 @@ const watchdog = setTimeout(() => {
                 layout === "scrapbook" ? "#d4a574" :
                 layout === "jardim" ? "#f5f1e8" : "#faf6f1";
             skel.classList.add("on");
-            setTimeout(() => { 
-                skel.classList.add("out"); 
-                setTimeout(() => skel.classList.remove("on", "out"), 400); 
-            }, 400);
+            setTimeout(() => { skel.classList.add("out"); setTimeout(() => skel.classList.remove("on", "out"), 400); }, 400);
         }
 
-        const mapExclusivos = { netflix: { id: "layoutNetflix", render: renderNetflix }, spotify: { id: "layoutSpotify", render: renderSpotify }, vinil: { id: "layoutVinil", render: renderVinil }, cinema: { id: "layoutCinema", render: renderCinema }, retro: { id: "layoutRetro", render: renderRetro } };
-        const mapClassicos = { "carta-antiga": { id: "layoutCartaAntiga", render: renderCartaAntiga }, scrapbook: { id: "layoutScrapbook", render: renderScrapbook }, jardim: { id: "layoutJardim", render: renderJardim } };
+        const mapExclusivos = {
+            netflix: { id: "layoutNetflix", render: renderNetflix },
+            spotify: { id: "layoutSpotify", render: renderSpotify },
+            vinil:   { id: "layoutVinil",   render: renderVinil },
+            cinema:  { id: "layoutCinema",  render: renderCinema },
+            retro:   { id: "layoutRetro",   render: renderRetro }
+        };
+        const mapClassicos = {
+            "carta-antiga": { id: "layoutCartaAntiga", render: renderCartaAntiga },
+            scrapbook:      { id: "layoutScrapbook",   render: renderScrapbook },
+            jardim:         { id: "layoutJardim",      render: renderJardim }
+        };
 
         if (mapExclusivos[layout]) {
             const css = $("cssPadrao"); if (css) css.remove();
@@ -813,26 +1205,25 @@ const watchdog = setTimeout(() => {
             cfg.render(p, tema);
         } else if (mapClassicos[layout]) {
             aplicarTema(p.tema);
+            document.body.classList.add("tema-" + p.tema);
             const cfg = mapClassicos[layout];
             $(cfg.id).style.display = "block";
             cfg.render(p, tema);
         } else {
             aplicarTema(p.tema);
+            document.body.classList.add("tema-" + p.tema);
             $("layoutPadrao").style.display = "block";
             renderPadrao(p, tema);
         }
 
-        // SUCESSO!
         loadDone = true;
         clearTimeout(watchdog);
-        
-        // Esconde o esqueleto, mas NÃO o intro. O intro vai se fechar sozinho após a animação.
+
         const skelToHide = $("skeletonLoader");
         if (skelToHide) skelToHide.classList.remove("on", "out");
-        
-        // Dispara a animação com os nomes já preenchidos
+
         mostrarIntro(p);
-        
+
         setTimeout(atualizarBotaoMusica, 500);
         if (p.autoplay && p.musica && !isDemo) {
             setTimeout(() => { const a = getActiveAudio(); if (a) a.play().catch(() => {}); }, 1800);
