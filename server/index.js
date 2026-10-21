@@ -20,12 +20,17 @@ async function serveStatic(req, res, pathname) {
   rel = path.normalize(rel).replace(/^([\\/]?\.\.)+/, "");
   const abs = path.join(config.FRONTEND_ROOT, rel);
 
-  // Bloqueia acesso ao diretório do servidor
-  if (abs.startsWith(path.join(config.FRONTEND_ROOT, "server"))) {
+  // Bloqueia acesso ao diretório do servidor.
+  // Comparação em minúsculas: no Windows o filesystem é case-insensitive,
+  // então "/Server/data/users.json" também precisava ser bloqueado.
+  const raizLower = config.FRONTEND_ROOT.toLowerCase();
+  const serverLower = path.join(config.FRONTEND_ROOT, "server").toLowerCase();
+  const absLower = abs.toLowerCase();
+  if (absLower === serverLower || absLower.startsWith(serverLower + path.sep)) {
     httpLib.fail(res, 403, "FORBIDDEN", "Acesso negado.");
     return;
   }
-  if (!abs.startsWith(config.FRONTEND_ROOT)) {
+  if (!(absLower === raizLower || absLower.startsWith(raizLower + path.sep))) {
     httpLib.fail(res, 403, "FORBIDDEN", "Acesso negado.");
     return;
   }

@@ -34,7 +34,10 @@ function emailHash(email) {
 
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "DENY",
+  // SAMEORIGIN (e não DENY): a home embute ver.html?demo=1 no iframe da
+  // prévia ao vivo. Bloquear todo framing quebraria a prévia; SAMEORIGIN
+  // continua impedindo clickjacking de outros domínios.
+  "X-Frame-Options": "SAMEORIGIN",
   "Referrer-Policy": "no-referrer",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Content-Security-Policy":
@@ -45,7 +48,7 @@ const SECURITY_HEADERS = {
     "font-src 'self' https://fonts.gstatic.com data:; " +
     "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
     "connect-src 'self'; " +
-    "frame-ancestors 'none'",
+    "frame-ancestors 'self'",
 };
 
 module.exports = { hashPassword, verifyPassword, randomToken, randomId, emailHash, SECURITY_HEADERS };

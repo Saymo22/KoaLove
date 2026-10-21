@@ -215,7 +215,9 @@ function emailHash(email) {
 
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "DENY",
+  // SAMEORIGIN: a home embute ver.html?demo=1 no iframe da prévia ao vivo.
+  // Continua bloqueando clickjacking de outros domínios.
+  "X-Frame-Options": "SAMEORIGIN",
   "Referrer-Policy": "no-referrer",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Content-Security-Policy":
@@ -226,7 +228,7 @@ const SECURITY_HEADERS = {
     "font-src 'self' https://fonts.gstatic.com data:; " +
     "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
     "connect-src 'self'; " +
-    "frame-ancestors 'none'",
+    "frame-ancestors 'self'",
 };
 
 module.exports = { hashPassword, verifyPassword, randomToken, randomId, emailHash, SECURITY_HEADERS };
@@ -543,7 +545,10 @@ async function login(req, res) {
 async function logout(req, res) {
   const ctx = auth.readSession(req);
   if (ctx) {
-    await stores.sessions.remove(ctx.session.token);
+    // JsonStore.remove(id) busca por "id"; sessões usam "token".
+    const sessions = stores.sessions.all();
+    const i = sessions.findIndex(s => s.token === ctx.session.token);
+    if (i >= 0) { sessions.splice(i, 1); await stores.sessions.save(); }
   }
   http.clearSessionCookie(res);
   http.ok(res, { logged_out: true });
@@ -782,7 +787,7 @@ async function purchases(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.purchases.map(p => {
+  const enriched = stores.purchases.all().map(p => {
     const u = stores.users.find(x => x.id === p.user_id);
     return {
       ...p,
@@ -798,7 +803,7 @@ async function refunds(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.refunds.map(r => {
+  const enriched = stores.refunds.all().map(r => {
     const u = stores.users.find(x => x.id === r.user_id);
     const p = stores.purchases.find(x => x.id === r.purchase_id);
     return {
@@ -843,7 +848,7 @@ async function tickets(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.tickets.map(t => {
+  const enriched = stores.tickets.all().map(t => {
     const u = stores.users.find(x => x.id === t.user_id);
     return { ...t, cliente: u ? { id: u.id, name: u.name, email: u.email } : null };
   }).sort((a, b) => b.created_at - a.created_at);
@@ -967,12 +972,17 @@ async function serveStatic(req, res, pathname) {
   rel = path.normalize(rel).replace(/^([\\/]?\.\.)+/, "");
   const abs = path.join(config.FRONTEND_ROOT, rel);
 
-  // Bloqueia acesso ao diretório do servidor
-  if (abs.startsWith(path.join(config.FRONTEND_ROOT, "server"))) {
+  // Bloqueia acesso ao diretório do servidor.
+  // Comparação em minúsculas: no Windows o filesystem é case-insensitive,
+  // então "/Server/data/users.json" também precisa ser bloqueado.
+  const raizLower = config.FRONTEND_ROOT.toLowerCase();
+  const serverLower = path.join(config.FRONTEND_ROOT, "server").toLowerCase();
+  const absLower = abs.toLowerCase();
+  if (absLower === serverLower || absLower.startsWith(serverLower + path.sep)) {
     httpLib.fail(res, 403, "FORBIDDEN", "Acesso negado.");
     return;
   }
-  if (!abs.startsWith(config.FRONTEND_ROOT)) {
+  if (!(absLower === raizLower || absLower.startsWith(raizLower + path.sep))) {
     httpLib.fail(res, 403, "FORBIDDEN", "Acesso negado.");
     return;
   }
@@ -2265,7 +2275,7 @@ Abrir DevTools → Application → Cookies. `nossoamor_sid` deve ter ✅ HttpOnl
 ```bash
 curl -I http://localhost:3000/home.html
 ```
-Verificar presença de: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy`, `Referrer-Policy: no-referrer`, `Permissions-Policy`.
+Verificar presença de: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Content-Security-Policy`, `Referrer-Policy: no-referrer`, `Permissions-Policy`.
 
 ### 3.5. Path traversal
 ```bash

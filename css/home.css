@@ -49,7 +49,7 @@
             pointer-events: none;
             z-index: 9999;
         }
-        @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pageFadeIn { from { transform: translateY(6px); } to { transform: translateY(0); } }
 
         .wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 28px; }
 
@@ -229,7 +229,7 @@
         @keyframes orbita { to { transform: rotate(360deg); } }
 
         .hero-home .stagger {
-            opacity: 0; transform: translateY(30px);
+            transform: translateY(24px);
             animation: heroIn 1s cubic-bezier(.19, 1, .22, 1) forwards;
         }
         .hero-home .stagger:nth-child(1) { animation-delay: .1s; }
@@ -306,7 +306,7 @@
             z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px;
             font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
             color: #a58b96; text-decoration: none;
-            opacity: 0; animation: heroIn 1s cubic-bezier(.19, 1, .22, 1) 1.2s forwards;
+            opacity: 1; animation: heroIn 1s cubic-bezier(.19, 1, .22, 1) 1.2s forwards;
         }
         .hero-scroll i {
             display: block; width: 1px; height: 44px; overflow: hidden;
@@ -923,11 +923,13 @@
             transition: transform .5s cubic-bezier(.2, .8, .3, 1), box-shadow .4s ease, border-color .4s ease;
             border: 1px solid rgba(201, 168, 106, .15);
             position: relative;
-            opacity: 0;
-            transform: translateY(50px) scale(0.95);
+            /* Visível por padrão: a revelação anima apenas o transform.
+               Assim os temas nunca ficam invisíveis se o IntersectionObserver
+               não disparar (aba em segundo plano etc.). */
+            opacity: 1;
+            transform: translateY(18px) scale(0.98);
             cursor: pointer;
             transform-style: preserve-3d;
-            will-change: transform;
         }
         .tema-card.on { opacity: 1; transform: translateY(0) scale(1); }
 

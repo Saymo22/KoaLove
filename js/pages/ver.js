@@ -1120,6 +1120,9 @@ const watchdog = setTimeout(() => {
 
 (async function boot() {
     try {
+        // Temas vêm de GET /api/config — aguarda carregar antes de renderizar
+        try { await window.NA_CONFIG_READY; } catch {}
+
         let p = null;
 
         if (isDemo) {

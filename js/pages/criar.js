@@ -61,11 +61,13 @@ const DESTAQUES = {
 };
 
 (function () {
-  const progress = $("scrollProgress"), nav = $("nav");
+  const progress = $("scrollProgress");
+  if (!progress) return;
+  // A classe "scrolled" da navbar é gerenciada por js/core/navbar.js.
   window.addEventListener("scroll", () => {
       const h = document.documentElement;
-      progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
-      nav.classList.toggle("scrolled", window.scrollY > 30);
+      const max = h.scrollHeight - h.clientHeight;
+      progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
     }, { passive: true });
 })();
 
@@ -211,7 +213,7 @@ function criarCardTema(chave, t) {
   const destaque = DESTAQUES[chave];
 
   const el = document.createElement("div");
-  el.className = "tema";
+  el.className = "tema prereveal";
   el.dataset.chave = chave;
   el.dataset.categoria = t.categoria || "classico";
   el.style.setProperty("--t-rosa", cores.rosa);
@@ -265,6 +267,8 @@ function criarCardTema(chave, t) {
       x.setAttribute("aria-pressed", "false");
     });
     el.classList.add("sel");
+    el.classList.remove("prereveal"); // garante o card visível mesmo antes da cascata
+    el.classList.add("on");
     el.setAttribute("aria-pressed", "true");
     document.body.classList.toggle("tema-escuro", temaEscuro(chave));
     aplicarTemaPreview(chave);
@@ -287,16 +291,37 @@ function criarCardTema(chave, t) {
 const wrapClassicos = $("temasClassicos");
 const wrapEspeciais = $("temasEspeciais");
 const todosCards = [];
-Object.entries(THEMES).forEach(([chave, t]) => {
-  const card = criarCardTema(chave, t);
-  if (t.categoria === "especial") wrapEspeciais.appendChild(card);
-  else wrapClassicos.appendChild(card);
-  todosCards.push(card);
+/* Revela os cards de forma robusta: anima em cascata, mas garante
+   que TODOS fiquem visíveis mesmo se algo interromper a animação. */
+function revelarCards() {
+  todosCards.forEach((c, i) => {
+    setTimeout(() => c.classList.add("on"), Math.min(i * 60, 600));
+  });
+  // Rede de segurança: se por qualquer motivo a cascata não rodar,
+  // revela tudo no próximo frame.
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      todosCards.forEach((c) => {
+        c.classList.add("on");
+        c.classList.remove("prereveal");
+      });
+    }, 900);
+  });
+}
+/* Temas vêm de GET /api/config (nada hardcoded) */
+NA_CONFIG_READY.then(() => {
+  if (!Object.keys(THEMES).length) {
+    $("erro1").textContent = "Não foi possível carregar os temas. Verifique se o servidor está rodando (node server/index.js).";
+    return;
+  }
+  Object.entries(THEMES).forEach(([chave, t]) => {
+    const card = criarCardTema(chave, t);
+    if (t.categoria === "especial") wrapEspeciais.appendChild(card);
+    else wrapClassicos.appendChild(card);
+    todosCards.push(card);
+  });
+  requestAnimationFrame(() => revelarCards());
 });
-
-setTimeout(() => {
-  todosCards.forEach((c, i) => setTimeout(() => c.classList.add("on"), i * 60));
-}, 200);
 
 function aplicarTemaPreview(chave) {
   const t = (THEMES[chave] || THEMES.namoro).cores, s = $("previewScreen");
@@ -334,19 +359,26 @@ function animarNumero(el, valorFinal, format) {
 function trocarLayout(novoLayout) {
   const map = { netflix: "pvNetflix", spotify: "pvSpotify", vinil: "pvVinil" };
   const id = map[novoLayout] || "pvPadrao";
+  const novo = $(id);
+  if (!novo) return;
+
+  const anterior = document.querySelector(".layout-view.atual");
+  if (anterior && anterior !== novo) {
+    anterior.style.display = "none";
+    anterior.classList.remove("atual");
+  }
+
+  // Garante que a view ativa esteja sempre visível (opacity 1 por padrão).
+  // A entrada é uma animação em CSS que NUNCA parte de opacity 0, para que
+  // uma aba em segundo plano (animação congelada) não deixe a prévia em branco.
+  novo.style.display = "block";
+  novo.classList.add("atual");
+
   if (layoutAtual !== novoLayout) {
-    document.querySelectorAll(".layout-view").forEach((v) => (v.style.display = "none"));
-    const novo = $(id);
-    if (novo) {
-      novo.style.display = "block";
-      novo.style.opacity = "0";
-      novo.style.transform = "translateY(10px)";
-      requestAnimationFrame(() => {
-        novo.style.transition = "opacity .4s, transform .4s";
-        novo.style.opacity = "1";
-        novo.style.transform = "translateY(0)";
-      });
-    }
+    novo.classList.remove("layout-enter");
+    void novo.offsetWidth; // reinicia a animação
+    novo.classList.add("layout-enter");
+
     layoutAtual = novoLayout;
     buildPreviewDots(novoLayout);
     $("previewScroll").scrollTop = 0;
@@ -803,6 +835,28 @@ document.querySelectorAll(".btn, .b").forEach((btn) => {
   });
 });
 
+/* Gera uma miniatura JPEG (< 200KB) da capa para o admin ver */
+async function gerarPreviewThumb() {
+  const url = fotoURLs[Number($("fotoCapa").value) || 0] || fotoURLs[0];
+  if (!url) return null;
+  try {
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = rej;
+      i.src = url;
+    });
+    const canvas = document.createElement("canvas");
+    const maxW = 320;
+    const scale = Math.min(1, maxW / (img.width || maxW));
+    canvas.width = Math.round((img.width || maxW) * scale);
+    canvas.height = Math.round((img.height || maxW) * scale);
+    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
+    return dataUrl.length < 200_000 ? dataUrl : null;
+  } catch { return null; }
+}
+
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!validar(4)) return;
@@ -832,36 +886,54 @@ $("form").addEventListener("submit", async (e) => {
   btn.disabled = true;
   btn.textContent = "Salvando...";
 
-  const pedido = {
-    id: pedidoEditandoId || novoId(),
-    tema,
-    de: $("de").value.trim(),
-    para: $("para").value.trim(),
-    titulo: $("titulo").value.trim() || "Nós dois",
-    inicio: $("inicio").value,
-    frase: $("frase").value.trim() || THEMES[tema].sufixo,
-    carta: $("carta").value.trim(),
-    eventos,
-    amo,
-    musicaNome: $("musicaNome").value.trim(),
-    musicaArtista: $("musicaArtista").value.trim(),
-    fotos,
-    videos,
-    musica,
-    fotoCapa,
-    legendas,
-    usarIntro,
-    autoplay,
-    rodapeCustom,
-    status: pedidoAntigo ? pedidoAntigo.status : "rascunho",
-    criadoEm: pedidoAntigo ? pedidoAntigo.criadoEm : Date.now(),
-  };
+  const titulo = $("titulo").value.trim() || "Nós dois";
+  const frase = $("frase").value.trim() || (THEMES[tema] ? THEMES[tema].sufixo : "");
 
   try {
-    await salvarPedido(pedido);
-    location.href = "pagamento.html?id=" + pedido.id;
+    // 1) Metadados → backend (contrato: POST /api/purchases, status=pending)
+    const preview = await gerarPreviewThumb();
+    const { purchase } = await window.ApiPurchases.create({
+      tema, titulo,
+      de: $("de").value.trim(),
+      para: $("para").value.trim(),
+      inicio: $("inicio").value,
+      carta: $("carta").value.trim(),
+      has_media: fotos.length > 0 || videos.length > 0 || !!musica,
+      preview_data_url: preview,
+    });
+
+    // 2) Mídia rica (blobs) → IndexedDB local (nunca vai ao servidor)
+    await salvarPedido({
+      id: purchase.id,
+      tema, titulo, frase,
+      de: $("de").value.trim(),
+      para: $("para").value.trim(),
+      inicio: $("inicio").value,
+      carta: $("carta").value.trim(),
+      eventos,
+      amo,
+      musicaNome: $("musicaNome").value.trim(),
+      musicaArtista: $("musicaArtista").value.trim(),
+      fotos,
+      videos,
+      musica,
+      fotoCapa,
+      legendas,
+      usarIntro,
+      autoplay,
+      rodapeCustom,
+      status: purchase.status,
+      criadoEm: purchase.created_at,
+    });
+
+    location.href = "pagamento.html?id=" + purchase.id;
   } catch (err) {
-    $("erro3").textContent = "Não foi possível salvar. Tente com arquivos menores.";
+    if (err && err.code === "NOT_AUTHENTICATED") {
+      $("erro3").textContent = "Faça login para salvar o presente. Redirecionando...";
+      setTimeout(() => (location.href = "login.html"), 1200);
+      return;
+    }
+    $("erro3").textContent = (err && err.message) || "Não foi possível salvar. Tente com arquivos menores.";
     btn.disabled = false;
     btn.textContent = "Ir para o pagamento →";
   }
@@ -889,12 +961,23 @@ $("previewClose").addEventListener("click", () => $("previewCol").classList.remo
 async function carregarPedidoParaEdicao() {
   const id = parametro("id");
   if (!id) return;
-  
-  if (typeof buscarPedido !== "function") return;
-  
-  const pedido = await buscarPedido(id);
-  if (!pedido) return;
-  
+
+  // Mídia rica (fotos, eventos etc.) fica no IndexedDB local
+  const local = await buscarPedido(id).catch(() => null);
+
+  // Metadados + status vêm do backend (contrato: GET /api/purchases/:id)
+  let apiPedido = null;
+  try {
+    ({ purchase: apiPedido } = await window.ApiPurchases.getOne(id));
+  } catch (err) {
+    if (err && err.code === "NOT_AUTHENTICATED") { location.href = "login.html"; return; }
+    if ((!err || err.status === 404) && !local) { location.href = "criar.html"; return; }
+  }
+
+  const pedido = { ...(local || {}), ...(apiPedido || {}) };
+  if (!apiPedido && !local) return;
+  if (apiPedido && apiPedido.status === "paid") { location.href = "resultado.html?id=" + id; return; }
+
   pedidoEditandoId = pedido.id;
   pedidoAntigo = pedido;
   
@@ -964,7 +1047,10 @@ async function carregarPedidoParaEdicao() {
   setTimeout(atualizarPreview, 150);
 }
 
-addEvento();
-addEvento();
-atualizarPreview();
-carregarPedidoParaEdicao();
+/* Boot aguarda o GET /api/config (temas e cores) */
+NA_CONFIG_READY.then(() => {
+  addEvento();
+  addEvento();
+  atualizarPreview();
+  carregarPedidoParaEdicao();
+});

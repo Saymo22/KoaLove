@@ -87,7 +87,14 @@ async function login(req, res) {
 async function logout(req, res) {
   const ctx = auth.readSession(req);
   if (ctx) {
-    await stores.sessions.remove(ctx.session.token);
+    // JsonStore.remove(id) procura por "id", mas sessões são identificadas
+    // pelo "token". Remove pelo token para invalidar a sessão de fato.
+    const sessions = stores.sessions.all();
+    const i = sessions.findIndex(s => s.token === ctx.session.token);
+    if (i >= 0) {
+      sessions.splice(i, 1);
+      await stores.sessions.save();
+    }
   }
   http.clearSessionCookie(res);
   http.ok(res, { logged_out: true });

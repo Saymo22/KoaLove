@@ -1,44 +1,63 @@
 const id = parametro("id");
-let pedido = null;
+let pedido = null;       // metadados do backend (GET /api/purchases/:id)
+let midia = null;        // mídia local (IndexedDB)
 let metodoSelecionado = "pix";
 const $ = (x) => document.getElementById(x);
 
 /* =====================================================
-   CUPONS VÁLIDOS
+   CUPONS — vêm de GET /api/config (nada hardcoded)
 ===================================================== */
-const CUPONS = {
-    BEMVINDO10: { desc: 10, label: "10% de desconto" },
-    AMOR10:     { desc: 10, label: "10% de desconto" },
-    NAMORO15:   { desc: 15, label: "15% de desconto" },
-    ETERNO20:   { desc: 20, label: "20% de desconto" },
-};
-
 let descontoAtivo = null;
-const precoOriginal = CONFIG.preco;
+let precoOriginal = null; // CONFIG.preco (price_cents / 100)
 
 /* =====================================================
    NAVBAR SCROLL
 ===================================================== */
 (function () {
     const progress = $("scrollProgress");
-    const nav = $("nav");
+    if (!progress) return;
+    // A classe ".scrolled" da navbar é gerenciada por js/core/navbar.js.
     window.addEventListener("scroll", () => {
         const h = document.documentElement;
-        progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
-        nav.classList.toggle("scrolled", window.scrollY > 30);
+        const max = h.scrollHeight - h.clientHeight;
+        progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
     }, { passive: true });
 })();
 
 /* =====================================================
-   BOOT
+   BOOT (aguarda config da API)
 ===================================================== */
-(async function () {
-    pedido = id ? await buscarPedido(id) : null;
-    if (!pedido) { location.href = "criar.html"; return; }
-    if (pedido.status === "pago") { location.href = "resultado.html?id=" + id; return; }
+NA_CONFIG_READY.then(async () => {
+    if (!id) { location.href = "criar.html"; return; }
+
+    // Contrato: GET /api/purchases/:id (dono ou admin)
+    try {
+        ({ purchase: pedido } = await window.ApiPurchases.getOne(id));
+    } catch (err) {
+        if (err && (err.code === "NOT_AUTHENTICATED" || err.status === 401)) {
+            location.href = "login.html";
+            return;
+        }
+        location.href = "criar.html";
+        return;
+    }
+
+    if (pedido.status === "paid") { location.href = "resultado.html?id=" + id; return; }
+
+    // Mídia local (fotos/vídeos/música) — blobs ficam no IndexedDB
+    midia = await buscarPedido(id).catch(() => null);
+    if (!midia) {
+        $("erro").textContent = "Esta página foi aberta em outro navegador/dispositivo. A mídia fica salva apenas no navegador onde o presente foi criado.";
+    }
+
+    precoOriginal = CONFIG.preco;
+    if (typeof precoOriginal !== "number") {
+        $("erro").textContent = "Não foi possível carregar o preço. Verifique se o servidor está rodando (node server/index.js).";
+        return;
+    }
 
     aplicarTema(pedido.tema);
-    const t = THEMES[pedido.tema];
+    const t = THEMES[pedido.tema] || {};
 
     $("pgEmoji").textContent = t.emoji || "🎁";
 
@@ -47,12 +66,14 @@ const precoOriginal = CONFIG.preco;
     $("pgSubtitulo").textContent =
         "De " + (pedido.de || "você") + " para " + (pedido.para || "alguém especial");
 
+    const fotos = (midia && midia.fotos) || [];
+    const videos = (midia && midia.videos) || [];
     const linhas = [
-        ["Tema", t.emoji + " " + t.nome, "🎨"],
+        ["Tema", (t.emoji || "🎁") + " " + (t.nome || pedido.tema), "🎨"],
         ["Para", pedido.para, "💌"],
-        ["Fotos", pedido.fotos.length + (pedido.fotos.length === 1 ? " foto" : " fotos"), "📸"],
-        ["Vídeos", pedido.videos.length + (pedido.videos.length === 1 ? " vídeo" : " vídeos"), "🎬"],
-        ["Música", pedido.musica ? (pedido.musicaNome || "Incluída") : "—", "🎵"],
+        ["Fotos", fotos.length + (fotos.length === 1 ? " foto" : " fotos"), "📸"],
+        ["Vídeos", videos.length + (videos.length === 1 ? " vídeo" : " vídeos"), "🎬"],
+        ["Música", midia && midia.musica ? (midia.musicaNome || "Incluída") : "—", "🎵"],
         ["Link + QR Code", "Incluído", "🔗"]
     ];
 
@@ -67,13 +88,12 @@ const precoOriginal = CONFIG.preco;
         $("resumo").appendChild(li);
     });
 
-    animarTotal(formatarPreco(CONFIG.preco));
+    animarTotal(formatarPreco(precoOriginal));
 
-    if (CONFIG.modoTeste) {
-        $("avisoTeste").classList.add("on");
-        $("btnPagarTxt").textContent = "✨ Simular pagamento aprovado";
-    }
-})();
+    // Checkout sempre em modo teste neste servidor (sem gateway integrado)
+    $("avisoTeste").classList.add("on");
+    $("btnPagarTxt").textContent = "✨ Simular pagamento aprovado";
+});
 
 /* =====================================================
    TOTAL ANIMADO
@@ -103,17 +123,11 @@ document.querySelectorAll(".pg-metodo").forEach(m => {
         document.querySelectorAll(".pg-metodo").forEach(x => x.classList.remove("sel"));
         m.classList.add("sel");
         metodoSelecionado = m.dataset.metodo;
-
-        if (!CONFIG.modoTeste) {
-            $("btnPagarTxt").textContent = metodoSelecionado === "pix"
-                ? "🔒 Pagar com Pix"
-                : "🔒 Pagar com cartão";
-        }
     });
 });
 
 /* =====================================================
-   CUPOM
+   CUPOM (validado contra GET /api/config)
 ===================================================== */
 $("pgCupomBtn").addEventListener("click", () => {
     const codigo = $("pgCupom").value.trim().toUpperCase();
@@ -128,7 +142,7 @@ $("pgCupomBtn").addEventListener("click", () => {
         return;
     }
 
-    // Remover cupom já aplicado se clicar novamente
+    // Remove cupom já aplicado se clicar novamente
     if (descontoAtivo && descontoAtivo.codigo === codigo) {
         descontoAtivo = null;
         el.value = "";
@@ -142,7 +156,7 @@ $("pgCupomBtn").addEventListener("click", () => {
         return;
     }
 
-    const cupom = CUPONS[codigo];
+    const cupom = (CONFIG.coupons || {})[codigo];
 
     if (!cupom) {
         el.style.borderColor = "#b3263e";
@@ -161,13 +175,14 @@ $("pgCupomBtn").addEventListener("click", () => {
         return;
     }
 
-    // Aplicar
-    const novoPreco = precoOriginal * (1 - cupom.desc / 100);
-    descontoAtivo = { codigo, desc: cupom.desc, preco: novoPreco };
+    // Aplicar (cálculo local apenas para preview; o servidor é a autoridade)
+    const desc = cupom.discount_percent || 0;
+    const novoPreco = precoOriginal * (1 - desc / 100);
+    descontoAtivo = { codigo, desc, preco: novoPreco };
 
     el.style.borderColor = "var(--ouro)";
     el.style.background = "linear-gradient(135deg, #fff8e6, #fffbe9)";
-    btn.textContent = "✓ " + cupom.desc + "% off";
+    btn.textContent = "✓ " + desc + "% off";
     btn.style.background = "linear-gradient(135deg, #46d369, #2ea854)";
     btn.style.color = "#fff";
 
@@ -178,23 +193,15 @@ $("pgCupomBtn").addEventListener("click", () => {
 });
 
 /* =====================================================
-   PAGAMENTO
+   PAGAMENTO (contrato: POST /api/purchases/:id/pay)
 ===================================================== */
 async function pagar() {
-    if (!CONFIG.modoTeste) {
-        throw new Error("Gateway de pagamento ainda não integrado.");
-    }
-    pedido.status = "pago";
-    pedido.pagoEm = Date.now();
-    pedido.metodoPagamento = metodoSelecionado;
-    if (descontoAtivo) {
-        pedido.cupom = descontoAtivo.codigo;
-        pedido.descontoPercent = descontoAtivo.desc;
-        pedido.valorPago = descontoAtivo.preco;
-    } else {
-        pedido.valorPago = CONFIG.preco;
-    }
-    await salvarPedido(pedido);
+    const { purchase } = await window.ApiPurchases.pay(
+        id,
+        metodoSelecionado,
+        descontoAtivo ? descontoAtivo.codigo : null
+    );
+    pedido = purchase;
 }
 
 $("btnPagar").addEventListener("click", async (e) => {
@@ -217,7 +224,6 @@ $("btnPagar").addEventListener("click", async (e) => {
     $("erro").textContent = "";
 
     try {
-        await new Promise(r => setTimeout(r, 900));
         await pagar();
 
         confetes();
@@ -227,7 +233,11 @@ $("btnPagar").addEventListener("click", async (e) => {
             location.href = "resultado.html?id=" + id;
         }, 900);
     } catch (err) {
-        $("erro").textContent = err.message || "Falha no pagamento.";
+        if (err && (err.code === "RATE_LIMITED" || err.code === "CLIENT_RATE_LIMITED")) {
+            $("erro").textContent = `Muitas tentativas. Aguarde ${err.retryAfter || 60}s e tente de novo.`;
+        } else {
+            $("erro").textContent = (err && err.message) || "Falha no pagamento.";
+        }
         btn.disabled = false;
         txt.textContent = textoOriginal;
     }

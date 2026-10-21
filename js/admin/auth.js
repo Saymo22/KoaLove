@@ -1,21 +1,31 @@
-const ADMIN_KEY = "nossoamor_admin_session";
-const ADMIN_EMAIL = "admin@nossoamor.com";
-const ADMIN_PASS = "admin123";
-
-function fazerLoginAdmin(email, pass) {
-    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-        localStorage.setItem(ADMIN_KEY, JSON.stringify({ email, role: "admin" }));
-        return true;
+/* Auth do admin — usa a API (cookie HttpOnly + role=admin). */
+async function fazerLoginAdmin(email, pass) {
+  try {
+    const user = await window.ApiAuth.login(email, pass);
+    if (user.role !== "admin") {
+      await window.ApiAuth.logout();
+      return { ok: false, error: "Esta conta não tem permissão de administrador." };
     }
-    return false;
+    return { ok: true, user };
+  } catch (err) {
+    return { ok: false, error: err.message, code: err.code, retryAfter: err.retryAfter };
+  }
 }
-function fazerLogoutAdmin() {
-    localStorage.removeItem(ADMIN_KEY);
-    window.location.href = "login.html";
+
+async function fazerLogoutAdmin() {
+  await window.ApiAuth.logout();
+  window.location.href = "login.html";
 }
-function estaLogadoAdmin() {
-    return localStorage.getItem(ADMIN_KEY) !== null;
+
+async function estaLogadoAdmin() {
+  try {
+    const user = await window.ApiAuth.me();
+    return user.role === "admin";
+  } catch { return false; }
 }
-function protegerRotaAdmin() {
-    if (!estaLogadoAdmin()) window.location.href = "login.html";
+
+async function protegerRotaAdmin() {
+  const ok = await estaLogadoAdmin();
+  if (!ok) { window.location.href = "login.html"; return false; }
+  return true;
 }

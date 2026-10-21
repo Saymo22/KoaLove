@@ -1,53 +1,46 @@
-protegerRotaAdmin();
-renderAdminHeader('suporte');
+(async () => {
+  if (!(await protegerRotaAdmin())) return;
+  renderAdminHeader("suporte");
+  const tbody = document.getElementById("tabelaSuporte");
 
-let ticketsDB = [
-    { id: "TK-102", nome: "Marina S.", assunto: "A música não toca no iPhone", data: "Hoje, 09:42", status: "aberto" },
-    { id: "TK-101", nome: "João P.", assunto: "Como faço para baixar o QR Code?", data: "Ontem, 15:30", status: "respondido" },
-    { id: "TK-099", nome: "Amanda L.", assunto: "Quero mudar a capa do presente", data: "12/05/2024", status: "aberto" }
-];
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
 
-function showToast(msg) {
-    const container = document.getElementById("toastContainer");
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = `✅ ${msg}`;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-function renderSuporte() {
-    const tbody = document.getElementById("tabelaSuporte");
-    tbody.innerHTML = "";
-
-    ticketsDB.forEach((ticket, index) => {
-        const tr = document.createElement("tr");
-        
-        let badgeClass = ticket.status === "aberto" ? "badge-pendente" : "badge-aprovado";
-        let badgeText = ticket.status === "aberto" ? "Aguardando" : "Respondido";
-
-        tr.innerHTML = `
-            <td><strong>${ticket.id}</strong></td>
-            <td>${ticket.nome}</td>
-            <td>${ticket.assunto}</td>
-            <td>${ticket.data}</td>
-            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
-            <td>
-                <button class="btn-action" onclick="abrirTicket(${index})">Abrir Chat</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-window.abrirTicket = function(index) {
-    if (ticketsDB[index].status === 'aberto') {
-        ticketsDB[index].status = 'respondido';
-        showToast(`Ticket ${ticketsDB[index].id} marcado como respondido.`);
-        renderSuporte();
-    } else {
-        showToast(`Visualizando histórico do ticket ${ticketsDB[index].id}.`);
+  async function load() {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#8b717b;">Carregando…</td></tr>`;
+    try {
+      const { tickets } = await window.ApiAdmin.tickets();
+      if (!tickets.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#8b717b;">Nenhum ticket aberto.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = tickets.map(t => `
+        <tr>
+          <td><strong>${escapeHtml(String(t.id).slice(0, 10))}</strong></td>
+          <td>${escapeHtml(t.cliente?.name ?? "—")}</td>
+          <td>${escapeHtml(t.subject)}</td>
+          <td>${new Date(t.created_at).toLocaleDateString("pt-BR")}</td>
+          <td><span class="badge badge-${t.status === "open" ? "pendente" : "aprovado"}">${t.status === "open" ? "Aguardando" : "Respondido"}</span></td>
+          <td><button class="btn-action" data-id="${escapeHtml(t.id)}" data-act="reply">Responder</button></td>
+        </tr>
+      `).join("");
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#b3263e;">Erro: ${escapeHtml(err.message)}</td></tr>`;
     }
-}
+  }
 
-renderSuporte();
+  tbody.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-act='reply']");
+    if (!btn) return;
+    const text = prompt("Resposta para o cliente:");
+    if (!text) return;
+    try {
+      await window.ApiAdmin.ticketReply(btn.dataset.id, text);
+      alert("Resposta enviada.");
+      await load();
+    } catch (err) { alert("Erro: " + err.message); }
+  });
+
+  await load();
+})();

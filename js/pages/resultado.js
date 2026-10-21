@@ -4,22 +4,36 @@
     // NAVBAR SCROLL
     (function () {
         const progress = $("scrollProgress");
-        const nav = $("nav");
+        if (!progress) return;
+        // A classe ".scrolled" da navbar é gerenciada por js/core/navbar.js.
         window.addEventListener("scroll", () => {
             const h = document.documentElement;
-            progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
-            nav.classList.toggle("scrolled", window.scrollY > 30);
+            const max = h.scrollHeight - h.clientHeight;
+            progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
         }, { passive: true });
     })();
 
     /* =====================================================
-       BOOT
+       BOOT (contrato: GET /api/purchases/:id)
     ===================================================== */
     (async function () {
-        const pedido = id ? await buscarPedido(id) : null;
-        if (!pedido) { location.href = "criar.html"; return; }
-        if (pedido.status !== "pago") { location.href = "pagamento.html?id=" + id; return; }
+        if (!id) { location.href = "criar.html"; return; }
 
+        let pedido = null;
+        try {
+            ({ purchase: pedido } = await window.ApiPurchases.getOne(id));
+        } catch (err) {
+            if (err && (err.code === "NOT_AUTHENTICATED" || err.status === 401)) {
+                location.href = "login.html";
+                return;
+            }
+            location.href = "criar.html";
+            return;
+        }
+        if (pedido.status !== "paid") { location.href = "pagamento.html?id=" + id; return; }
+
+        // Temas vêm de GET /api/config
+        try { await window.NA_CONFIG_READY; } catch {}
         aplicarTema(pedido.tema);
 
         const url = new URL("ver.html?id=" + id, location.href).href;

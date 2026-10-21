@@ -314,8 +314,18 @@ NA.navbar = (function () {
     function init() {
         inject();
         window.addEventListener("storage", (e) => {
-            if (e.key === SESSION_KEY) inject();
+            if (e.key === SESSION_KEY || e.key === "nossoamor_user_cache") inject();
         });
+        // Reconcilia o cache de usuário com a API em background (contrato)
+        if (window.ApiAuth) {
+            window.ApiAuth.me().then(() => {
+                inject();
+            }).catch(() => {
+                // 401 → estado deslogado
+                try { localStorage.removeItem("nossoamor_user_cache"); } catch (e) {}
+                inject();
+            });
+        }
     }
 
     if (document.readyState === "loading") {

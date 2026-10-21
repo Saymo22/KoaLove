@@ -128,31 +128,62 @@ const caixaEspeciais = document.getElementById("temasEspeciais");
 const todosCards = [];
 let totClassicos = 0, totEspeciais = 0;
 
-Object.entries(THEMES).forEach(([chave, t]) => {
-    const card = criarTemaCard(chave, t);
-    if (t.categoria === "especial") {
-        caixaEspeciais.appendChild(card);
-        totEspeciais++;
-    } else {
-        caixaClassicos.appendChild(card);
-        totClassicos++;
-    }
-    todosCards.push(card);
-});
+/* Revela os cards depois que eles existem de fato.
+   Antes, o IntersectionObserver era criado com o array ainda vazio
+   (os temas chegam de /api/config), então nenhum card recebia .on.
+   Além disso há um fallback: se o observer não disparar (aba em segundo
+   plano), todos ficam visíveis mesmo assim. */
+function revelarTemas() {
+    if (!todosCards.length) return;
+    const mostrarTodos = () => todosCards.forEach(c => c.classList.add("on"));
 
-document.getElementById("cntTodos").textContent = todosCards.length;
-document.getElementById("cntClassicos").textContent = totClassicos;
-document.getElementById("cntEspeciais").textContent = totEspeciais;
+    if (!("IntersectionObserver" in window)) { mostrarTodos(); return; }
 
-(function () {
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+            if (!en.isIntersecting) return;
+            const irmaos = [...en.target.parentElement.children];
+            const idx = irmaos.indexOf(en.target);
+            setTimeout(() => en.target.classList.add("on"), Math.min(idx * 80, 400));
+            io.unobserve(en.target);
+        });
+    }, { threshold: 0.12 });
+
+    todosCards.forEach(c => io.observe(c));
+    setTimeout(mostrarTodos, 1200);
+}
+
+/* Temas e preço vêm de GET /api/config (nada hardcoded) */
+NA_CONFIG_READY.then(() => {
+    if (!Object.keys(THEMES).length) return; // sem config e sem cache: não renderiza a vitrine
+
+    Object.entries(THEMES).forEach(([chave, t]) => {
+        const card = criarTemaCard(chave, t);
+        if (t.categoria === "especial") {
+            caixaEspeciais.appendChild(card);
+            totEspeciais++;
+        } else {
+            caixaClassicos.appendChild(card);
+            totClassicos++;
+        }
+        todosCards.push(card);
+    });
+
+    document.getElementById("cntTodos").textContent = todosCards.length;
+    document.getElementById("cntClassicos").textContent = totClassicos;
+    document.getElementById("cntEspeciais").textContent = totEspeciais;
+
+    revelarTemas();
+
     const valor = CONFIG.preco;
+    if (typeof valor !== "number") return;
     const inteiro = Math.floor(valor);
     const centavos = String(Math.round((valor - inteiro) * 100)).padStart(2, "0");
     const el = document.getElementById("precoValor");
     if (el) {
         el.innerHTML = '<span class="cifrao">R$</span>' + inteiro + '<span class="centavos">,' + centavos + '</span>';
     }
-})();
+});
 
 /* =====================================================
    FILTROS
@@ -212,18 +243,18 @@ document.querySelectorAll(".filtro").forEach(btn => {
 })();
 
 /* =====================================================
-   SCROLL & NAV
+   SCROLL
+   A classe ".scrolled" da navbar é gerenciada por js/core/navbar.js.
+   Não guardamos referência a #nav aqui: ele é injetado depois, e um
+   valor null estourava TypeError a cada scroll.
 ===================================================== */
 const progress = document.getElementById("scrollProgress");
-const nav = document.getElementById("nav");
 
 window.addEventListener("scroll", () => {
+    if (!progress) return;
     const h = document.documentElement;
-    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-    progress.style.width = pct + "%";
-
-    if (window.scrollY > 30) nav.classList.add("scrolled");
-    else nav.classList.remove("scrolled");
+    const max = h.scrollHeight - h.clientHeight;
+    progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
 }, { passive: true });
 
 (function () {
@@ -262,24 +293,6 @@ window.addEventListener("scroll", () => {
         });
     }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
     els.forEach(el => io.observe(el));
-})();
-
-(function () {
-    if (!("IntersectionObserver" in window)) {
-        todosCards.forEach(c => c.classList.add("on"));
-        return;
-    }
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach(en => {
-            if (en.isIntersecting) {
-                const cards = [...en.target.parentElement.children];
-                const idx = cards.indexOf(en.target);
-                setTimeout(() => en.target.classList.add("on"), idx * 100);
-                io.unobserve(en.target);
-            }
-        });
-    }, { threshold: 0.15 });
-    todosCards.forEach(c => io.observe(c));
 })();
 
 /* =====================================================
@@ -398,9 +411,11 @@ document.querySelectorAll(".b").forEach(btn => {
     setInterval(tick, 1000);
 
     const por = CONFIG.preco;
-    const de = Math.round((por * 1.1) * 100) / 100;
-    document.getElementById("promoDe").textContent = formatarPreco(de);
-    document.getElementById("promoPor").textContent = formatarPreco(por);
+    if (typeof por === "number") {
+        const de = Math.round((por * 1.1) * 100) / 100;
+        document.getElementById("promoDe").textContent = formatarPreco(de);
+        document.getElementById("promoPor").textContent = formatarPreco(por);
+    }
 })();
 
 /* =====================================================

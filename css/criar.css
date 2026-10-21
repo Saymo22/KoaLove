@@ -497,17 +497,22 @@
         transition:
           transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1),
           box-shadow 0.5s,
-          border-color 0.4s;
+          border-color 0.4s,
+          opacity 0.5s;
         box-shadow: var(--sombra-suave);
         position: relative;
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-        transform-style: preserve-3d;
-        will-change: transform;
-      }
-      .tema.on {
         opacity: 1;
         transform: translateY(0) scale(1);
+        transform-style: preserve-3d;
+      }
+      /* Estado inicial de entrada: NUNCA esconde o card (opacity sempre 1),
+         apenas desloca levemente. Assim, mesmo com a aba em segundo plano
+         (animações congeladas), os temas continuam visíveis. */
+      .tema.prereveal {
+        transform: translateY(16px);
+      }
+      .tema.prereveal.on {
+        transform: translateY(0);
       }
       .tema:hover {
         transform: translateY(-6px) !important;
@@ -1626,6 +1631,23 @@
     ===================================================== */
       #pvPadrao {
         background: var(--rosa-pastel, #fff1f5);
+      }
+      /* Views de layout: visíveis por padrão. A entrada anima SOMENTE o
+         transform (nunca opacity 0), para não esconder a prévia quando a
+         aba está em segundo plano e as animações ficam congeladas. */
+      .layout-view {
+        opacity: 1;
+      }
+      .layout-view.layout-enter {
+        animation: layoutEnter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+      }
+      @keyframes layoutEnter {
+        from {
+          transform: translateY(10px);
+        }
+        to {
+          transform: translateY(0);
+        }
       }
       .pv-hero {
         min-height: 320px;

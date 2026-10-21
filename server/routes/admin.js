@@ -87,7 +87,7 @@ async function purchases(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.purchases.map(p => {
+  const enriched = stores.purchases.all().map(p => {
     const u = stores.users.find(x => x.id === p.user_id);
     return {
       ...p,
@@ -103,7 +103,7 @@ async function refunds(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.refunds.map(r => {
+  const enriched = stores.refunds.all().map(r => {
     const u = stores.users.find(x => x.id === r.user_id);
     const p = stores.purchases.find(x => x.id === r.purchase_id);
     return {
@@ -148,7 +148,7 @@ async function tickets(req, res) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const enriched = stores.tickets.map(t => {
+  const enriched = stores.tickets.all().map(t => {
     const u = stores.users.find(x => x.id === t.user_id);
     return { ...t, cliente: u ? { id: u.id, name: u.name, email: u.email } : null };
   }).sort((a, b) => b.created_at - a.created_at);

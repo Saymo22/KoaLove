@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes — Admin</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body">
+    <header id="adminHeader"></header>
+    <main class="admin-main">
+        <h1 class="page-title">Clientes</h1>
+        <p class="page-desc">Todos os clientes cadastrados, com compras, tickets e reembolsos associados.</p>
+
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>E-mail</th>
+                        <th>Cliente desde</th>
+                        <th>Compras</th>
+                        <th>Total gasto</th>
+                        <th>Tickets</th>
+                        <th>Reembolsos</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaClientes"></tbody>
+            </table>
+        </div>
+
+        <div id="clientDetailPanel" style="display:none; margin-top:24px;"></div>
+    </main>
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="../js/core/config.js"></script>
+    <script src="../js/api/client.js"></script>
+    <script src="../js/api/auth.js"></script>
+    <script src="../js/api/admin.js"></script>
+    <script src="../js/admin/auth.js"></script>
+    <script src="../js/admin/header.js"></script>
+    <script src="../js/admin/clientes.js"></script>
+</body>
+</html>
