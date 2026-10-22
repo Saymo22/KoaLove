@@ -248,7 +248,7 @@ function criarCardTema(chave, t) {
   });
   el.querySelector(".emoji").textContent = t.emoji;
   el.querySelector(".nome").textContent = t.nome;
-  el.querySelector(".tema-info p").textContent = t.desc + ".";
+  el.querySelector(".tema-info p").textContent = t.desc || t.pequeno || t.sufixo || '';
 
   if (!window.matchMedia("(pointer: coarse)").matches) {
     el.addEventListener("mousemove", (e) => {
@@ -393,7 +393,10 @@ function atualizarPreview() {
   const ini = $("inicio").value;
   const sufixo = $("frase").value.trim();
   const tempo = ini ? tempoJuntos(ini) : null;
+  document.querySelector('label[for="inicio"]').textContent = temaChave === 'aniversario' ? 'Data de nascimento' : 'Desde quando?';
   aplicarTemaPreview(temaChave);
+  atualizarPreviewTema(temaChave);
+  window.NAThemeEditor?.activate(temaChave);
   if (tempo) {
     $("pAnos").textContent = tempo.anos;
     $("pMeses").textContent = tempo.meses;
@@ -409,6 +412,67 @@ function atualizarPreview() {
   renderPreviewPadrao(tempo, t);
   pulsarPreview();
 }
+
+// O mesmo HTML usado em ver.html, isolado dos estilos do formulário.
+let themePreviewFrame = null;
+let temaPreviewKey = null;
+function atualizarPreviewTema(chave) {
+  const ativo = !!window.NA_THEME_FILES?.[chave];
+  $("previewScroll").classList.toggle("preview-tema", ativo);
+  $("previewDots").hidden = ativo;
+  if (!ativo) {
+    themePreviewFrame?.remove();
+    themePreviewFrame = null;
+    temaPreviewKey = null;
+    return;
+  }
+  if (temaPreviewKey !== chave) {
+    themePreviewFrame?.remove();
+    themePreviewFrame = null;
+    temaPreviewKey = chave;
+  }
+  if (!themePreviewFrame) {
+    themePreviewFrame = document.createElement("iframe");
+    themePreviewFrame.className = "preview-tema-frame";
+    themePreviewFrame.title = "Prévia do tema " + (THEMES[chave]?.nome || chave);
+    themePreviewFrame.src = window.NA_THEME_FILES[chave] + "?embed=1";
+    if(chave === 'aniversario') themePreviewFrame.setAttribute('allow', 'microphone');
+    themePreviewFrame.addEventListener("load", enviarPreviewTema);
+    $("previewScroll").append(themePreviewFrame);
+  }
+  enviarPreviewTema();
+}
+function enviarPreviewTema() {
+  if (!themePreviewFrame) return;
+  const p = {};
+  for (const campo of ["titulo", "de", "para", "inicio", "carta", "frase", "musicaNome", "musicaArtista", "rodapeCustom"]) {
+    p[campo] = $(campo).value.trim();
+  }
+  p.de ||= "Alguém especial";
+  p.para ||= "Você";
+  p.autoplay = $('autoplay').checked;
+  p.usarIntro = $('usarIntro').checked;
+  p.themeData = window.NAThemeEditor?.getData() || {};
+  p.legendas = [...document.querySelectorAll(".legenda-input")].map(el => el.value.trim());
+  const events = [...document.querySelectorAll(".ev-item")].map(el => ({
+    data: el.querySelector(".ev-data").value.trim(),
+    titulo: el.querySelector(".ev-titulo").value.trim(),
+    texto: el.querySelector(".ev-texto").value.trim(),
+  })).filter(ev => ev.titulo || ev.texto);
+  const reasons = [...document.querySelectorAll(".amo")].map(el => el.value.trim()).filter(Boolean);
+  themePreviewFrame.contentWindow?.postMessage({
+    type: temaPreviewKey === 'namoro' ? "NOSSO_AMOR_NAMORO_DATA" : "NOSSO_AMOR_THEME_DATA",
+    payload: { p, photos: fotoURLs, videos: videoURLs, music: musicaPreviewURL,
+      cover: fotoURLs[Number($("fotoCapa").value) || 0] || fotoURLs[0] || "", events, reasons },
+  }, location.origin);
+}
+window.addEventListener("message", event => {
+  if(event.origin !== location.origin || event.source !== themePreviewFrame?.contentWindow)return;
+  if(event.data?.type === 'NOSSO_AMOR_THEME_READY' && event.data.key === temaPreviewKey){
+    window.NAThemeEditor?.acceptSchema({...event.data,name:THEMES[temaPreviewKey]?.nome});
+    enviarPreviewTema();
+  }else if(event.data?.type === "NOSSO_AMOR_NAMORO_READY") enviarPreviewTema();
+});
 
 function renderPreviewPadrao(tempo, t) {
   const ini = $("inicio").value;
@@ -900,12 +964,14 @@ $("form").addEventListener("submit", async (e) => {
       carta: $("carta").value.trim(),
       has_media: fotos.length > 0 || videos.length > 0 || !!musica,
       preview_data_url: preview,
+      themeData: window.NAThemeEditor?.getData() || {},
     });
 
     // 2) Mídia rica (blobs) → IndexedDB local (nunca vai ao servidor)
     await salvarPedido({
       id: purchase.id,
       tema, titulo, frase,
+      themeData: window.NAThemeEditor?.getData() || {},
       de: $("de").value.trim(),
       para: $("para").value.trim(),
       inicio: $("inicio").value,
@@ -986,6 +1052,7 @@ async function carregarPedidoParaEdicao() {
   $("btnFinal").textContent = "Salvar alterações →";
 
   tema = pedido.tema;
+  window.NAThemeEditor?.restore(pedido.themeData);
   const cardTema = document.querySelector(`.tema[data-chave="${tema}"]`);
   if (cardTema) setTimeout(() => cardTema.click(), 100);
 

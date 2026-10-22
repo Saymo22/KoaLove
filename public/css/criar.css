@@ -1561,6 +1561,19 @@
         position: relative;
         padding-top: 44px;
       }
+      .preview-scroll.preview-tema {
+        overflow: hidden;
+      }
+      .preview-tema > .layout-view { display: none !important; }
+      .preview-tema-frame {
+        position: absolute;
+        inset: 44px 0 0;
+        width: 100%;
+        height: calc(100% - 44px);
+        border: 0;
+        background: #0a0508;
+      }
+      #previewDots[hidden] { display: none; }
       .preview-scroll::-webkit-scrollbar {
         display: none;
       }
@@ -4802,3 +4815,13 @@ body.app {
         height: min(640px, calc(100vh - 130px));
     }
 }
+
+/* Personalização dos modelos independentes. */
+.theme-details{margin:28px 0;padding:20px;border:1px solid var(--rosa-claro);border-radius:16px}
+.theme-details details{padding:12px 0;border-bottom:1px solid var(--rosa-claro)}
+.theme-details details details{margin-left:12px}
+.theme-details summary{cursor:pointer;font-weight:600;padding:8px 0;overflow-wrap:anywhere}
+.theme-field{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.theme-field span{font-size:13px}
+.theme-field textarea{min-height:100px}
+

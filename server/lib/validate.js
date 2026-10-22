@@ -17,4 +17,25 @@ function sanitizeStr(v, max = 1000) {
   return String(v == null ? "" : v).trim().slice(0, max);
 }
 
-module.exports = { isString, isEmail, isOneOf, sanitizeStr };
+// Conteúdo dos controles de cada tema; somente dados, nunca HTML executável.
+function themeData(value) {
+  if (value === undefined || value === null) return { ok: true, value: {} };
+  if (typeof value !== 'object' || Array.isArray(value) || JSON.stringify(value).length > 200_000)
+    return { ok: false };
+  function clean(node, depth = 0) {
+    if (depth > 10) throw new Error('Conteúdo muito profundo');
+    if (typeof node === 'string') return node.slice(0, 4000);
+    if (typeof node === 'number') return Number.isFinite(node) ? node : 0;
+    if (typeof node === 'boolean' || node === null) return node;
+    if (Array.isArray(node)) return node.slice(0, 100).map(item => clean(item, depth + 1));
+    if (typeof node !== 'object') throw new Error('Tipo inválido');
+    const result = {};
+    for (const [key, child] of Object.entries(node).slice(0, 300)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
+      result[key.slice(0, 80)] = clean(child, depth + 1);
+    }
+    return result;
+  }
+  try { return { ok: true, value: clean(value) }; } catch { return { ok: false }; }
+}
+module.exports = { isString, isEmail, isOneOf, sanitizeStr, themeData };

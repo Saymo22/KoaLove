@@ -108,7 +108,7 @@
                 <label for="inicio">Desde quando?</label>
                 <input type="date" id="inicio" />
                 <div class="erro-campo-msg" data-msg="inicio">Escolha uma data</div>
-                <small>Alimenta o contador e a frase da capa.</small>
+                <small>Usada nos contadores e nas datas do tema.</small>
               </div>
             </div>
 
@@ -126,7 +126,7 @@
             <div class="campo">
               <label for="frase">Frase da capa</label>
               <input type="text" id="frase" maxlength="90" placeholder="Ex.: de amor, risadas e momentos inesquecíveis." />
-              <small>A duração vem automaticamente antes da sua frase.</small>
+              <small>A frase aparece na capa do tema escolhido.</small>
             </div>
 
             <div class="campo" data-campo="carta">
@@ -160,6 +160,7 @@
             <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu carisma" /></div>
             <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Você" /></div>
 
+            <section id="themeDetails" class="theme-details" hidden></section>
             <div class="acoes">
               <button type="button" class="btn sec" data-ir="2">← Voltar</button>
               <button type="button" class="btn ouro" data-ir="4">Continuar →</button>
@@ -537,6 +538,8 @@
     <script src="js/api/purchases.js"></script>
     <script src="app.js"></script>
     <script src="js/core/navbar.js"></script>
+    <script src="js/core/theme-catalog.js"></script>
+    <script src="js/pages/theme-editor.js"></script>
     <script src="js/pages/criar.js"></script>
   </body>
 </html>

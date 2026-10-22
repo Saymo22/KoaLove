@@ -58,9 +58,21 @@ async function serveStatic(req, res, pathname) {
       ".woff": "font/woff",
       ".woff2":"font/woff2",
       ".ttf":  "font/ttf",
+      ".mp3":  "audio/mpeg",
+      ".wav":  "audio/wav",
+      ".ogg":  "audio/ogg",
+      ".m4a":  "audio/mp4",
+      ".mp4":  "video/mp4",
+      ".webm": "video/webm",
+      ".mov":  "video/quicktime",
     };
     res.statusCode = 200;
     httpLib.applySecurityHeaders(res);
+    // O bolo interativo solicita microfone apenas quando o visitante toca no botão.
+    // Permite o recurso na mesma origem e nas duas páginas que incorporam o tema.
+    if (["/teste/aniversario.html", "/criar.html", "/ver.html"].includes(pathname)) {
+      res.setHeader("Permissions-Policy", "camera=(), microphone=(self), geolocation=()");
+    }
     res.setHeader("Content-Type", contentTypes[ext] || "application/octet-stream");
     res.end(data);
     log(req, 200);

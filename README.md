@@ -27,7 +27,17 @@ O projeto foi construído do zero, sem frameworks, focando em performance e desi
 
 ## 🖥️ Backend e API
 
-O servidor fica em `server/` e serve simultaneamente a **API REST** (`/api/*`) e os **arquivos estáticos** do frontend na raiz do repositório.
+O servidor fica em `server/` e serve simultaneamente a **API REST** (`/api/*`) e os **arquivos estáticos** de `public/`. Os endereços continuam iguais: `/criar.html`, `/ver.html`, `/admin/login.html` etc.
+
+Os 13 modelos completos ficam em `public/teste/`: Namoro, Casamento, Amizade, Família, Aniversário, Carta Antiga, Jardim Secreto, Scrapbook e os exclusivos Netflix, Vinil, Cinema, Spotify e Retrô. Cada um possui seu próprio HTML, CSS e JavaScript, sem misturar os estilos entre temas. Para abrir um exemplo, use `/ver.html?demo=1&tema=netflix` (substitua pelo identificador do tema).
+
+Em `criar.html`, a prévia usa exatamente o mesmo modelo de `ver.html`. O passo **Momentos → Detalhes do tema** oferece controles para textos e funções específicas: quiz, memórias, membros da família, cartas do cofre, desejos da fonte, constelação e itens já realizados. Os exclusivos acrescentam catálogo e episódios, notificações, álbuns, faixas dos lados A/B, cartazes e avaliação por pipocas, playlists, letras, fitas VHS e fliperama. As personalizações são separadas por tema e gravadas em `themeData` na API e no IndexedDB.
+
+Os players exclusivos usam o áudio e os vídeos do formulário, com progresso e controles ligados à mídia real. Faixas também aceitam um endereço de áudio próprio nos detalhes; sem ele, usam a música principal. Fotos viram capas, cartazes e clipes. O Netflix pula a seleção de perfil na prévia e oferece os perfis na visualização com introdução ativada. O servidor serve arquivos públicos de áudio e vídeo com seus tipos MIME correspondentes; o envio pelo formulário continua armazenado no IndexedDB.
+
+Aniversário usa **Data de nascimento** para calcular a idade e permite apagar velas por toque ou, após permissão do navegador, pelo microfone. A permissão de microfone fica restrita à mesma origem nas páginas que incorporam esse tema.
+
+Para verificar a integração, execute `node tools/verify-theme.cjs`. A verificação cobre a troca de modelos, referências locais, rotas HTTP, validação e gravação/leitura dos detalhes sem modificar o banco do usuário.
 
 ### Como rodar
 
@@ -100,70 +110,29 @@ A fonte de verdade completa do contrato está em [`server/docs/CONTRACT.md`](ser
 
 ```text
 /
-├── index.html               # Redireciona para home.html
-├── home.html                # Landing page (venda e apresentação)
-├── criar.html               # Fluxo de criação do presente
-├── pagamento.html           # Checkout
-├── resultado.html           # Tela de sucesso com QR Code e Link
-├── ver.html                 # O presente em si (visualização pública)
-├── login.html               # Tela de Login/Cadastro
-├── minha-conta.html         # Dashboard do usuário e histórico
-├── termos.html              # Termos de Uso
-├── privacidade.html         # Política de Privacidade
-├── reembolso.html           # Política de Reembolso
-│
-├── admin/                   # Painel administrativo
-│   ├── login.html
-│   ├── dashboard.html
-│   ├── clientes.html        # NOVO: gestão de clientes
-│   ├── reembolsos.html
-│   └── suporte.html
-│
-├── server/                  # Backend Node.js (API + arquivos estáticos)
-│   ├── index.js             # Servidor HTTP
-│   ├── seed.js              # Popula server/data
-│   ├── routes/              # auth, config, purchases, admin (roteador em index.js)
-│   ├── lib/                 # Utilitários (store, sessão, respostas)
-│   ├── data/                # Banco local em JSON (ignorado no git)
-│   └── docs/
-│       ├── CONTRACT.md      # Contrato oficial da API
-│       └── TEST_SCENARIOS.md
-│
-├── css/
-│   ├── base.css             # Reset e estilos globais (variáveis)
-│   ├── home.css
-│   ├── criar.css
-│   ├── pagamento.css
-│   ├── resultado.css
-│   ├── ver.css              # Estilos dos temas e layouts do presente
-│   ├── login.css
-│   ├── minha-conta.css
-│   ├── legal.css            # Estilos compartilhados das páginas legais
-│   └── tema-padrao.css      # Layout base dos presentes clássicos
-│
-├── js/
-│   ├── api/                 # Camada de acesso à API
-│   │   ├── client.js        # Cliente HTTP (envelope, ApiError, 429)
-│   │   ├── auth.js          # login/registro/logout/me
-│   │   ├── purchases.js     # CRUD + pagamento
-│   │   └── admin.js         # Endpoints do painel
-│   │
-│   ├── core/
-│   │   ├── config.js        # CONFIG/THEMES a partir de /api/config
-│   │   ├── auth.js          # Shim de compatibilidade
-│   │   ├── db.js            # Abstração do IndexedDB (mídia)
-│   │   └── navbar.js        # Componente da Navbar (Hambúrguer + Auth)
-│   │
-│   ├── pages/
-│   │   ├── home.js
-│   │   ├── criar.js
-│   │   ├── pagamento.js
-│   │   ├── resultado.js
-│   │   ├── ver.js           # Lógica de renderização do presente
-│   │   ├── login.js
-│   │   └── minha-conta.js
-│   │
-│   └── admin/               # JS do painel (dashboard, clientes, reembolsos, suporte)
-│
-├── app.js                   # CONFIG/THEMES via API, utilitários de data e IndexedDB
-└── favicon.svg
+├── public/                 # Todos os arquivos do site (raiz pública HTTP)
+│   ├── *.html              # home, criar, ver, pagamento, conta e páginas legais
+│   ├── app.js              # Configuração e helpers compartilhados
+│   ├── favicon.svg
+│   ├── admin/              # Páginas administrativas
+│   ├── css/                # Estilos das páginas
+│   ├── js/                 # api/, core/, pages/ e admin/
+│   └── teste/              # Modelos recebidos para integração
+│       ├── namoro.html
+│       ├── namoro.css
+│       ├── namoro.js
+│       └── casamento.*, amizade.*, familia.*, aniversario.*, carta-antiga.*, jardim.*, scrapbook.*
+│           netflix.*, vinil.*, cinema.*, spotify.*, retro.*
+├── server/                 # Backend Node.js e API (fora da raiz pública)
+│   ├── index.js
+│   ├── config.js           # FRONTEND_ROOT aponta para ../public
+│   ├── seed.js
+│   ├── routes/
+│   ├── lib/
+│   ├── data/               # Banco JSON local, ignorado no Git
+│   └── docs/               # Contrato da API e cenários de teste
+├── tools/                  # Verificações de integração
+└── README.md
+```
+
+Os textos e metadados básicos vêm da API; fotos, vídeos, música e os campos ricos continuam no IndexedDB do navegador, conforme o contrato atual. Compartilhar mídias com outros dispositivos exige uma futura implementação de upload no servidor.

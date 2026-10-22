@@ -1425,10 +1425,12 @@ Cookie `nossoamor_sid` é setado com `HttpOnly; SameSite=Strict`.
 ```json
 { "tema": "namoro", "titulo": "Nós dois", "para": "Rafael", "de": "Marina",
   "inicio": "2022-08-13", "carta": "...", "has_media": true,
-  "preview_data_url": "data:image/jpeg;base64,..." }
+  "preview_data_url": "data:image/jpeg;base64,...",
+  "themeData": { "amizade": { "texts": {}, "collections": {}, "checks": {}, "numbers": {} } } }
 ```
 - 201 → `{ purchase }` com `status: "pending"`
-- 401 `NOT_AUTHENTICATED` / 400 `INVALID_THEME` / `MISSING_RECIPIENT`
+- 401 `NOT_AUTHENTICATED` / 400 `INVALID_THEME` / `MISSING_RECIPIENT` / `INVALID_THEME_DATA`
+- `themeData` é opcional e retorna sem perda de estrutura no pedido e em `GET /api/purchases/:id`. Guarda os detalhes separados por identificador de tema: textos, quiz, pessoas da família, cartas, desejos, memórias, números e itens realizados. Aceita até 200.000 caracteres de JSON, profundidade 10, textos de até 4.000 caracteres e listas de até 100 itens. Chaves de protótipo são descartadas. Fotos, vídeos e música permanecem no IndexedDB.
 
 #### `GET /api/purchases` (autenticado) → `{ purchases: [...] }`
 

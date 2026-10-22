@@ -17,6 +17,8 @@ async function create(req, res) {
     return http.fail(res, 400, "INVALID_THEME", "Tema inválido ou não configurado.", { field: "tema" });
 
   const titulo = validate.sanitizeStr(body.titulo, 80) || "Nós dois";
+  const themeData = validate.themeData(body.themeData);
+  if (!themeData.ok) return http.fail(res, 400, "INVALID_THEME_DATA", "Revise os detalhes do tema: conteúdo inválido ou muito extenso.", { field: "themeData" });
   const para   = validate.sanitizeStr(body.para, 60);
   if (!para) return http.fail(res, 400, "MISSING_RECIPIENT", "Informe o nome de quem recebe.", { field: "para" });
 
@@ -24,6 +26,7 @@ async function create(req, res) {
     id: security.randomId("p"),
     user_id: user.id,
     tema, titulo, para,
+    themeData: themeData.value,
     de: validate.sanitizeStr(body.de, 60),
     inicio: validate.sanitizeStr(body.inicio, 20),
     carta: validate.sanitizeStr(body.carta, 2000),

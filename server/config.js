@@ -8,8 +8,8 @@ module.exports = {
   // Diretório de dados (criado automaticamente)
   DATA_DIR: path.join(__dirname, "data"),
 
-  // Frontend raiz (um nível acima de server/)
-  FRONTEND_ROOT: path.resolve(__dirname, ".."),
+  // Apenas os arquivos públicos do site são servidos por HTTP.
+  FRONTEND_ROOT: path.resolve(__dirname, "../public"),
 
   // Sessão
   SESSION_TTL_MS: 7 * 24 * 60 * 60 * 1000,          // 7 dias
@@ -45,6 +45,7 @@ module.exports = {
   // Extensões de arquivos estáticos permitidos
   STATIC_EXTS: new Set([
     ".html", ".css", ".js", ".svg", ".png", ".jpg", ".jpeg",
-    ".webp", ".gif", ".ico", ".woff", ".woff2", ".ttf", ".json"
+    ".webp", ".gif", ".ico", ".woff", ".woff2", ".ttf", ".json",
+    ".mp3", ".wav", ".ogg", ".m4a", ".mp4", ".webm", ".mov"
   ]),
 };
