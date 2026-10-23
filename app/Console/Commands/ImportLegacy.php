@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Requests\PurchaseRequest;
 use App\Models\Purchase;
 use App\Models\Refund;
 use App\Models\Ticket;
@@ -44,6 +45,9 @@ class ImportLegacy extends Command
             }
             $purchaseIds = [];
             foreach ($tables['purchases'] as $row) {
+                $contentFields = ['tema', 'titulo', 'para', 'de', 'inicio', 'carta', 'frase', 'eventos', 'amo', 'legendas', 'fotoCapa', 'musicaNome', 'musicaArtista', 'usarIntro', 'autoplay', 'rodapeCustom', 'themeData', 'preview_data_url'];
+                $content = array_intersect_key($row, array_flip($contentFields));
+                Validator::make($content, (new PurchaseRequest($content))->rules())->validate();
                 Validator::make($row, ['id' => 'required|string|regex:/^[\w-]{3,100}$/', 'user_id' => 'required|string', 'tema' => 'required|in:'.implode(',', array_keys(config('gift.themes'))), 'status' => 'required|in:pending,paid,refunded', 'price_cents' => 'required|integer|min:0'])->validate();
                 throw_unless(isset($ids[$row['user_id']]) && ! isset($purchaseIds[$row['id']]), \RuntimeException::class, 'Referência de compra inválida.');
                 $purchaseIds[$row['id']] = true;
