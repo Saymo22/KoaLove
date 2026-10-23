@@ -1,5 +1,14 @@
 const {test}=require('node:test');
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+test('As configurações PHPUnit referenciam diretórios com testes existentes',()=>{
+  for(const config of ['phpunit.xml','phpunit.pgsql.xml']){
+    const suites=fs.readFileSync(config,'utf8').match(/<testsuites>([\s\S]*?)<\/testsuites>/)[1];
+    for(const [,directory]of suites.matchAll(/<directory>([^<]+)<\/directory>/g)){
+      assert(fs.existsSync(directory),`${config}: diretório ausente ${directory}`);
+      assert(fs.readdirSync(directory,{recursive:true}).some(file=>file.endsWith('Test.php')),`${config}: suíte vazia ${directory}`);
+    }
+  }
+});
 test('Referências estáveis, coleções exclusivas e reprodução de áudio',require('./exclusive-helpers.cjs'));
 test('Oito etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));
