@@ -1,0 +1,455 @@
+{
+  "admin/clientes": {
+    "url": "/admin/clientes.html",
+    "view": "admin.clientes",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css",
+      "resources/css/pages/admin-clientes-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/api/admin.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/admin/clientes.js"
+    ],
+    "entry": "resources/js/entries/admin-clientes.js"
+  },
+  "admin/dashboard": {
+    "url": "/admin/dashboard.html",
+    "view": "admin.dashboard",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/api/admin.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/admin/dashboard.js"
+    ],
+    "entry": "resources/js/entries/admin-dashboard.js"
+  },
+  "admin/login": {
+    "url": "/admin/login.html",
+    "view": "admin.login",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css",
+      "resources/css/pages/admin-login-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/admin/auth.js",
+      "resources/js/pages/extracted/admin-login-0.js"
+    ],
+    "entry": "resources/js/entries/admin-login.js"
+  },
+  "admin/reembolsos": {
+    "url": "/admin/reembolsos.html",
+    "view": "admin.reembolsos",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/api/admin.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/admin/reembolsos.js"
+    ],
+    "entry": "resources/js/entries/admin-reembolsos.js"
+  },
+  "admin/suporte": {
+    "url": "/admin/suporte.html",
+    "view": "admin.suporte",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/api/admin.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/admin/suporte.js"
+    ],
+    "entry": "resources/js/entries/admin-suporte.js"
+  },
+  "criar": {
+    "url": "/criar.html",
+    "view": "criar",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/criar.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/purchases.js",
+      "resources/js/core/gift-sync.js",
+      "resources/js/app.js",
+      "resources/js/core/db.js",
+      "resources/js/core/navbar.js",
+      "resources/js/core/theme-catalog.js",
+      "resources/js/pages/theme-editor.js",
+      "resources/js/pages/creator-workflow.js",
+      "resources/js/pages/criar.js"
+    ],
+    "entry": "resources/js/entries/criar.js"
+  },
+  "home": {
+    "url": "/home.html",
+    "view": "home",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/home.css",
+      "resources/css/pages/home-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/app.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/home.js"
+    ],
+    "entry": "resources/js/entries/home.js"
+  },
+  "index": {
+    "url": "/index.html",
+    "view": "index",
+    "styles": [
+      "resources/css/pages/index-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/pages/extracted/index-0.js"
+    ],
+    "entry": "resources/js/entries/index.js"
+  },
+  "login": {
+    "url": "/login.html",
+    "view": "login",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/login.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/core/auth.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/login.js"
+    ],
+    "entry": "resources/js/entries/login.js"
+  },
+  "minha-conta": {
+    "url": "/minha-conta.html",
+    "view": "minha-conta",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/minha-conta.css",
+      "resources/css/pages/minha-conta-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/api/purchases.js",
+      "resources/js/core/db.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/minha-conta.js",
+      "resources/js/pages/extracted/minha-conta-0.js",
+      "resources/js/pages/privacy.js"
+    ],
+    "entry": "resources/js/entries/minha-conta.js"
+  },
+  "pagamento": {
+    "url": "/pagamento.html",
+    "view": "pagamento",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/pagamento.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/purchases.js",
+      "resources/js/app.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/pagamento.js"
+    ],
+    "entry": "resources/js/entries/pagamento.js"
+  },
+  "privacidade": {
+    "url": "/privacidade.html",
+    "view": "privacidade",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/legal.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/extracted/privacidade-0.js"
+    ],
+    "entry": "resources/js/entries/privacidade.js"
+  },
+  "recuperar-senha": {
+    "url": "/recuperar-senha.html",
+    "view": "recuperar-senha",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/recuperar-senha.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/pages/recuperar-senha.js"
+    ],
+    "entry": "resources/js/entries/recuperar-senha.js"
+  },
+  "reembolso": {
+    "url": "/reembolso.html",
+    "view": "reembolso",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/legal.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/extracted/reembolso-0.js"
+    ],
+    "entry": "resources/js/entries/reembolso.js"
+  },
+  "resultado": {
+    "url": "/resultado.html",
+    "view": "resultado",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/resultado.css"
+    ],
+    "scripts": [
+      "resources/js/vendor/qrcode.js",
+      "resources/js/adapters/qr-code.js",
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/purchases.js",
+      "resources/js/core/gift-sync.js",
+      "resources/js/app.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/resultado.js"
+    ],
+    "entry": "resources/js/entries/resultado.js"
+  },
+  "termos": {
+    "url": "/termos.html",
+    "view": "termos",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/legal.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/core/navbar.js",
+      "resources/js/pages/extracted/termos-0.js"
+    ],
+    "entry": "resources/js/entries/termos.js"
+  },
+  "themes/amizade": {
+    "url": "/teste/amizade.html",
+    "view": "themes.amizade",
+    "styles": [
+      "resources/css/themes/amizade.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/amizade.js"
+    ],
+    "entry": "resources/js/entries/themes-amizade.js"
+  },
+  "themes/aniversario": {
+    "url": "/teste/aniversario.html",
+    "view": "themes.aniversario",
+    "styles": [
+      "resources/css/themes/aniversario.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/aniversario.js"
+    ],
+    "entry": "resources/js/entries/themes-aniversario.js"
+  },
+  "themes/carta-antiga": {
+    "url": "/teste/carta-antiga.html",
+    "view": "themes.carta-antiga",
+    "styles": [
+      "resources/css/themes/carta-antiga.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/carta-antiga.js"
+    ],
+    "entry": "resources/js/entries/themes-carta-antiga.js"
+  },
+  "themes/casamento": {
+    "url": "/teste/casamento.html",
+    "view": "themes.casamento",
+    "styles": [
+      "resources/css/themes/casamento.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/casamento.js"
+    ],
+    "entry": "resources/js/entries/themes-casamento.js"
+  },
+  "themes/cinema": {
+    "url": "/teste/cinema.html",
+    "view": "themes.cinema",
+    "styles": [
+      "resources/css/themes/cinema.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/core/exclusive-theme-runtime.js",
+      "resources/js/themes/cinema.js"
+    ],
+    "entry": "resources/js/entries/themes-cinema.js"
+  },
+  "themes/familia": {
+    "url": "/teste/familia.html",
+    "view": "themes.familia",
+    "styles": [
+      "resources/css/themes/familia.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/familia.js"
+    ],
+    "entry": "resources/js/entries/themes-familia.js"
+  },
+  "themes/jardim": {
+    "url": "/teste/jardim.html",
+    "view": "themes.jardim",
+    "styles": [
+      "resources/css/themes/jardim.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/jardim.js"
+    ],
+    "entry": "resources/js/entries/themes-jardim.js"
+  },
+  "themes/namoro": {
+    "url": "/teste/namoro.html",
+    "view": "themes.namoro",
+    "styles": [
+      "resources/css/themes/namoro.css",
+      "resources/css/pages/themes-namoro-extracted.css"
+    ],
+    "scripts": [
+      "resources/js/pages/extracted/themes-namoro-0.js",
+      "resources/js/themes/namoro.js"
+    ],
+    "entry": "resources/js/entries/themes-namoro.js"
+  },
+  "themes/netflix": {
+    "url": "/teste/netflix.html",
+    "view": "themes.netflix",
+    "styles": [
+      "resources/css/themes/netflix.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/core/exclusive-theme-runtime.js",
+      "resources/js/themes/netflix.js"
+    ],
+    "entry": "resources/js/entries/themes-netflix.js"
+  },
+  "themes/retro": {
+    "url": "/teste/retro.html",
+    "view": "themes.retro",
+    "styles": [
+      "resources/css/themes/retro.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/core/exclusive-theme-runtime.js",
+      "resources/js/themes/retro.js"
+    ],
+    "entry": "resources/js/entries/themes-retro.js"
+  },
+  "themes/scrapbook": {
+    "url": "/teste/scrapbook.html",
+    "view": "themes.scrapbook",
+    "styles": [
+      "resources/css/themes/scrapbook.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/themes/scrapbook.js"
+    ],
+    "entry": "resources/js/entries/themes-scrapbook.js"
+  },
+  "themes/spotify": {
+    "url": "/teste/spotify.html",
+    "view": "themes.spotify",
+    "styles": [
+      "resources/css/themes/spotify.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/core/exclusive-theme-runtime.js",
+      "resources/js/themes/spotify.js"
+    ],
+    "entry": "resources/js/entries/themes-spotify.js"
+  },
+  "themes/vinil": {
+    "url": "/teste/vinil.html",
+    "view": "themes.vinil",
+    "styles": [
+      "resources/css/themes/vinil.css"
+    ],
+    "scripts": [
+      "resources/js/core/theme-runtime.js",
+      "resources/js/core/exclusive-theme-runtime.js",
+      "resources/js/themes/vinil.js"
+    ],
+    "entry": "resources/js/entries/themes-vinil.js"
+  },
+  "ver": {
+    "url": "/ver.html",
+    "view": "ver",
+    "styles": [
+      "resources/css/ver.css"
+    ],
+    "scripts": [
+      "resources/js/app.js",
+      "resources/js/core/theme-catalog.js",
+      "resources/js/pages/ver.js"
+    ],
+    "entry": "resources/js/entries/ver.js"
+  }
+}

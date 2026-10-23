@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amizade Lendária — Para Você</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(["resources/css/themes/amizade.css","resources/js/entries/themes-amizade.js"])
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-orb"></div>
+  <div class="loader-text">Carregando amizade</div>
+</div>
+
+<!-- BG -->
+<div class="bg-mesh"></div>
+<div class="blobs">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+<div class="grain"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="scroll-bar" id="scrollBar"></div>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="inicio">
+  <div class="stickers">
+    <span class="sticker">🎮</span>
+    <span class="sticker">🎧</span>
+    <span class="sticker">🍕</span>
+    <span class="sticker">✨</span>
+    <span class="sticker">🎬</span>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Nível lendário
+      </div>
+      <h1 class="hero-title">
+        <span class="line1">AMIZADE</span>
+        <span class="line2">LENDÁRIA</span>
+      </h1>
+      <p class="hero-sub">
+        Um site feito <strong>exclusivamente</strong> para a pessoa que aguentou todas as minhas loucuras — e ainda voltou no dia seguinte.
+      </p>
+      <div class="hero-xp">
+        <div class="xp-label">
+          <span>Amizade XP</span>
+          <span class="xp-value">∞ / ∞</span>
+        </div>
+        <div class="xp-bar"><div class="xp-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="hero-photo-wrap">
+      <div class="hero-photo">
+        <!-- TROQUE PELA FOTO DE VOCÊS -->
+        <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=800&q=85&auto=format&fit=crop" alt="Nós dois">
+        <div class="hero-photo-tag">Desde 2018</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Role</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ================= CONTADOR + STATS ================= -->
+<section class="stats-sec" id="stats">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Tempo de guerra</span>
+      <h2 class="title">Há quanto tempo <em>somos nós</em></h2>
+      <p class="sub">Cada segundo desde o dia em que nos conhecemos. E ainda não desistimos um do outro — o que é impressionante.</p>
+    </div>
+
+    <div class="counter-card" data-reveal data-d="1">
+      <div class="counter-grid">
+        <div><span class="c-num" id="cdDays">0</span><span class="c-label">Dias</span></div>
+        <div><span class="c-num" id="cdHours">0</span><span class="c-label">Horas</span></div>
+        <div><span class="c-num" id="cdMins">0</span><span class="c-label">Minutos</span></div>
+        <div><span class="c-num" id="cdSecs">0</span><span class="c-label">Segundos</span></div>
+      </div>
+      <div class="counter-foot">
+        <p>Parceria oficial desde <strong id="startLabel">15 de junho de 2018</strong></p>
+      </div>
+    </div>
+
+    <div class="fun-stats" data-reveal data-d="2">
+      <div class="fun-stat">
+        <span class="fs-emoji">😂</span>
+        <span class="fs-num" data-count="2847">0</span>
+        <span class="fs-label">Risadas</span>
+      </div>
+      <div class="fun-stat">
+        <span class="fs-emoji">📱</span>
+        <span class="fs-num" data-count="1523">0</span>
+        <span class="fs-label">Memes enviados</span>
+      </div>
+      <div class="fun-stat">
+        <span class="fs-emoji">🍔</span>
+        <span class="fs-num" data-count="187">0</span>
+        <span class="fs-label">Rolês</span>
+      </div>
+      <div class="fun-stat">
+        <span class="fs-emoji">🤝</span>
+        <span class="fs-num" data-count="12">0</span>
+        <span class="fs-label">Brigas (resolvidas)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TIMELINE CAPÍTULOS ================= -->
+<section id="historia">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Arquivo confidencial</span>
+      <h2 class="title">Nossa <em>cronologia</em></h2>
+      <p class="sub">Os capítulos mais importantes de uma amizade que não estava nos planos de ninguém — mas virou a melhor parte.</p>
+    </div>
+
+    <div class="chapters">
+      <div class="chapter" data-reveal>
+        <div class="chapter-num">01</div>
+        <div class="chapter-body">
+          <p class="chapter-date">2018 — O início</p>
+          <h3>O primeiro "oi"</h3>
+          <p>Nos conhecemos no lugar mais aleatório possível. Nenhum de nós dois imaginava que aquele dia ia render tudo o que veio depois.</p>
+          <span class="chapter-tag">Início oficial</span>
+        </div>
+      </div>
+
+      <div class="chapter" data-reveal data-d="1">
+        <div class="chapter-num">02</div>
+        <div class="chapter-body">
+          <p class="chapter-date">2018 — A virada</p>
+          <h3>A primeira conversa de madrugada</h3>
+          <p>Aquela em que a gente ficou até as 4 da manhã falando de tudo. Ali eu soube: essa pessoa fica.</p>
+          <span class="chapter-tag">Nível: inseparáveis</span>
+        </div>
+      </div>
+
+      <div class="chapter" data-reveal data-d="2">
+        <div class="chapter-num">03</div>
+        <div class="chapter-body">
+          <p class="chapter-date">2019 — A prova</p>
+          <h3>O primeiro perrengue juntos</h3>
+          <p>Deu tudo errado. Rimos depois. E desde então eu sei que qualquer coisa fica mais leve com você por perto.</p>
+          <span class="chapter-tag">Sobrevivemos</span>
+        </div>
+      </div>
+
+      <div class="chapter" data-reveal data-d="3">
+        <div class="chapter-num">04</div>
+        <div class="chapter-body">
+          <p class="chapter-date">2021 — A estreia</p>
+          <h3>Nossa primeira viagem</h3>
+          <p>Três dias, duas fotos boas e umas 400 histórias que só nós dois vamos entender pelo resto da vida.</p>
+          <span class="chapter-tag">Bucket list: ✓</span>
+        </div>
+      </div>
+
+      <div class="chapter" data-reveal data-d="4">
+        <div class="chapter-num">05</div>
+        <div class="chapter-body">
+          <p class="chapter-date">Hoje</p>
+          <h3>E continua…</h3>
+          <p>Ainda temos muita coisa pra viver, muita besteira pra falar e muitos memes pra trocar. Isso aqui é só um marco — não o fim.</p>
+          <span class="chapter-tag">Em andamento</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALERIA POLAROID ================= -->
+<section id="galeria">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Registros oficiais</span>
+      <h2 class="title">Nosso mural de <em>provas</em></h2>
+      <p class="sub">Cada foto é uma prova em tribunal de que a gente se diverte junto. Clique em qualquer uma para ampliar.</p>
+    </div>
+    <div class="polaroids" id="polaroids" data-reveal data-d="1"></div>
+  </div>
+</section>
+
+<!-- ================= STORIES ================= -->
+<section class="stories-sec" id="stories">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Momentos em movimento</span>
+      <h2 class="title">Nossos <em>stories</em></h2>
+      <p class="sub">Toque em um story para reviver. Assim como no Instagram — mas sem o algoritmo estragando.</p>
+    </div>
+    <div class="stories-rail" id="storiesRail" data-reveal data-d="1"></div>
+  </div>
+</section>
+
+<!-- ================= INSIDE JOKES ================= -->
+<section id="jokes">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Coisas que só nós sabemos</span>
+      <h2 class="title">Manual de <em>sobrevivência</em></h2>
+      <p class="sub">Vire cada carta para revelar uma piada interna que ninguém de fora vai entender.</p>
+    </div>
+
+    <div class="marquee">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
+
+    <div class="jokes-cards" data-reveal data-d="1">
+      <div class="joke-card">
+        <div class="joke-face joke-front">
+          <span class="ico">🍕</span>
+          <h4>Aquele rolê</h4>
+          <span>Vire →</span>
+        </div>
+        <div class="joke-face joke-back">
+          <p>Aquela vez que a gente foi comer pizza e acabou virando uma aventura digna de filme. Nunca mais pedimos delivery do mesmo jeito.</p>
+        </div>
+      </div>
+      <div class="joke-card">
+        <div class="joke-face joke-front">
+          <span class="ico">🎤</span>
+          <h4>O bordão</h4>
+          <span>Vire →</span>
+        </div>
+        <div class="joke-face joke-back">
+          <p>Toda vez que alguém fala "aquela frase", a gente se olha e já sabe. Ninguém entende, mas a gente morre de rir.</p>
+        </div>
+      </div>
+      <div class="joke-card">
+        <div class="joke-face joke-front">
+          <span class="ico">🎬</span>
+          <h4>O filme</h4>
+          <span>Vire →</span>
+        </div>
+        <div class="joke-face joke-back">
+          <p>A gente assistiu 400 vezes e ainda chora nas mesmas cenas. Já sabemos as falas de cor — e isso é lindo.</p>
+        </div>
+      </div>
+      <div class="joke-card">
+        <div class="joke-face joke-front">
+          <span class="ico">🎵</span>
+          <h4>A música</h4>
+          <span>Vire →</span>
+        </div>
+        <div class="joke-face joke-back">
+          <p>Sempre que toca, um de nós dois manda print pro outro. É automático. Não tem como evitar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="quiz-sec" id="quiz">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Prova final</span>
+      <h2 class="title">Você me conhece <em>mesmo?</em></h2>
+      <p class="sub">Cinco perguntas. Se acertar tudo, a amizade é oficialmente comprovada em cartório.</p>
+    </div>
+
+    <div class="quiz-card" data-reveal data-d="1">
+      <div class="quiz-progress"><div class="quiz-progress-fill" id="quizProgressFill"></div></div>
+      <div id="quizContent">
+        <div class="quiz-step" id="quizStep">Pergunta 1 de 5</div>
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="qr-score" id="qrScore"></div>
+        <div class="qr-title" id="qrTitle"></div>
+        <p class="qr-msg" id="qrMsg"></p>
+        <button class="qr-btn" id="quizRestart">Tentar de novo ↺</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BUCKET LIST ================= -->
+<section id="bucket">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Lista oficial</span>
+      <h2 class="title">O que ainda vamos <em>fazer</em></h2>
+      <p class="sub">Marque os que já rolou — e me cobre os que faltam.</p>
+    </div>
+
+    <div class="bucket-list" data-reveal data-d="1">
+      <label class="bucket-item">
+        <input type="checkbox" checked>
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Ver um pôr do sol juntos</span>
+      </label>
+      <label class="bucket-item">
+        <input type="checkbox">
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Fazer uma viagem internacional</span>
+      </label>
+      <label class="bucket-item">
+        <input type="checkbox" checked>
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Passar uma madrugada inteira conversando</span>
+      </label>
+      <label class="bucket-item">
+        <input type="checkbox">
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Assistir uma maratona de filmes sem dormir</span>
+      </label>
+      <label class="bucket-item">
+        <input type="checkbox">
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Fazer um show de talentos (mesmo sem talento)</span>
+      </label>
+      <label class="bucket-item">
+        <input type="checkbox">
+        <span class="bucket-check"></span>
+        <span class="bucket-text">Ficar ricos e viajar de primeira classe</span>
+      </label>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CARTA / STICKY NOTE ================= -->
+<section class="letter-sec" id="carta">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Recado importante</span>
+      <h2 class="title">Uma coisa que eu <em>precisava dizer</em></h2>
+      <p class="sub">Toque no papel. Não é nada grave. É só… verdade.</p>
+    </div>
+
+    <div class="note-wrap" data-reveal data-d="1">
+      <div class="note" id="note">
+        <p class="note-eyebrow">P.S. — não joga fora</p>
+        <h3 class="note-title">Para você, meu parceiro(a):</h3>
+        <p class="note-preview">Eu não sou muito de falar isso em voz alta, mas você é uma das melhores coisas que já me aconteceram…</p>
+        <div class="note-full">
+          <p>Não sei se você sabe, mas tem dias que você é literalmente a única coisa que faz sentido. E não é exagero — é só a verdade.</p>
+          <p>Obrigado(a) por aguentar meus áudios de 4 minutos, pelas risadas que ninguém mais entende, por ficar mesmo quando eu tô insuportável.</p>
+          <p>A vida seria muito mais sem graça sem você por perto. E eu não quero descobrir como seria.</p>
+          <p>Fica comigo nessa, tá? Tem muita coisa boa ainda pra gente viver.</p>
+          <p class="sign">Com carinho,<br>seu(sua) amigo(a) favorito(a) ✦</p>
+        </div>
+        <button class="note-btn" id="noteBtn">Ler tudo →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CERTIFICADO ================= -->
+<section id="certificado">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Documento oficial</span>
+      <h2 class="title">Certificado de <em>amizade</em></h2>
+      <p class="sub">Válido em qualquer lugar do mundo. Não expira. Não tem letra miúda.</p>
+    </div>
+
+    <div class="cert-wrap" data-reveal data-d="1">
+      <div class="cert">
+        <div class="cert-crown">👑</div>
+        <p class="cert-eyebrow">Certificado oficial</p>
+        <h3 class="cert-title">Amizade Lendária</h3>
+        <p class="cert-body">
+          Certificamos, para todos os fins e efeitos, que <strong>Seu Amigo(a)</strong> é oficialmente reconhecido(a) como o(a) <strong>melhor amigo(a)</strong> de <strong>Seu Nome</strong>, com todos os direitos e deveres que essa honraria carrega.
+        </p>
+        <p class="cert-valid">✦ Válido para sempre · Em qualquer lugar do mundo ✦</p>
+        <div class="cert-sign">
+          <span class="sig">Seu Nome</span>
+          <div class="seal">✦</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROLETA ================= -->
+<section class="roulette-sec" id="roleta">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <span class="eyebrow">Surpresa</span>
+      <h2 class="title">Roleta da <em>memória</em></h2>
+      <p class="sub">Cansou de ler? Gira a roleta e volta no tempo com uma memória aleatória nossa.</p>
+    </div>
+
+    <div class="roulette-card" data-reveal data-d="1">
+      <button class="roulette-btn" id="rouletteBtn">🎲 Girar roleta</button>
+      <div class="roulette-result">
+        <p class="roulette-memory" id="rouletteMemory"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="f-emoji">🤝</span>
+  <p>Feito com carinho, café e um pouco de insônia — para a pessoa que faz tudo valer a pena.</p>
+  <div class="f-names">Parceria Oficial ✦</div>
+  <small>Para sempre</small>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+</div>
+
+<!-- STORY VIEWER -->
+<div id="storyViewer">
+  <div class="story-frame">
+    <div class="story-progress" id="storyProgress"></div>
+    <div class="story-media" id="storyMedia"></div>
+    <div class="story-veil"></div>
+    <div class="story-head">
+      <img class="story-ava" id="storyAva" src="" alt="">
+      <div>
+        <div class="story-name" id="storyName">Nós dois</div>
+        <div class="story-time" id="storyTime">agora</div>
+      </div>
+    </div>
+    <button class="story-close" id="storyClose">✕</button>
+    <p class="story-cap" id="storyCap"></p>
+    <div class="story-tap l" id="tapPrev"></div>
+    <div class="story-tap r" id="tapNext"></div>
+  </div>
+</div>
+
+<!-- PLAYER -->
+<div class="player" id="player">
+  <div class="disc" id="disc">
+    <img id="discCover" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=200&q=80&auto=format&fit=crop" alt="">
+    <div class="disc-hole"></div>
+  </div>
+  <div class="p-info">
+    <div class="p-title" id="pTitle">Amigos para Sempre</div>
+    <div class="p-artist" id="pArtist">Trilha oficial</div>
+  </div>
+  <div class="p-eq"><i></i><i></i><i></i><i></i></div>
+  <button class="p-btn" id="playBtn" aria-label="Play/Pause">▶</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<button id="toTop" aria-label="Voltar ao topo">↑</button>
+
+<!-- ÁUDIO -->
+<audio id="audio" loop preload="none">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+</audio>
+
+
+
+</body>
+</html>

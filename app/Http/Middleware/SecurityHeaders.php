@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class SecurityHeaders
+{
+    public function handle(Request $request, Closure $next)
+    {
+        try {
+            $response = $next($request);
+        } catch (\Throwable $error) {
+            report($error);
+            $response = app(ExceptionHandler::class)->render($request, $error);
+        }
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        $response->headers->set('Referrer-Policy', 'no-referrer');
+        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()');
+        if ($request->isSecure()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000');
+        }
+        if ($request->is('ver.html', 'teste/*', 'minha-conta.html', 'admin/*', 'api/*')) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+        if ($request->is('api/*')) {
+            $response->headers->set('Cache-Control', 'no-store');
+        }
+        DB::table('audit_events')->insert(['user_id' => $request->user()?->id, 'action' => $request->method().' '.($request->route()?->uri() ?? 'unmatched'), 'ip_hash' => hash_hmac('sha256', (string) $request->ip(), config('app.key')), 'status' => $response->getStatusCode(), 'created_at' => now()]);
+
+        return $response;
+    }
+}

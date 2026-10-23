@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu presente está pronto ❤️</title>
+
+
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(["resources/css/base.css","resources/css/resultado.css","resources/js/entries/resultado.js"])
+</head>
+<body class="app">
+
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ✅ NAVBAR INJETADA -->
+    <div id="navbar"></div>
+
+    <main class="rs-wrap">
+
+        <div class="rs-hero">
+            <div class="rs-check">
+                <div class="rs-check-circulo"></div>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <span class="rs-particle"></span>
+                <svg viewBox="0 0 52 52" aria-hidden="true">
+                    <path d="M14 27 L23 36 L39 18"/>
+                </svg>
+            </div>
+            <h1 class="rs-titulo">Pagamento <em>confirmado!</em></h1>
+            <p class="rs-sub">Seu presente está pronto. Dê uma olhada abaixo antes de compartilhar.</p>
+        </div>
+
+        <div class="rs-card">
+            <div class="rs-card-titulo">Veja como ficou</div>
+            <div class="rs-preview">
+                <div class="rs-preview-browser">
+                    <div class="rs-preview-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+                    <div class="rs-preview-url">nossoamor.com/sua-historia</div>
+                    <a class="rs-preview-full" id="btnFullPreview" target="_blank" rel="noopener">↗ Tela cheia</a>
+                </div>
+                <div class="rs-preview-body">
+                    <iframe id="rsPreviewIframe" title="Prévia do seu presente"></iframe>
+                </div>
+            </div>
+            <p class="rs-preview-hint">
+                Role dentro do preview para ver cada seção. <b>Tudo pronto pra emocionar.</b>
+            </p>
+        </div>
+
+        <div class="rs-card">
+            <div class="rs-card-titulo">QR Code do presente</div>
+            <div class="rs-qr-box">
+                <div class="rs-qr-frame">
+                    <div id="qr"></div>
+                </div>
+                <p class="rs-qr-hint">
+                    Aponte a câmera ou <b>imprima em um cartão</b> para entregar pessoalmente.
+                </p>
+            </div>
+        </div>
+
+        <div class="rs-card">
+            <div class="rs-card-titulo">Link para compartilhar</div>
+            <div class="rs-link-row">
+                <input type="text" id="link" readonly>
+                <button type="button" id="btnCopiar">Copiar</button>
+            </div>
+            <div class="rs-share">
+                <a class="rs-btn wpp" id="btnWpp" target="_blank" rel="noopener">
+                    <span>💬</span><span>WhatsApp</span>
+                </a>
+                <a class="rs-btn ver" id="btnVer" target="_blank" rel="noopener">
+                    <span>👁️</span><span>Ver presente</span>
+                </a>
+                <button class="rs-btn baixar" id="btnBaixar" type="button">
+                    <span>⬇️</span><span>Baixar QR</span>
+                </button>
+                <a class="rs-btn copiar" id="btnCopiar2" role="button">
+                    <span>🔗</span><span>Copiar link</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="rs-card">
+            <div class="rs-card-titulo">Como entregar</div>
+            <ul class="rs-dicas">
+                <li>
+                    <span class="rs-dicas-icon">💬</span>
+                    <span><b>Mande pelo WhatsApp</b> — envie direto.</span>
+                </li>
+                <li>
+                    <span class="rs-dicas-icon">🖨️</span>
+                    <span><b>Imprima o QR Code</b> em um cartão.</span>
+                </li>
+                <li>
+                    <span class="rs-dicas-icon">✨</span>
+                    <span><b>Assista a reação</b> — cada abertura é uma surpresa.</span>
+                </li>
+            </ul>
+            <div class="rs-selos">
+                <div class="rs-selo" data-icon="🔒">Link privado</div>
+                <div class="rs-selo" data-icon="♾️">Para sempre</div>
+                <div class="rs-selo" data-icon="💛">Feito com carinho</div>
+            </div>
+        </div>
+
+        <div class="rs-outro">
+            <a href="criar.html">Criar outro presente</a>
+        </div>
+
+    </main>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
