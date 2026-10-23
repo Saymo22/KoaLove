@@ -14,6 +14,8 @@ const CONFIG_CACHE_KEY = "nossoamor_config_cache";
 
 function _aplicarConfig(data) {
   if (!data || typeof data !== "object") return;
+  window.APP_CONFIG ||= {};
+  window.APP_CONFIG.DIRECT_UPLOADS = data.media_upload === 'direct';
   if (typeof data.price_cents === "number") CONFIG.preco = data.price_cents / 100;
   if (typeof data.simulation === 'boolean') CONFIG.modoTeste = data.simulation;
   if (data.currency) CONFIG.currency = data.currency;

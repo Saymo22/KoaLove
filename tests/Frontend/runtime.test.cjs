@@ -9,6 +9,17 @@ test('As configurações PHPUnit referenciam diretórios com testes existentes',
     }
   }
 });
+test('Uploads em nuvem usam a URL temporária sem enviar cookies ou CSRF ao storage',async()=>{
+  const calls=[];let request;
+  const scope=vm.createContext({window:{APP_CONFIG:{DIRECT_UPLOADS:true},ApiClient:{get(){},post:async(path,body)=>{
+    calls.push({path,body});return path.endsWith('/upload-url')?{upload_id:'intent-1',url:'https://storage.example.test/private',headers:{'Content-Type':'video/mp4'}}:{id:'asset',kind:'video'};
+  },ApiError:class extends Error{constructor(v){super(v.message);Object.assign(this,v);}}}},fetch:async(url,options)=>{request={url,options};return{ok:true};}});
+  vm.runInContext(fs.readFileSync('resources/js/api/purchases.js','utf8'),scope);
+  const blob={type:'video/mp4',size:50*1024*1024};const result=await scope.window.ApiPurchases.upload('purchase','asset',blob);
+  assert.equal(result.kind,'video');assert.equal(request.url,'https://storage.example.test/private');assert.equal(request.options.credentials,'omit');
+  assert.equal(request.options.referrerPolicy,'no-referrer');assert.equal(request.options.body,blob);assert.equal(request.options.headers['X-CSRF-TOKEN'],undefined);
+  assert.equal(calls[0].body.bytes,blob.size);assert.equal(calls[1].body.upload_id,'intent-1');assert(calls[1].path.endsWith('/complete-upload'));
+});
 test('Referências estáveis, coleções exclusivas e reprodução de áudio',require('./exclusive-helpers.cjs'));
 test('Oito etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));

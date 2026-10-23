@@ -42,7 +42,7 @@ Os testes recusam bancos sem sufixo _test (exceto SQLite em memória). A CI exec
 
 Sirva SOMENTE public/ pelo Nginx/Apache + PHP-FPM, com HTTPS. APP_ENV=production, APP_DEBUG=false, SESSION_SECURE_COOKIE=true e APP_URL definitivo. Configure SMTP MAIL_* e PRIVACY_EMAIL/controlador antes de publicar. A recuperação retorna indisponível quando o mailer ainda é log em produção. Não use artisan serve em produção.
 
-Instale FFprobe atualizado pelo sistema. Configure limite de corpo no proxy, timeout de upload, pool FPM limitado e PostgreSQL/cache compartilhado. Armazenamento local exige volume persistente privado: múltiplas instâncias precisam de disco compartilhado ou outro adapter. Não há configuração Vercel.
+Instale FFprobe atualizado pelo sistema. Configure limite de corpo no proxy, timeout de upload, pool FPM limitado e PostgreSQL/cache compartilhado. Armazenamento local exige volume persistente privado: múltiplas instâncias precisam de disco compartilhado ou outro adapter. Para hospedagem serverless, consulte [Laravel na Vercel](VERCEL.md): PostgreSQL externo e S3 privado são necessários.
 
 Execute composer install --no-dev --optimize-autoloader, npm ci, npm run build, php artisan migrate --force e php artisan optimize no pipeline. Inicie php artisan schedule:run a cada minuto (cron/Task Scheduler) para privacy:prune diário; monitore falhas e espaço em disco. Faça backups criptografados com expiração máxima de 30 dias e restauração testada. Configure o servidor web para não registrar query strings dos links compartilhados.
 

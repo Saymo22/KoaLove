@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        if (getenv('VERCEL')) {
+            $middleware->trustProxies(at: ['127.0.0.1', '::1'], headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
+        }
         $middleware->alias(['api.auth' => ApiAuthentication::class, 'admin' => Administrator::class]);
         $middleware->prepend([SecurityHeaders::class, LimitJsonBody::class]);
     })

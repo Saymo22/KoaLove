@@ -65,7 +65,7 @@ class PurchaseController extends ApiController
             return $p;
         });
         foreach ($obsolete as $asset) {
-            Storage::disk('local')->delete($asset->path);
+            Storage::disk($asset->disk)->delete($asset->path);
         }
 
         return $this->ok(['purchase' => $this->project($purchase)]);

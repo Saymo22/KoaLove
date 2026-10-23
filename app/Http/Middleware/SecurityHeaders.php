@@ -27,7 +27,8 @@ class SecurityHeaders
         if ($request->is('ver.html', 'teste/*', 'minha-conta.html', 'admin/*', 'api/*')) {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
         }
-        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+        $origins = implode(' ', array_filter(config('gift.upload_origins', []), fn ($origin) => preg_match('/\Ahttps:\/\/[a-z0-9.-]+(?::[0-9]+)?\z/i', $origin)));
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' $origins; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
         if ($request->is('api/*')) {
             $response->headers->set('Cache-Control', 'no-store');
         }

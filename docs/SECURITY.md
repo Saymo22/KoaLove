@@ -12,6 +12,8 @@ Mídias ficam em storage/app/private, sem symlink público. Downloads verificam 
 
 ## Acesso, retenção e LGPD
 
+Na Vercel, use PostgreSQL externo para dados/sessões/cache e S3 privado para arquivos. Upload direto usa uma reserva autenticada com cota e objeto em quarentena; a confirmação valida o conteúdo no servidor. URLs assinadas de upload expiram em 5 minutos e as de download em 1 minuto. Uma URL de download já emitida permanece utilizável até expirar, inclusive após revogação do presente. Configure CORS somente para origens do projeto, bloqueie acesso público ao bucket e monitore a limpeza diária das reservas expiradas. Não armazene dados persistentes em `/tmp`. Declare Neon/AWS ou os provedores efetivamente escolhidos na política pública antes do lançamento.
+
 - Conta e presentes ativos: utilizados para entregar o serviço enquanto a conta permanecer ativa. Nenhuma promessa técnica de hospedagem eterna.
 - Rascunhos não pagos: 30 dias desde a última atualização; upload renova essa atividade.
 - Presente excluído: link revogado imediatamente, purga em 30 dias.

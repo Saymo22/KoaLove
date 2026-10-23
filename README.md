@@ -15,6 +15,7 @@ Suas fotos ficam privadas no servidor. Quem possui o link de um presente liberad
 ## Documentação
 
 - [Desenvolvimento e testes](docs/DEVELOPMENT.md)
+- [Implantação na Vercel](docs/VERCEL.md)
 - [Contrato da API](docs/API.md)
 - [Segurança](docs/SECURITY.md)
 - [Migração dos dados antigos](docs/MIGRATION.md)

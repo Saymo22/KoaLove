@@ -7,6 +7,16 @@
     update: (id, payload) => post(`/purchases/${encodeURIComponent(id)}/update`, payload),
     remove: (id) => post(`/purchases/${encodeURIComponent(id)}/delete`, {}),
     upload: async (id, assetId, blob) => {
+      if (window.APP_CONFIG?.DIRECT_UPLOADS) {
+        const path='/purchases/'+encodeURIComponent(id)+'/media/'+encodeURIComponent(assetId);
+        const ticket=await post(path+'/upload-url',{mime:blob.type,bytes:blob.size});
+        if(ticket.complete)return {id:ticket.id,kind:ticket.kind};
+        let response;
+        try { response=await fetch(ticket.url,{method:'PUT',headers:ticket.headers,body:blob,credentials:'omit',referrerPolicy:'no-referrer'}); }
+        catch { throw new window.ApiClient.ApiError({status:0,code:'NETWORK_ERROR',message:'Falha de conexão com o armazenamento. Seu rascunho foi mantido; tente novamente.'}); }
+        if(!response.ok)throw new window.ApiClient.ApiError({status:response.status,code:'UPLOAD_STORAGE_ERROR',message:'Não foi possível enviar a mídia ao armazenamento. Tente novamente.'});
+        return post(path+'/complete-upload',{upload_id:ticket.upload_id});
+      }
       const base = (window.APP_CONFIG?.API_BASE || '/api').replace(/\/+$/, '');
       let res;
       try {

@@ -14,7 +14,8 @@
 ## Banco (resumo)
 - users: nome, email único normalizado, senha hash, role user/admin, deletion_requested_at.
 - purchases: ID textual, user FK, chave idempotente única por usuário, share_token único, status, content/manifest JSON, versão, valores em centavos, timestamps, soft delete.
-- media_assets: purchase FK, asset_id único por compra, tipo, MIME, bytes e caminho privado.
+- media_assets: purchase FK, asset_id único por compra, tipo, MIME, bytes, disk e caminho privado.
+- media_uploads: UUID, compra/asset, MIME, bytes reservados, disk/caminho privado e expiração; controla uploads diretos em quarentena.
 - refunds: compra/usuário FK, motivo, status, decisão e datas.
 - tickets: usuário FK, assunto, status, mensagens JSON.
 - audit_events: usuário FK anulável, rota sem parâmetros, IP HMAC, status e data; retenção 30 dias.

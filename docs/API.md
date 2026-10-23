@@ -12,12 +12,14 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.
 - GET/POST /purchases, GET /purchases/{purchase}.
 - POST /purchases/{purchase}/media/{asset}: corpo binário, MIME real validado; asset de 16 a 100 caracteres alfanuméricos, hífen ou sublinhado. Repetições do mesmo ID/tipo reutilizam a mídia existente.
+- Com `GET /config` indicando `media_upload=direct`, POST /purchases/{purchase}/media/{asset}/upload-url recebe mime/bytes e devolve upload_id/url/headers para PUT direto sem cookies; pode devolver complete=true para asset já concluído. POST /purchases/{purchase}/media/{asset}/complete-upload recebe upload_id e valida o objeto antes de liberar seu uso. Reservas contam na cota e expiram em 20 minutos; a URL de PUT vale 5 minutos. Uma nova tentativa começa solicitando upload-url novamente.
 - POST /purchases/{purchase}/update: conteúdo + media:{photos:[asset],videos:[asset],music:asset|null}. Só aceita mídias da própria compra; finaliza content_version=1.
 - POST /purchases/{purchase}/migrate: atualização de compra legada paga ainda sem mídia sincronizada.
 - POST /purchases/{purchase}/pay: metodo pix/card e cupom opcional; preço calculado no servidor. Repetir pagamento aprovado não duplica a operação.
 - POST /purchases/{purchase}/delete: soft delete; revoga compartilhamento.
 - GET /shared/{token}, /shared/{token}/media/{asset}: somente presente pago, finalizado e ativo. Token aleatório de 256 bits. Projeção pública não inclui dono, cobrança nem dados de outros temas. Mídia aceita Range via Symfony.
 - GET /purchases/{purchase}/media/{asset}: exige dono e mídia selecionada no manifesto.
+- Para mídia S3, o GET autorizado retorna redirecionamento para uma URL privada assinada por 1 minuto; o armazenamento atende Range. Objetos em quarentena não são acessíveis por essas rotas.
 - GET /privacy/export: exportação autenticada JSON. Arquivos binários seguem disponíveis nos presentes da conta; não estão embutidos na exportação.
 - POST /privacy/delete: confirma password, desativa conta e links imediatamente; purga em até 30 dias.
 - Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Reembolso e status da compra mudam na mesma transação. Não há gateway de estorno real.

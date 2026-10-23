@@ -10,6 +10,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (getenv('VERCEL')) {
+            URL::forceScheme('https');
+            URL::forceRootUrl(config('app.url'));
+        }
         Gate::policy(Purchase::class, PurchasePolicy::class);
         foreach (['pages' => 1200, 'login' => 5, 'register' => 3, 'recovery' => 3, 'api' => 240, 'write' => 90, 'create' => 10, 'admin' => 120] as $name => $limit) {
             RateLimiter::for($name, fn ($request) => Limit::perMinute($limit)->by($name.':'.$request->ip()));

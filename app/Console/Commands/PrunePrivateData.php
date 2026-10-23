@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\MediaUpload;
 use App\Models\Purchase;
 use App\Models\User;
+use App\Services\GiftMedia;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -16,9 +18,13 @@ class PrunePrivateData extends Command
 
     public function handle(): int
     {
+        MediaUpload::where('expires_at', '<=', now())->each(function ($upload) {
+            Storage::disk($upload->disk)->delete($upload->path);
+            $upload->delete();
+        });
         User::where('deletion_requested_at', '<=', now()->subDays(config('gift.deletion_days')))->each(function ($user) {
             // Arquivos primeiro: uma falha permite tentar novamente sem perder a referência.
-            Purchase::withTrashed()->where('user_id', $user->id)->each(fn ($p) => Storage::disk('local')->deleteDirectory('gifts/'.$p->id));
+            Purchase::withTrashed()->where('user_id', $user->id)->each(fn ($p) => GiftMedia::deletePurchase($p));
             $user->delete();
         });
         $expired = function ($q) {
@@ -31,7 +37,7 @@ class PrunePrivateData extends Command
                     if (! $p) {
                         return;
                     }
-                    Storage::disk('local')->deleteDirectory('gifts/'.$p->id);
+                    GiftMedia::deletePurchase($p);
                     $p->forceDelete();
                 });
             });

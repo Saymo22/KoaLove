@@ -8,6 +8,9 @@ server/data/
 server/node_modules/
 server/.env
 .tools/
+.vercel/
+/dist/
+/bin/
 /vendor/
 /node_modules/
 /.env

@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home.html');
@@ -13,7 +16,14 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware('throttle:api')->group(function () {
-    Route::get('config', fn () => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn () => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => config('filesystems.default') === 's3' ? 'direct' : 'server', 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('internal/prune', function (Request $request) {
+        $secret = config('gift.cron_secret');
+        abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);
+        abort_unless(Artisan::call('privacy:prune') === 0, 503);
+
+        return response()->json(['ok' => true]);
+    });
     Route::post('auth/register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::post('auth/forgot-password', [AuthController::class, 'forgot'])->middleware('throttle:recovery');
@@ -33,6 +43,8 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
             Route::post('purchases/{purchase}/delete', [PurchaseController::class, 'destroy']);
             Route::post('purchases/{purchase}/pay', [PurchaseController::class, 'pay']);
             Route::post('purchases/{purchase}/media/{asset}', [MediaController::class, 'upload']);
+            Route::post('purchases/{purchase}/media/{asset}/upload-url', [CloudUploadController::class, 'reserve']);
+            Route::post('purchases/{purchase}/media/{asset}/complete-upload', [CloudUploadController::class, 'complete']);
             Route::get('privacy/export', [PrivacyController::class, 'export']);
             Route::post('privacy/delete', [PrivacyController::class, 'destroy']);
         });
