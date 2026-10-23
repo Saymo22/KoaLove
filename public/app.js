@@ -18,7 +18,6 @@ function _aplicarConfig(data) {
   if (data.currency) CONFIG.currency = data.currency;
   if (data.coupons && typeof data.coupons === "object") CONFIG.coupons = data.coupons;
   if (data.themes && typeof data.themes === "object") Object.assign(THEMES, data.themes);
-  if(window.APP_CONFIG)window.APP_CONFIG.MEDIA_UPLOAD=data.media_upload||'local';
 }
 
 /* Promessa global: aguardar antes de usar THEMES ou CONFIG.preco */

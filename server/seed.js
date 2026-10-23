@@ -59,7 +59,6 @@ const THEMES = {
 };
 
 async function seed() {
-  if(config.CLOUD)throw new Error('O seed de demonstração é somente local. Na Vercel, configure os serviços e ADMIN_EMAIL/ADMIN_PASS; a inicialização é automática.');
   await initAll();
 
   // 1) Config (preço + temas + cupons)

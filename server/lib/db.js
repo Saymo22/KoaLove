@@ -114,4 +114,4 @@ async function initAll() {
   } catch(err) {if(err.code !== 'ENOENT') throw err;}
   for (const store of Object.values(stores)) await store.load();
 }
-module.exports = config.CLOUD ? require('./postgres-db') : { JsonStore, stores, initAll, transactionAcross, withRequest:fn=>fn() };
+module.exports = { JsonStore, stores, initAll, transactionAcross };

@@ -88,14 +88,17 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
-async function handleRequest(req, res) {
+async function main() {
+  await initAll();
+
+  const server = http.createServer(async (req, res) => {
     try {
     const url = new URL(req.url, "http://x");
     decodeURIComponent(url.pathname);
     const pathname = url.pathname;
 
     // API, mídia e arquivos públicos têm orçamentos separados.
-    const rl = await rateLimit.check(req);
+    const rl = rateLimit.check(req);
     for (const [k, v] of Object.entries(rl.headers)) res.setHeader(k, v);
     if (!rl.allowed) {
       log(req, 429);
@@ -129,15 +132,7 @@ async function handleRequest(req, res) {
       else res.destroy();
       if (!invalid) console.error("[request]", err);
     }
-}
-
-async function main() {
-  await initAll();
-  const {withRequest}=require('./lib/db');
-  const server = http.createServer((req,res)=>Promise.resolve(withRequest(()=>handleRequest(req,res))).catch(()=>{
-    if(!res.headersSent)httpLib.fail(res,503,'STORAGE_UNAVAILABLE','Não foi possível acessar o armazenamento.');
-    else res.destroy();
-  }));
+  });
 
   server.listen(config.PORT, config.HOST, () => {
     console.log("─".repeat(60));
@@ -152,5 +147,4 @@ async function main() {
   });
 }
 
-module.exports = {handleRequest,main};
-if(require.main === module) main().catch(e => { console.error("Falha ao iniciar:", e); process.exit(1); });
+main().catch(e => { console.error("Falha ao iniciar:", e); process.exit(1); });

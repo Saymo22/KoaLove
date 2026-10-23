@@ -38,9 +38,6 @@ async function handle(req, res) {
     if (method === "POST" && pathname === "/api/purchases")     return await purchases.create(req, res);
     if (method === "GET"  && pathname === "/api/purchases")     return await purchases.list(req, res);
     let m;
-    if (method === 'POST' && (m = match(method, '/api/purchases/:id/media/:asset/prepare', pathname))) return await require('./cloud-media').prepare(req,res,m.id,m.asset);
-    if (method === 'POST' && (m = match(method, '/api/purchases/:id/media/:asset/token', pathname))) return await require('./cloud-media').token(req,res,m.id,m.asset);
-    if (method === 'POST' && (m = match(method, '/api/purchases/:id/media/:asset/complete', pathname))) return await require('./cloud-media').complete(req,res,m.id,m.asset);
     if (method === "GET" && (m = match(method, "/api/shared/:token", pathname))) return await purchases.shared(req,res,m.token);
     if (method === "GET" && (m = match(method, "/api/shared/:token/media/:asset", pathname))) return await purchases.media(req,res,m.token,m.asset,true);
     if (method === "GET" && (m = match(method, "/api/purchases/:id/media/:asset", pathname))) return await purchases.media(req,res,m.id,m.asset);

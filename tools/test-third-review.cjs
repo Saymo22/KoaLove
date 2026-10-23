@@ -8,7 +8,7 @@ process.env.NA_DATA_DIR=unitDir;
 const hashes=()=>Object.fromEntries(fs.readdirSync(root+'/server/data').filter(n=>n.endsWith('.json')).map(n=>[n,require('node:crypto').createHash('sha256').update(fs.readFileSync(root+'/server/data/'+n)).digest('hex')]));
 const original=hashes();let child,logs='';const base='http://127.0.0.1:3206',cookie='nossoamor_sid=review-2-isolated-session';
 async function start(){
- logs='';const wrapper=`const fs=require('fs');const mailer=require('./server/lib/mailer');mailer.ready=()=>true;mailer.sendPasswordReset=async(email,token)=>fs.writeFileSync(process.env.NA_DATA_DIR+'/mail.json',JSON.stringify({email,token}));require('./server/index').main();`;
+ logs='';const wrapper=`const fs=require('fs');const mailer=require('./server/lib/mailer');mailer.ready=()=>true;mailer.sendPasswordReset=async(email,token)=>fs.writeFileSync(process.env.NA_DATA_DIR+'/mail.json',JSON.stringify({email,token}));require('./server/index');`;
  child=spawn(process.execPath,['-e',wrapper],{cwd:root,env:{...process.env,NA_DATA_DIR:apiDir,PORT:'3206'},stdio:['ignore','pipe','pipe']});
  child.stdout.on('data',b=>logs+=b);child.stderr.on('data',b=>logs+=b);
  await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(new Error(logs||'Timeout')),10000);child.once('error',reject);child.once('exit',()=>{clearTimeout(timeout);reject(new Error(logs));});child.stdout.on('data',()=>{if(logs.includes('Servidor de testes rodando')){clearTimeout(timeout);resolve();}});});

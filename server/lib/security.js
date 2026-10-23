@@ -47,7 +47,7 @@ const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com data:; " +
     "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
-    "connect-src 'self' https://*.blob.vercel-storage.com https://blob.vercel-storage.com; " +
+    "connect-src 'self'; " +
     "frame-ancestors 'self'",
 };
 

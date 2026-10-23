@@ -27,7 +27,6 @@ function check(req) {
   const ip = require('./http').clientIp(req);
   const { rule, limit, windowMs } = pickRule(req.method, req.url.split("?")[0]);
   const key = `${ip}|${rule}`;
-  if(config.CLOUD)return require('./postgres-db').rateLimit(key,limit,windowMs);
   const now = Date.now();
 
   let b = buckets.get(key);

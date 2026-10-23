@@ -27,8 +27,6 @@ O projeto foi construído do zero, sem frameworks, focando em performance e desi
 
 ## 🖥️ Backend e API
 
-Para hospedar o site e o backend na Vercel, siga [VERCEL.md](VERCEL.md). A integração usa PostgreSQL para os registros e Vercel Blob privado para mídia, mantendo o modo local com JSON. A raiz do projeto na Vercel deve ser a raiz deste repositório.
-
 O servidor fica em `server/` e serve simultaneamente a **API REST** (`/api/*`) e os **arquivos estáticos** de `public/`. Os endereços continuam iguais: `/criar.html`, `/ver.html`, `/admin/login.html` etc.
 
 Os 13 modelos completos ficam em `public/teste/`: Namoro, Casamento, Amizade, Família, Aniversário, Carta Antiga, Jardim Secreto, Scrapbook e os exclusivos Netflix, Vinil, Cinema, Spotify e Retrô. Cada um possui seu próprio HTML, CSS e JavaScript, sem misturar os estilos entre temas. Para abrir um exemplo, use `/ver.html?demo=1&tema=netflix` (substitua pelo identificador do tema).

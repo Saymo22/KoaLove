@@ -7,19 +7,6 @@
     update: (id, payload) => post(`/purchases/${encodeURIComponent(id)}/update`, payload),
     remove: (id) => post(`/purchases/${encodeURIComponent(id)}/delete`, {}),
     upload: async (id, assetId, blob) => {
-      if(window.NA_CONFIG_READY)await window.NA_CONFIG_READY;
-      if(window.APP_CONFIG?.MEDIA_UPLOAD==='blob') {
-        const route=`/purchases/${encodeURIComponent(id)}/media/${encodeURIComponent(assetId)}`;
-        const intent=await post(route+'/prepare',{type:blob.type,size:blob.size});
-        if(intent.complete)return {id:assetId,kind:intent.kind};
-        if(intent.reused){
-          try{return await post(route+'/complete',{});}catch(error){if(error.code!=='UPLOAD_INCOMPLETE')throw error;}
-        }
-        if(!window.NABlob)throw new Error('Não foi possível carregar o envio de arquivos. Atualize a página.');
-        const base=(window.APP_CONFIG.API_BASE||'/api').replace(/\/+$/,'');
-        await window.NABlob.upload(intent.pathname,blob,{access:'private',contentType:blob.type,multipart:true,handleUploadUrl:base+route+'/token'});
-        return post(route+'/complete',{});
-      }
       const base = (window.APP_CONFIG?.API_BASE || '/api').replace(/\/+$/, '');
       let res;
       try {

@@ -47,7 +47,6 @@ function project(p, shared=false) {
   const output = shared ? Object.fromEntries(CONTENT.map(key=>[key,p[key]])) : {...p};
   if (shared) { output.status = 'paid'; output.themeData = {[p.tema]:p.themeData?.[p.tema]||{}}; }
   delete output.uploads;
-  delete output.uploadIntents;
   const base = shared ? `/api/shared/${p.share_token}/media/` : `/api/purchases/${p.id}/media/`;
   const url = id => new URL(base+encodeURIComponent(id),'http://local').pathname;
   output.fotos=(p.media?.photos||[]).map(url);
@@ -97,11 +96,10 @@ async function update(req,res,id,legacy=false) {
     current.uploads=current.uploads.filter(asset=>selected.has(asset.id));
     Object.assign(current,fields,{share_token:current.share_token||security.randomToken(),media:{photos,videos,music},photoIds:photos,has_media:true,content_version:1,updated_at:Date.now()});return current;
   });
-  await Promise.allSettled(obsolete.map(asset=>asset.blobPath?require('./cloud-media').remove(asset):fs.unlink(path.join(MEDIA_DIR,asset.filename))));
+  await Promise.allSettled(obsolete.map(asset=>fs.unlink(path.join(MEDIA_DIR,asset.filename))));
   http.ok(res,{purchase:project(p)});
 }
 async function upload(req,res,id,assetId) {
-  if(config.CLOUD)throw error(409,'DIRECT_UPLOAD_REQUIRED','Envie arquivos diretamente ao armazenamento privado. Atualize a página e tente novamente.');
   owner(req,stores.purchases.find(x=>x.id===id),'legacy');
   if(!/^[\w-]{16,100}$/.test(assetId))throw error(400,'INVALID_MEDIA_ID','Identificador de mídia inválido.');
   const mime=String(req.headers['content-type']||'').split(';')[0].toLowerCase(),kind=MIME[mime];
@@ -139,12 +137,11 @@ async function media(req,res,key,assetId,isShared=false) {
   else owner(req,p);
   if(![...(p.media?.photos||[]),...(p.media?.videos||[]),p.media?.music].includes(assetId))throw error(404,'NOT_FOUND','Mídia indisponível.');
   const asset=p.uploads?.find(a=>a.id===assetId);if(!asset)throw error(404,'NOT_FOUND','Mídia indisponível.');
-  const target=asset.blobPath?null:path.join(MEDIA_DIR,asset.filename),stat=asset.blobPath?{size:asset.bytes}:await fs.stat(target);
+  const target=path.join(MEDIA_DIR,asset.filename),stat=await fs.stat(target);
   let start=0,end=stat.size-1;
   const range=req.headers.range;
   if(range){const m=/^bytes=(\d*)-(\d*)$/.exec(range);if(m&&(m[1]||m[2])){if(!m[1])start=Math.max(0,stat.size-Number(m[2]));else{start=Number(m[1]);if(m[2])end=Math.min(end,Number(m[2]));}}else start=NaN;
     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start>end||start>=stat.size){res.writeHead(416,{'Content-Range':`bytes */${stat.size}`});return res.end();}}
-  if(asset.blobPath)return require('./cloud-media').stream(req,res,asset,start,end);
   http.applySecurityHeaders(res);res.setHeader('Content-Type',asset.mime);res.setHeader('Cache-Control','no-store');res.setHeader('Accept-Ranges','bytes');res.setHeader('Content-Length',end-start+1);
   if(range){res.statusCode=206;res.setHeader('Content-Range',`bytes ${start}-${end}/${stat.size}`);}
   else res.statusCode=200;
@@ -165,4 +162,4 @@ async function pay(req,res,id) {
     Object.assign(p,{status:'paid',paid_at:Date.now(),payment_method:body.metodo==='card'?'card':'pix',coupon:cupom||null,discount_percent:discount,amount_paid_cents:Math.round(p.price_cents*(1-discount/100))});return p;
   });http.ok(res,{purchase:project(purchase)});
 }
-module.exports={create,list,getOne,update,upload,shared,media,remove,pay,project,mediaRules:{owner,MIME,LIMIT}};
+module.exports={create,list,getOne,update,upload,shared,media,remove,pay,project};
