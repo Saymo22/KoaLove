@@ -525,6 +525,7 @@ document.addEventListener('keydown', e => {
   function setGift(payload) {
     if (!payload || typeof payload !== 'object') return;
     const p=payload.p||{};
+    if(EMBED||p.usarIntro===false)$('loader').classList.add('done');
     document.body.classList.add('na-personalizado');
     for(const id of ['contador','historia','galeria','motivos','stories']) $(id).hidden=false;
     document.documentElement.classList.add('na-data-ready');
@@ -639,7 +640,7 @@ document.addEventListener('keydown', e => {
     audio.querySelectorAll('source').forEach(x=>x.remove());
     if(validMedia(payload.music)){
       player.style.display='';
-      if(audio.getAttribute('src')!==payload.music){audio.pause();audio.src=payload.music;audio.load();}
+      if(audio.getAttribute('src')!==payload.music){audio.pause();audio.src=payload.music;audio.load();if(p.autoplay&&!EMBED)audio.play().catch(()=>{});}
       setText($('pTitle'),text(p.musicaNome,'Nossa música'));
       setText($('pArtist'),text(p.musicaArtista,from+' & '+to));
       $('discCover').src=cover||'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&q=80&auto=format&fit=crop';

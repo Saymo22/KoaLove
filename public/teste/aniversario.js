@@ -711,7 +711,7 @@ NATheme.connect({key:"aniversario",title: '.hero-title', phrase: '.hero-lede', l
     
     const validDate=/^\d{4}-\d{2}-\d{2}$/.test(p.inicio||'')&&Number.isFinite(+new Date(p.inicio+'T00:00:00'));
     const counter=document.getElementById('startLabel')?.closest('.counter-card');if(counter)counter.hidden=!validDate;
-    if(validDate){birthDate=new Date(p.inicio+'T00:00:00');NATheme.set('#startLabel',new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'}).format(birthDate));updateCounter();}
+    for(const id of ['heroAgeNum','badgeAge']){const el=document.getElementById(id);if(el){el.hidden=!validDate;const badge=el.closest('.hero-age,.hero-photo-badge');if(badge)badge.hidden=!validDate;if(!validDate)el.textContent='';}}if(validDate){birthDate=new Date(p.inicio+'T00:00:00');NATheme.set('#startLabel',new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'}).format(birthDate));updateCounter();}
     naChange(MEMORIES,c.memories,()=>{usedMemories=[];jarMemory.textContent='';});if(validDate){birthDate=new Date(p.inicio+'T00:00:00');let age=new Date().getFullYear()-birthDate.getFullYear();const now=new Date();if(now.getMonth()<birthDate.getMonth()||(now.getMonth()===birthDate.getMonth()&&now.getDate()<birthDate.getDate()))age--;NATheme.set('#heroAgeNum',Math.max(0,age));NATheme.set('#badgeAge',Math.max(0,age));}NATheme.set('#giftTitle',p.para||'Você é o presente');
   },dispose:()=>stopMic(),
 });

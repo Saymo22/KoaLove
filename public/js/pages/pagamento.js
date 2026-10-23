@@ -29,13 +29,14 @@ let precoOriginal = null; // CONFIG.preco (price_cents / 100)
 ===================================================== */
 NA_CONFIG_READY.then(async () => {
     if (!id) { location.href = "criar.html"; return; }
+    $('editarRascunho').href='criar.html?id='+encodeURIComponent(id);
 
     // Contrato: GET /api/purchases/:id (dono ou admin)
     try {
         ({ purchase: pedido } = await window.ApiPurchases.getOne(id));
     } catch (err) {
         if (err && (err.code === "NOT_AUTHENTICATED" || err.status === 401)) {
-            location.href = "login.html";
+            location.href = 'login.html?next='+encodeURIComponent('pagamento.html?id='+id);
             return;
         }
         location.href = "criar.html";
@@ -46,11 +47,11 @@ NA_CONFIG_READY.then(async () => {
 
     // Mídia local (fotos/vídeos/música) — blobs ficam no IndexedDB
     midia = await buscarPedido(id).catch(() => null);
-    if (!midia) {
-        $("erro").textContent = "Esta página foi aberta em outro navegador/dispositivo. A mídia fica salva apenas no navegador onde o presente foi criado.";
+    if (pedido.content_version !== 1) {
+        $("erro").textContent = "Abra o rascunho e salve novamente para sincronizar as mídias antes do pagamento.";
     }
 
-    precoOriginal = CONFIG.preco;
+    precoOriginal = Number.isFinite(pedido.price_cents)?pedido.price_cents/100:CONFIG.preco;
     if (typeof precoOriginal !== "number") {
         $("erro").textContent = "Não foi possível carregar o preço. Verifique se o servidor está rodando (node server/index.js).";
         return;
@@ -66,14 +67,14 @@ NA_CONFIG_READY.then(async () => {
     $("pgSubtitulo").textContent =
         "De " + (pedido.de || "você") + " para " + (pedido.para || "alguém especial");
 
-    const fotos = (midia && midia.fotos) || [];
-    const videos = (midia && midia.videos) || [];
+    const fotos = pedido.content_version===1 ? pedido.fotos||[] : midia?.fotos||[];
+    const videos = pedido.content_version===1 ? pedido.videos||[] : midia?.videos||[];
     const linhas = [
         ["Tema", (t.emoji || "🎁") + " " + (t.nome || pedido.tema), "🎨"],
         ["Para", pedido.para, "💌"],
         ["Fotos", fotos.length + (fotos.length === 1 ? " foto" : " fotos"), "📸"],
         ["Vídeos", videos.length + (videos.length === 1 ? " vídeo" : " vídeos"), "🎬"],
-        ["Música", midia && midia.musica ? (midia.musicaNome || "Incluída") : "—", "🎵"],
+        ["Música", (pedido.content_version===1?pedido.musica:midia?.musica) ? (pedido.musicaNome || midia?.musicaNome || "Incluída") : "—", "🎵"],
         ["Link + QR Code", "Incluído", "🔗"]
     ];
 

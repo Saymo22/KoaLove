@@ -12,6 +12,16 @@ module.exports=function testExclusiveHelpers(){
   scope.NATheme=window.NATheme;
   vm.runInContext(fs.readFileSync(path.join(__dirname,'../public/js/core/exclusive-theme-runtime.js'),'utf8'),scope);
   const helper=window.NAExclusive;
+  const photoRefs={collections:{cards:[{cover:'@photo:1',title:'Uma foto'},{cover:'@photo:8'}]},numbers:{count:3}};
+  const resolved=window.NATheme.resolvePhotoRefs(photoRefs,['blob:primeira','blob:segunda']);
+  assert.equal(resolved.collections.cards[0].cover,'blob:segunda');
+  assert.equal(resolved.collections.cards[1].cover,'');
+  assert.equal(resolved.numbers.count,3);
+  assert.equal(photoRefs.collections.cards[0].cover,'@photo:1','Referências persistidas não viram URLs temporárias');
+  const stable={cover:'@media:second-photo'};
+  assert.equal(window.NATheme.resolvePhotoRefs(stable,['blob:first','blob:second'],['first-photo','second-photo']).cover,'blob:second');
+  assert.equal(window.NATheme.resolvePhotoRefs(stable,['blob:second','blob:first'],['second-photo','first-photo']).cover,'blob:second');
+  assert.equal(window.NATheme.resolvePhotoRefs(stable,['blob:first'],['first-photo']).cover,'');
   const first={nodeType:1,textContent:'Nosso'},last={nodeType:1,textContent:'Vinil'};
   const titleHost={childNodes:[first,last]};
   const originalQuery=document.querySelector;document.querySelector=()=>titleHost;
@@ -27,6 +37,11 @@ module.exports=function testExclusiveHelpers(){
   const override=[{title:'Título editado',poster:'https://example.test/foto.jpg',audio:'https://example.test/faixa.wav'}];
   const customized=helper.items(base,override,payload,['poster'],true);
   assert.equal(customized[0].title,'Título editado');assert.equal(customized[0].poster,override[0].poster);
+  const partial={__naOverrides:{'0.poster':'blob:chosen-photo'}};
+  const linked=helper.items(base,partial,{...payload,events:[{titulo:'Momento atualizado',texto:'Texto novo'}]},['poster'],true);
+  assert.equal(linked[0].title,'Momento atualizado');assert.equal(linked[0].synopsis,'Texto novo');assert.equal(linked[0].poster,'blob:chosen-photo');
+  const clear=helper.items(base,partial,{...payload,events:[]},['poster'],true);
+  assert.equal(clear[0].title,'Exemplo');assert.equal(clear[0].poster,'blob:chosen-photo');
   assert.equal(helper.stories(payload)[0].video,'blob:video-do-usuario');
   assert.equal(helper.stories({...payload,videos:[]})[0].img,'blob:foto-do-usuario');
   assert.ok(helper.placeholder('<teste>').startsWith('data:image/svg+xml,'));

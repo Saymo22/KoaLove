@@ -4,9 +4,16 @@ const config = require("../config");
 const buckets = new Map();   // key = `${ip}|${rule}` -> { hits: [timestamps] }
 
 function pickRule(method, pathname) {
+  if(!pathname.startsWith('/api/'))return {rule:'STATIC',...config.RATE_LIMITS.STATIC};
+  if(['GET','HEAD'].includes(method)&&/^\/api\/(purchases|shared)\/[^/]+\/media\/[^/]+$/.test(pathname))return {rule:'MEDIA',...config.RATE_LIMITS.MEDIA};
   // Match exato primeiro
   const exact = `${method} ${pathname}`;
   if (config.RATE_LIMITS[exact]) return { rule: exact, ...config.RATE_LIMITS[exact] };
+  // Uploads e atualização não consomem o limite de criação de pedidos.
+  if(method === 'POST' && /^\/api\/purchases\/[^/]+\//.test(pathname)) {
+    const rule = 'POST /api/purchases/:id';
+    return {rule, ...config.RATE_LIMITS[rule]};
+  }
   // Match por prefixo (ex: "GET /api/admin")
   const parts = pathname.split("/").filter(Boolean);
   for (let i = parts.length; i >= 2; i--) {
@@ -17,7 +24,7 @@ function pickRule(method, pathname) {
 }
 
 function check(req) {
-  const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+  const ip = require('./http').clientIp(req);
   const { rule, limit, windowMs } = pickRule(req.method, req.url.split("?")[0]);
   const key = `${ip}|${rule}`;
   const now = Date.now();

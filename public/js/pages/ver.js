@@ -23,6 +23,7 @@ const safeMedia = v => {
   if (typeof v==='object') return safeMedia(v.url||v.src||v.blob||v.file);
   if (typeof v!=='string') return '';
   const s=v.trim();
+  if (s.startsWith('/api/')) return new URL(s,location.origin).href;
   if (/^(https?:\/\/|blob:|data:image\/|data:video\/|data:audio\/)/i.test(s)) return s;
   if (/^(?!\/\/)(?![a-z]+:)[\w./% -]+$/i.test(s)) return s;
   return '';
@@ -453,19 +454,14 @@ function bindAudio(){
  if(S.p.autoplay&&!DEMO)audio.play().catch(()=>{});
 }
 async function getPurchase(id){
- let local=null,remote=null,apiError=null;
- if(typeof buscarPedido==='function')try{local=await buscarPedido(id);}catch(e){console.warn('[ver] Falha ao ler IndexedDB',e);}
- try{
-   const r=await fetch('/api/purchases/'+encodeURIComponent(id),{credentials:'include',headers:{Accept:'application/json'}});
-   const body=await r.json();
-   if(!r.ok||!body.ok){const err=new Error(body?.error?.message||'Não foi possível consultar o presente.');err.code=body?.error?.code||'PURCHASE_UNAVAILABLE';throw err;}
-   remote=body.data?.purchase||null;
- }catch(e){apiError=e;}
- if(remote&&local){return{...local,...remote,fotos:local.fotos||[],videos:local.videos||[],musica:local.musica||null,legendas:local.legendas||[],eventos:local.eventos||[],amo:local.amo||[],frase:local.frase||remote.frase||'',fotoCapa:local.fotoCapa??0,musicaNome:local.musicaNome||remote.musicaNome||'',musicaArtista:local.musicaArtista||remote.musicaArtista||'',rodapeCustom:local.rodapeCustom||remote.rodapeCustom||''};}
- if(remote)return remote;
- if(local)return local;
- if(apiError)throw apiError;
- return null;
+ const token=query.get('token');
+ const endpoint=token?'/api/shared/'+encodeURIComponent(token):'/api/purchases/'+encodeURIComponent(id);
+ const r=await fetch(endpoint,{credentials:'include',headers:{Accept:'application/json'}});
+ const body=await r.json();
+ if(!r.ok||!body.ok)throw new Error(body?.error?.message||'Não foi possível consultar o presente.');
+ const remote=body.data?.purchase;
+ if(remote?.content_version!==1&&!token)throw new Error('Este presente antigo precisa ser sincronizado pelo criador antes do compartilhamento.');
+ return remote;
 }
 function fail(err){console.error('[Nosso Amor / experiências]',err);$('loading').hidden=true;$('error').hidden=false;$('error').innerHTML=`<span>✦</span><h1>Não conseguimos abrir sua surpresa.</h1><p>${E(err.message||String(err))}</p><a href="home.html">Voltar ao início ↗</a>`;}
 async function init(){
@@ -473,7 +469,7 @@ async function init(){
   if(!DEMO&&window.NA_CONFIG_READY)await window.NA_CONFIG_READY.catch(()=>null);
   const requested=canonical(query.get('tema')||'namoro');
   if(DEMO&&!renderers[requested])throw new Error('Tema de demonstração desconhecido.');
-  const id=query.get('id');if(!DEMO&&!id)throw new Error('Informe o identificador do presente no endereço (?id=).');
+  const id=query.get('id');if(!DEMO&&!id&&!query.get('token'))throw new Error('Informe o identificador do presente no endereço (?id=).');
   const p=DEMO?demoPurchase(requested):await getPurchase(id);
   if(!p)throw new Error('Presente não encontrado. O conteúdo local pode estar em outro navegador.');
   if(!DEMO&&!['paid','pago'].includes(String(p.status||'').toLowerCase()))throw new Error('O presente ainda não está liberado para visualização.');

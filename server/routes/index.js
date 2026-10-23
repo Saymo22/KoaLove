@@ -24,6 +24,8 @@ async function handle(req, res) {
 
   try {
     // AUTH
+    if (method === 'POST' && pathname === '/api/auth/forgot-password') return await auth.forgotPassword(req,res);
+    if (method === 'POST' && pathname === '/api/auth/reset-password') return await auth.resetPassword(req,res);
     if (method === "POST" && pathname === "/api/auth/register") return await auth.register(req, res);
     if (method === "POST" && pathname === "/api/auth/login")    return await auth.login(req, res);
     if (method === "POST" && pathname === "/api/auth/logout")   return await auth.logout(req, res);
@@ -36,8 +38,16 @@ async function handle(req, res) {
     if (method === "POST" && pathname === "/api/purchases")     return await purchases.create(req, res);
     if (method === "GET"  && pathname === "/api/purchases")     return await purchases.list(req, res);
     let m;
+    if (method === "GET" && (m = match(method, "/api/shared/:token", pathname))) return await purchases.shared(req,res,m.token);
+    if (method === "GET" && (m = match(method, "/api/shared/:token/media/:asset", pathname))) return await purchases.media(req,res,m.token,m.asset,true);
+    if (method === "GET" && (m = match(method, "/api/purchases/:id/media/:asset", pathname))) return await purchases.media(req,res,m.id,m.asset);
+    if (method === "POST" && (m = match(method, "/api/purchases/:id/media/:asset", pathname))) return await purchases.upload(req,res,m.id,m.asset);
+    if (method === "POST" && (m = match(method, "/api/purchases/:id/update", pathname))) return await purchases.update(req,res,m.id);
+    if (method === "POST" && (m = match(method, "/api/purchases/:id/delete", pathname))) return await purchases.remove(req,res,m.id);
     if (method === "GET"  && (m = match(method, "/api/purchases/:id", pathname)))       return await purchases.getOne(req, res, m.id);
     if (method === "POST" && (m = match(method, "/api/purchases/:id/pay", pathname)))   return await purchases.pay(req, res, m.id);
+
+    if (method === 'POST' && (m = match(method, '/api/purchases/:id/migrate', pathname))) return await purchases.update(req,res,m.id,true);
 
     // ADMIN
     if (method === "GET"  && pathname === "/api/admin/summary")  return await admin.summary(req, res);

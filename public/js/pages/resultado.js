@@ -1,5 +1,6 @@
     const id = parametro("id");
     const $ = (x) => document.getElementById(x);
+    $('btnBaixar').disabled = true;
 
     // NAVBAR SCROLL
     (function () {
@@ -32,11 +33,18 @@
         }
         if (pedido.status !== "paid") { location.href = "pagamento.html?id=" + id; return; }
 
+        if(pedido.content_version!==1){
+          try {
+            const local=await buscarPedido(id);
+            if(!local?.fotos?.length)throw new Error('Abra esta página no navegador onde criou o presente antigo para sincronizar suas fotos.');
+            ({purchase:pedido}=await NAGift.sync(NAGift.prepare({...local,...pedido,fotos:local.fotos,videos:local.videos||[],musica:local.musica||null,themeData:local.themeData||pedido.themeData}),id,true));
+          }catch(err){$('link').value=err.message;return;}
+        }
         // Temas vêm de GET /api/config
         try { await window.NA_CONFIG_READY; } catch {}
         aplicarTema(pedido.tema);
 
-        const url = new URL("ver.html?id=" + id, location.href).href;
+        const url = new URL("ver.html?token=" + encodeURIComponent(pedido.share_token), location.href).href;
         $("link").value = url;
         $("btnVer").href = url;
         $("btnWpp").href = "https://wa.me/?text=" + encodeURIComponent("Fiz uma surpresa para você ❤️ " + url);
@@ -49,19 +57,14 @@
 
         /* ---- QR Code ---- */
         try {
-            new QRCode($("qr"), {
-                text: url,
-                width: 160,
-                height: 160,
-                colorDark: "#5a3f1a",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            const canvas = document.createElement('canvas');
+            await NAQRCode.toCanvas(canvas,url,{width:160,margin:4,errorCorrectionLevel:'H',color:{dark:'#5a3f1a',light:'#ffffff'}});
+            canvas.setAttribute('role','img');
+            canvas.setAttribute('aria-label','QR Code para abrir o presente');
+            $('qr').replaceChildren(canvas);
+            $('btnBaixar').disabled = false;
         } catch (e) {
-            $("qr").innerHTML =
-                '<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
-                encodeURIComponent(url) +
-                '" alt="QR Code do presente" width="160" height="160">';
+            $('qr').textContent = 'Não foi possível gerar o QR Code. Copie o link do presente abaixo.';
         }
 
         setTimeout(() => celebrar(), 500);
@@ -107,6 +110,7 @@
         ripple(e, $("btnBaixar"));
         const canvas = $("qr").querySelector("canvas");
         const img = $("qr").querySelector("img");
+        if (!canvas && !img) return;
         const a = document.createElement("a");
         a.download = "qrcode-presente.png";
         a.href = canvas ? canvas.toDataURL("image/png") : (img ? img.src : "");

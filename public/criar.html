@@ -5,541 +5,437 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Criar presente ❤️ — Nosso Amor</title>
     <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos." />
-
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/criar.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet" />
   </head>
-  <body class="app">
-    <div class="scroll-progress" id="scrollProgress"></div>
-
-    <!-- ✅ NAVBAR INJETADA -->
-    <div id="navbar"></div>
-
+  <body class="app creator-v2">
+    <div class="scroll-progress" id="scrollProgress">
+    </div>
+    <div id="navbar">
+    </div>
     <div class="criar-layout">
       <main class="app-wrap">
         <header class="criar-header">
           <div class="criar-eyebrow" id="criarEyebrow">
-            <span class="dot"></span>
-            Criar meu presente
-          </div>
-          <h1 class="criar-titulo">Vamos criar uma <em>história?</em></h1>
-          <p class="criar-sub">
-            Em poucos minutos, transforme suas memórias em uma página que vai emocionar.
-          </p>
-
-          <div class="steps" id="steps">
-            <div class="step-item on" data-step="1">
-              <div class="step-num"><span>1</span></div>
-              <div class="step-label">Tema</div>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-item" data-step="2">
-              <div class="step-num"><span>2</span></div>
-              <div class="step-label">História</div>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-item" data-step="3">
-              <div class="step-num"><span>3</span></div>
-              <div class="step-label">Momentos</div>
-            </div>
-            <div class="step-line"></div>
-            <div class="step-item" data-step="4">
-              <div class="step-num"><span>4</span></div>
-              <div class="step-label">Mídias</div>
-            </div>
-          </div>
+            <span class="dot">
+            </span> ATELIÊ DE MEMÓRIAS</div>
+            <h1 class="criar-titulo">Um presente que é <em>só de vocês.</em>
+          </h1>
+          <p class="criar-sub">Escolha o tema. Conte a história. Veja tudo ganhar vida.</p>
         </header>
-
+        <section id="draftRecovery" class="draft-recovery" hidden aria-labelledby="draftRecoveryTitle">
+          <h2 id="draftRecoveryTitle">Você tem um rascunho neste navegador</h2>
+          <p>Retome o conteúdo e os arquivos que ficaram guardados no último envio.</p>
+          <p id="draftRecoveryError" role="alert"></p>
+          <button type="button" id="resumeDraft">Retomar rascunho</button>
+          <button type="button" id="discardDraft">Descartar cópia local</button>
+        </section>
+        <nav class="wizard-nav" aria-label="Etapas do presente">
+          <div class="wizard-progress">
+            <span id="wizardProgressText" aria-live="polite">Etapa 1 de 8</span>
+            <span id="wizardThemeName">Seu presente começa aqui</span>
+          </div>
+          <div class="steps" id="steps">
+            <button type="button" class="step-item on" data-step="1" aria-label="Etapa 1: Tema" aria-current="step">
+              <span class="step-num">
+                <span>1</span>
+              </span>
+              <span class="step-label">Tema</span>
+            </button>
+            <button type="button" class="step-item " data-step="2" aria-label="Etapa 2: Capa" >
+              <span class="step-num">
+                <span>2</span>
+              </span>
+              <span class="step-label">Capa</span>
+            </button>
+            <button type="button" class="step-item " data-step="3" aria-label="Etapa 3: Fotos e vídeos" >
+              <span class="step-num">
+                <span>3</span>
+              </span>
+              <span class="step-label">Fotos e vídeos</span>
+            </button>
+            <button type="button" class="step-item " data-step="4" aria-label="Etapa 4: Momentos" >
+              <span class="step-num">
+                <span>4</span>
+              </span>
+              <span class="step-label">Momentos</span>
+            </button>
+            <button type="button" class="step-item " data-step="5" aria-label="Etapa 5: Seu tema" >
+              <span class="step-num">
+                <span>5</span>
+              </span>
+              <span class="step-label">Seu tema</span>
+            </button>
+            <button type="button" class="step-item " data-step="6" aria-label="Etapa 6: Mensagem" >
+              <span class="step-num">
+                <span>6</span>
+              </span>
+              <span class="step-label">Mensagem</span>
+            </button>
+            <button type="button" class="step-item " data-step="7" aria-label="Etapa 7: Música" >
+              <span class="step-num">
+                <span>7</span>
+              </span>
+              <span class="step-label">Música</span>
+            </button>
+            <button type="button" class="step-item " data-step="8" aria-label="Etapa 8: Revisão" >
+              <span class="step-num">
+                <span>8</span>
+              </span>
+              <span class="step-label">Revisão</span>
+            </button>
+          </div>
+          <div class="wizard-track">
+            <span id="wizardProgressBar">
+            </span>
+          </div>
+        </nav>
         <form id="form" novalidate>
-          <div class="passo ativo" data-passo="1" id="passo1">
+          <div class="passo ativo" data-passo="1" id="passo1" >
             <div class="passo-header">
-              <h2>Qual é o <em>tema?</em></h2>
-              <p>Escolha o estilo. Ele define cores, tipografia e o clima da página.</p>
+              <span class="step-kicker">ETAPA 01</span>
+              <h2 tabindex="-1">Escolha o cenário</h2>
+              <p>Cada tema tem uma experiência e campos próprios. Você pode trocar e comparar.</p>
             </div>
-
             <div class="temas-grupo">
-              <div class="temas-grupo-titulo">Clássicos</div>
-              <div class="temas" id="temasClassicos"></div>
+              <h3>Clássicos</h3>
+              <div class="temas" id="temasClassicos">
+              </div>
             </div>
-
             <div class="temas-grupo">
-              <div class="temas-grupo-titulo">Especiais</div>
-              <div class="temas" id="temasEspeciais"></div>
+              <h3>Especiais e exclusivos</h3>
+              <div class="temas" id="temasEspeciais">
+              </div>
             </div>
-
-            <div class="erro" id="erro1"></div>
+            <div class="erro" id="erro1">
+            </div>
             <div class="acoes">
-              <button type="button" class="btn ouro grande" data-ir="2">
-                Continuar <span>→</span>
-              </button>
+              <span>
+              </span>
+              <button type="button" class="btn ouro" data-ir="2">Continuar →</button>
             </div>
           </div>
-
-          <div class="passo" data-passo="2" id="passo2">
+          <div class="passo " data-passo="2" id="passo2" hidden>
             <div class="passo-header">
-              <h2>A <em>história</em></h2>
-              <p>Quem está presenteando e quem recebe? Conte os detalhes.</p>
+              <span class="step-kicker">ETAPA 02</span>
+              <h2 tabindex="-1">Uma capa com a sua cara</h2>
+              <p>Defina quem faz parte da história e como ela começa.</p>
             </div>
-
+            <div class="theme-context" id="themeContext">
+            </div>
             <div class="grid2">
               <div class="campo" data-campo="de">
                 <label for="de">Seu nome</label>
-                <input type="text" id="de" maxlength="40" placeholder="Quem presenteia" />
-                <div class="erro-campo-msg" data-msg="de">Preencha seu nome</div>
+                <input id="de" aria-required="true" type="text" maxlength="40" placeholder="Quem presenteia">
+                <div class="erro-campo-msg" data-msg="de">Preencha este campo para continuar.</div>
               </div>
               <div class="campo" data-campo="para">
                 <label for="para">Nome de quem recebe</label>
-                <input type="text" id="para" maxlength="40" placeholder="Quem vai receber" />
-                <div class="erro-campo-msg" data-msg="para">Preencha o nome de quem recebe</div>
+                <input id="para" aria-required="true" type="text" maxlength="40" placeholder="Quem recebe">
+                <div class="erro-campo-msg" data-msg="para">Preencha este campo para continuar.</div>
               </div>
             </div>
-
-            <div class="grid2">
-              <div class="campo" data-campo="titulo">
-                <label for="titulo">Título da capa</label>
-                <input type="text" id="titulo" maxlength="40" placeholder="Ex.: Nós dois" />
-              </div>
-              <div class="campo" data-campo="inicio">
-                <label for="inicio">Desde quando?</label>
-                <input type="date" id="inicio" />
-                <div class="erro-campo-msg" data-msg="inicio">Escolha uma data</div>
-                <small>Usada nos contadores e nas datas do tema.</small>
-              </div>
+            <div class="campo" data-campo="titulo">
+              <label for="titulo">Título da capa</label>
+              <input id="titulo" type="text" maxlength="40" placeholder="Uma história só nossa">
+              <div class="erro-campo-msg" data-msg="titulo">Preencha este campo para continuar.</div>
             </div>
-
-            <div class="previa-contador">
-              <div class="previa-tag">Prévia do contador</div>
-              <div class="previa-frase" id="previaFrase">Escolha a data para ver o contador.</div>
-              <div class="previa-grid">
-                <div><strong id="pAnos">0</strong><span>Anos</span></div>
-                <div><strong id="pMeses">0</strong><span>Meses</span></div>
-                <div><strong id="pDias">0</strong><span>Dias</span></div>
-                <div><strong id="pHoras">0</strong><span>Horas</span></div>
-              </div>
-            </div>
-
-            <div class="campo">
+            <div class="campo" data-campo="frase">
               <label for="frase">Frase da capa</label>
-              <input type="text" id="frase" maxlength="90" placeholder="Ex.: de amor, risadas e momentos inesquecíveis." />
-              <small>A frase aparece na capa do tema escolhido.</small>
+              <input id="frase" type="text" maxlength="90" placeholder="Uma frase para abrir a experiência">
+              <div class="erro-campo-msg" data-msg="frase">Preencha este campo para continuar.</div>
             </div>
-
-            <div class="campo" data-campo="carta">
-              <label for="carta">Sua mensagem / carta</label>
-              <textarea id="carta" maxlength="2000" placeholder="Escreva com carinho..."></textarea>
-              <div class="erro-campo-msg" data-msg="carta">Escreva sua mensagem</div>
+            <div class="campo" data-campo="inicio">
+              <label for="inicio">Data especial</label>
+              <input id="inicio" type="date" maxlength="80" placeholder="">
+              <div class="erro-campo-msg" data-msg="inicio">Preencha este campo para continuar.</div>
             </div>
-
-            <div class="erro" id="erro2"></div>
+            <p class="nota" id="dateHint">
+            </p>
+            <div class="previa-contador" id="counterExample">
+              <span class="previa-tag">O tempo da sua história</span>
+              <p id="previaFrase">Escolha uma data para ver o contador.</p>
+              <div class="previa-grid">
+                <div>
+                  <strong id="pAnos">0</strong>
+                  <span>Anos</span>
+                </div>
+                <div>
+                  <strong id="pMeses">0</strong>
+                  <span>Meses</span>
+                </div>
+                <div>
+                  <strong id="pDias">0</strong>
+                  <span>Dias</span>
+                </div>
+                <div>
+                  <strong id="pHoras">0</strong>
+                  <span>Horas</span>
+                </div>
+              </div>
+            </div>
+            <div class="erro" id="erro2">
+            </div>
             <div class="acoes">
               <button type="button" class="btn sec" data-ir="1">← Voltar</button>
               <button type="button" class="btn ouro" data-ir="3">Continuar →</button>
             </div>
           </div>
-
-          <div class="passo" data-passo="3">
+          <div class="passo " data-passo="3" id="passo3" hidden>
             <div class="passo-header">
-              <h2>Os <em>momentos</em></h2>
-              <p>Os capítulos que marcaram essa história, em ordem.</p>
+              <span class="step-kicker">ETAPA 03</span>
+              <h2 tabindex="-1">Dê vida às suas lembranças</h2>
+              <p>Organize as fotos, escolha a capa e acrescente vídeos se quiser.</p>
             </div>
-
-            <div id="eventos"></div>
-            <button type="button" class="btn sec" id="btnAddEv" style="width: 100%; margin-bottom: 8px">
-              + Adicionar momento
-            </button>
-            <p class="nota">O último item, <b>"Hoje"</b>, é criado automaticamente.</p>
-
-            <div class="bloco-titulo">Pequenas coisas</div>
-            <p class="nota">Até 3 coisas que você ama ou admira (opcional).</p>
-            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu sorriso" /></div>
-            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Seu carisma" /></div>
-            <div class="campo"><input type="text" class="amo" maxlength="30" placeholder="Ex.: Você" /></div>
-
-            <section id="themeDetails" class="theme-details" hidden></section>
+            <div class="campo" data-campo="fotos">
+              <label class="upload">
+                <input type="file" id="fotos" accept="image/*" multiple>
+                <span class="upload-icon">↗</span>
+                <b>Escolher fotos</b>
+                <span>Até 12 imagens · escolha a capa abaixo</span>
+                <span class="qtd" id="qtdFotos">
+                </span>
+              </label>
+              <div class="erro-campo-msg" data-msg="fotos">Adicione pelo menos uma foto.</div>
+            </div>
+            <div id="painelPersonalizacao" hidden>
+              <input type="hidden" id="fotoCapa" value="0">
+              <div id="fotosGrid" class="fotos-grid">
+              </div>
+              <p class="nota">★ define a capa. Use as setas ou arraste para mudar a ordem. As legendas acompanham as fotos.</p>
+            </div>
+            <div class="campo" data-campo="videos">
+              <label class="upload">
+                <input type="file" id="videos" accept="video/*" multiple>
+                <span class="upload-icon">▷</span>
+                <b>Adicionar vídeos</b>
+                <span>Até 4 vídeos · opcionais</span>
+                <span class="qtd" id="qtdVideos">
+                </span>
+              </label>
+              <div class="erro-campo-msg" data-msg="videos">Adicione pelo menos uma foto.</div>
+            </div>
+            <p class="nota" id="mediaHint">
+            </p>
+            <div class="erro" id="erroMedia">
+            </div>
             <div class="acoes">
               <button type="button" class="btn sec" data-ir="2">← Voltar</button>
               <button type="button" class="btn ouro" data-ir="4">Continuar →</button>
             </div>
           </div>
-
-          <div class="passo" data-passo="4" id="passo4">
+          <div class="passo " data-passo="4" id="passo4" hidden>
             <div class="passo-header">
-              <h2>Fotos, vídeo e <em>música</em></h2>
-              <p>O toque final que vai deixar tudo inesquecível.</p>
+              <span class="step-kicker">ETAPA 04</span>
+              <h2 tabindex="-1">Conte os seus momentos</h2>
+              <p>Adicione apenas os capítulos que você quer contar. Esta etapa é opcional.</p>
             </div>
-
-            <div class="campo" data-campo="fotos">
-              <label class="upload">
-                <input type="file" id="fotos" accept="image/*" multiple />
-                <span class="upload-icon">📸</span>
-                <b>Fotos (até 12)</b>
-                <span>A primeira vira a capa</span>
-                <span class="qtd" id="qtdFotos"></span>
-              </label>
-              <div class="erro-campo-msg" data-msg="fotos">Adicione pelo menos uma foto</div>
+            <div class="section-note" id="momentsHint">
             </div>
-
-            <div class="campo">
-              <label class="upload">
-                <input type="file" id="videos" accept="video/*" multiple />
-                <span class="upload-icon">🎬</span>
-                <b>Vídeos (até 4)</b>
-                <span>Aparecem no estilo Story</span>
-                <span class="qtd" id="qtdVideos"></span>
-              </label>
+            <div id="eventos">
             </div>
-
-            <div class="campo">
-              <label class="upload">
-                <input type="file" id="musica" accept="audio/*" />
-                <span class="upload-icon">🎵</span>
-                <b>Música</b>
-                <span>Arquivo MP3</span>
-                <span class="qtd" id="qtdMusica"></span>
-              </label>
-            </div>
-
-            <div class="campo" id="musicaPreviewWrap" style="display:none">
-              <label>Prévia da música</label>
-              <audio id="musicaPreview" controls preload="metadata" style="width:100%; border-radius:12px;"></audio>
-            </div>
-
-            <div class="grid2">
+            <button type="button" class="btn sec" id="btnAddEv">+ Adicionar momento</button>
+            <div class="reasons-block">
+              <h3 id="reasonsTitle">O que você admira nessa pessoa?</h3>
+              <p class="nota">Até três detalhes, se quiser.</p>
               <div class="campo">
-                <label for="musicaNome">Nome da música</label>
-                <input type="text" id="musicaNome" maxlength="60" placeholder="Ex.: Can't Help Falling In Love" />
+                <label for="reason1">Detalhe 1</label>
+                <input id="reason1" type="text" class="amo" maxlength="30" placeholder="Uma pequena coisa especial">
               </div>
               <div class="campo">
-                <label for="musicaArtista">Artista</label>
-                <input type="text" id="musicaArtista" maxlength="60" placeholder="Ex.: Elvis Presley" />
+                <label for="reason2">Detalhe 2</label>
+                <input id="reason2" type="text" class="amo" maxlength="30" placeholder="Uma pequena coisa especial">
+              </div>
+              <div class="campo">
+                <label for="reason3">Detalhe 3</label>
+                <input id="reason3" type="text" class="amo" maxlength="30" placeholder="Uma pequena coisa especial">
               </div>
             </div>
-
-            <div id="painelPersonalizacao" style="display: none">
-              <div class="bloco-titulo">Toques finais</div>
-
-              <div class="campo">
-                <label>Suas fotos</label>
-                <input type="hidden" id="fotoCapa" value="0" />
-                <div id="fotosGrid" class="fotos-grid"></div>
-                <small>Clique na ★ para definir a capa. Arraste para reordenar ou use as setas.</small>
-              </div>
-
-              <label class="toggle-field">
-                <input type="checkbox" id="usarIntro" checked />
-                <span>Mostrar intro personalizada ao abrir ("Para [nome] ❤️")</span>
-              </label>
-
-              <label class="toggle-field">
-                <input type="checkbox" id="autoplay" />
-                <span>Tentar tocar a música automaticamente ao abrir</span>
-              </label>
-
-              <div class="campo">
-                <label for="rodapeCustom">Mensagem do rodapé</label>
-                <input type="text" id="rodapeCustom" maxlength="80" placeholder="Deixe em branco para usar a mensagem padrão" />
-                <small>Aparece no final da página do presente.</small>
-              </div>
-            </div>
-
-            <div class="erro" id="erro3"></div>
             <div class="acoes">
               <button type="button" class="btn sec" data-ir="3">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="5">Continuar →</button>
+            </div>
+          </div>
+          <div class="passo " data-passo="5" id="passo5" hidden>
+            <div class="passo-header">
+              <span class="step-kicker">ETAPA 05</span>
+              <h2 tabindex="-1">O toque do seu tema</h2>
+              <p>Personalize as interações e as seções do modelo escolhido.</p>
+            </div>
+            <section id="themeDetails" class="theme-details">
+              <p class="nota">Escolha um tema para ver os campos dele.</p>
+            </section>
+            <div class="acoes">
+              <button type="button" class="btn sec" data-ir="4">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="6">Continuar →</button>
+            </div>
+          </div>
+          <div class="passo " data-passo="6" id="passo6" hidden>
+            <div class="passo-header">
+              <span class="step-kicker">ETAPA 06</span>
+              <h2 tabindex="-1">Palavras que ficam</h2>
+              <p>Escreva a mensagem que será revelada no seu presente.</p>
+            </div>
+            <div class="campo" data-campo="carta">
+              <label for="carta">Sua mensagem</label>
+              <textarea id="carta" aria-required="true"  maxlength="2000" placeholder="O que você gostaria de dizer?">
+              </textarea>
+              <div class="erro-campo-msg" data-msg="carta">Preencha este campo para continuar.</div>
+            </div>
+            <p class="nota" id="letterHint">
+            </p>
+            <div class="campo" data-campo="rodapeCustom">
+              <label for="rodapeCustom">Uma frase para encerrar (opcional)</label>
+              <input id="rodapeCustom" type="text" maxlength="80" placeholder="Feito com carinho, para você">
+              <div class="erro-campo-msg" data-msg="rodapeCustom">Preencha este campo para continuar.</div>
+            </div>
+            <label class="toggle-field">
+              <input type="checkbox" id="usarIntro" checked>
+              <span>Mostrar a abertura do tema antes do presente</span>
+            </label>
+            <p class="nota">Na prévia, a abertura é pulada para facilitar a edição.</p>
+            <div class="acoes">
+              <button type="button" class="btn sec" data-ir="5">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="7">Continuar →</button>
+            </div>
+          </div>
+          <div class="passo " data-passo="7" id="passo7" hidden>
+            <div class="passo-header">
+              <span class="step-kicker">ETAPA 07</span>
+              <h2 tabindex="-1">A trilha dessa história</h2>
+              <p>Escolha um arquivo de áudio para acompanhar a experiência. É opcional.</p>
+            </div>
+            <div class="campo" data-campo="musica">
+              <label class="upload">
+                <input type="file" id="musica" accept="audio/*" >
+                <span class="upload-icon">♫</span>
+                <b>Escolher a música</b>
+                <span>Arquivo de áudio · opcional</span>
+                <span class="qtd" id="qtdMusica">
+                </span>
+              </label>
+              <div class="erro-campo-msg" data-msg="musica">Adicione pelo menos uma foto.</div>
+            </div>
+            <div class="campo" id="musicaPreviewWrap" hidden>
+              <label for="musicaPreview">Ouça o arquivo escolhido</label>
+              <audio id="musicaPreview" controls preload="metadata">
+              </audio>
+            </div>
+            <div class="grid2">
+              <div class="campo" data-campo="musicaNome">
+                <label for="musicaNome">Nome da música</label>
+                <input id="musicaNome" type="text" maxlength="60" placeholder="A música de vocês">
+                <div class="erro-campo-msg" data-msg="musicaNome">Preencha este campo para continuar.</div>
+              </div>
+              <div class="campo" data-campo="musicaArtista">
+                <label for="musicaArtista">Artista</label>
+                <input id="musicaArtista" type="text" maxlength="60" placeholder="Quem canta">
+                <div class="erro-campo-msg" data-msg="musicaArtista">Preencha este campo para continuar.</div>
+              </div>
+            </div>
+            <p class="nota" id="musicHint">
+            </p>
+            <label class="toggle-field">
+              <input type="checkbox" id="autoplay">
+              <span>Tentar iniciar a música ao abrir o presente</span>
+            </label>
+            <p class="nota">Alguns navegadores pedem um toque para iniciar o áudio.</p>
+            <div class="acoes">
+              <button type="button" class="btn sec" data-ir="6">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="8">Continuar →</button>
+            </div>
+          </div>
+          <div class="passo " data-passo="8" id="passo8" hidden>
+            <div class="passo-header">
+              <span class="step-kicker">ETAPA 08</span>
+              <h2 tabindex="-1">Tudo pronto para emocionar?</h2>
+              <p>Confira o conteúdo e experimente os botões na prévia antes de continuar.</p>
+            </div>
+            <div class="review-intro">
+              <span>♡</span>
+              <p>Seu presente, do seu jeito.<br>
+                <small>Volte a qualquer etapa para ajustar os detalhes.</small>
+              </p>
+            </div>
+            <div id="reviewSummary" class="review-summary">
+            </div>
+            <button type="button" class="btn sec review-preview" id="reviewPreview">Experimentar a prévia</button>
+            <div class="erro" id="erro3" role="alert">
+            </div>
+            <div class="acoes">
+              <button type="button" class="btn sec" data-ir="7">← Voltar</button>
               <button type="submit" class="btn ouro" id="btnFinal">Ir para o pagamento →</button>
             </div>
           </div>
         </form>
       </main>
-
-      <aside class="preview-col" id="previewCol">
+      <aside class="preview-col" id="previewCol" aria-label="Prévia do presente">
         <div class="preview-wrap">
-          <div class="preview-label" id="previewLabel">
-            <span class="live-dot"></span>
-            Prévia em tempo real
-          </div>
-
-          <div class="phone-stage" id="phoneStage">
-            <div class="phone-glow"></div>
-            <div class="phone-pol p1"><div></div></div>
-            <div class="phone-pol p2"><div></div></div>
-            <div class="phone-pol p3"><div></div></div>
-
-            <div class="preview-phone" id="previewPhone">
-              <div class="phone-island" id="phoneIsland"></div>
-              <div class="preview-screen" id="previewScreen">
-                <div class="phone-status">
-                  <span class="time" id="phoneTime">9:41</span>
-                  <span class="battery"></span>
+          <div class="preview-heading">
+            <div>
+              <span class="preview-eyebrow">ASSIM VAI FICAR</span>
+              <h2 id="previewThemeName">Sua história</h2>
+            </div>
+            <span class="preview-label" id="previewLabel">
+              <span class="live-dot">
+              </span> Ao vivo</span>
+            </div>
+            <div class="preview-toolbar">
+              <button type="button" id="previewHome">↑ Início</button>
+              <button type="button" id="previewExpand" aria-pressed="false">Ampliar ↗</button>
+            </div>
+            <div class="phone-stage" id="phoneStage">
+              <div class="preview-phone" id="previewPhone">
+                <div class="phone-top">
+                  <span id="phoneTime">9:41</span>
+                  <span class="phone-island" aria-hidden="true">
+                  </span>
+                  <span aria-hidden="true">◒ ▰</span>
                 </div>
-
-                <div class="preview-scroll" id="previewScroll">
-                  <!-- PADRÃO -->
-                  <div class="layout-view" id="pvPadrao">
-                    <section class="pv-hero" id="pvHero">
-                      <div class="pv-hero-content">
-                        <small id="pvPequeno">Uma história que continua...</small>
-                        <h2 id="pvTitulo">Nós dois</h2>
-                        <p id="pvFrase">Sua história começa aqui...</p>
-                      </div>
-                    </section>
-
-                    <section class="pv-sec">
-                      <span class="pv-eyebrow">Desde que tudo começou</span>
-                      <h3>Nosso tempo juntos</h3>
-                      <div class="pv-counter-grid">
-                        <div><strong id="pvAnos">0</strong><span>Anos</span></div>
-                        <div><strong id="pvMeses">0</strong><span>Meses</span></div>
-                        <div><strong id="pvDias">0</strong><span>Dias</span></div>
-                        <div><strong id="pvHoras">0</strong><span>Horas</span></div>
-                      </div>
-                    </section>
-
-                    <section class="pv-sec">
-                      <span class="pv-eyebrow">Era uma vez...</span>
-                      <h3>A nossa história</h3>
-                      <div class="pv-timeline" id="pvTimeline"></div>
-                    </section>
-
-                    <section class="pv-sec" id="pvSecGaleria">
-                      <span class="pv-eyebrow">Nossos momentos</span>
-                      <h3>Um álbum só nosso</h3>
-                      <div class="pv-photos" id="pvFotos"></div>
-                    </section>
-
-                    <section class="pv-sec" id="pvSecAmo">
-                      <span class="pv-eyebrow">Pequenas coisas</span>
-                      <h3 id="pvAmoTitulo">O que eu amo em você</h3>
-                      <div class="pv-cards" id="pvCards"></div>
-                    </section>
-
-                    <section class="pv-sec" id="pvSecVideo">
-                      <span class="pv-eyebrow">Um momento só nosso</span>
-                      <h3>Nosso Momento</h3>
-                      <div class="pv-video-frame" id="pvVideoFrame"></div>
-                    </section>
-
-                    <section class="pv-sec pv-carta">
-                      <span class="pv-eyebrow">Para você</span>
-                      <h3>Para você</h3>
-                      <p id="pvCarta">Sua mensagem aparece aqui...</p>
-                      <div class="pv-assin" id="pvAssin">Com todo meu amor,</div>
-                    </section>
-
-                    <section class="pv-sec pv-musica" id="pvSecMusica">
-                      <span class="pv-eyebrow">A nossa música</span>
-                      <h3 id="pvMusNome">—</h3>
-                      <p id="pvMusArtista"></p>
-                    </section>
-
-                    <footer class="pv-footer">
-                      <div>❤️</div>
-                      <p id="pvRodape">Nosso tempo juntos...</p>
-                    </footer>
-                  </div>
-
-                  <!-- NETFLIX -->
-                  <div class="layout-view" id="pvNetflix" style="display: none">
-                    <section class="pvn-hero" id="pvnHero">
-                      <div class="pvn-hero-slides" id="pvnSlides"></div>
-                      <div class="pvn-hero-overlay"></div>
-                      <div class="pvn-hero-content">
-                        <div class="pvn-badge"><span class="pvn-badge-n">N</span>SÉRIE ORIGINAL</div>
-                        <h2 class="pvn-title" id="pvnTitulo">Nós Dois</h2>
-                        <div class="pvn-meta">
-                          <span class="pvn-match">98% relevante</span>
-                          <span id="pvnAno">2024</span>
-                          <span id="pvnTemp">1 Temporada</span>
-                          <span class="pvn-hd">HD</span>
-                        </div>
-                        <p class="pvn-desc" id="pvnDesc"></p>
-                        <div class="pvn-actions">
-                          <button class="pvn-play" type="button">▶ Assistir</button>
-                          <button class="pvn-info" type="button">+ Minha lista</button>
-                        </div>
-                      </div>
-                      <div class="pvn-slide-dots" id="pvnSlideDots"></div>
-                    </section>
-
-                    <section class="pvn-section">
-                      <h3 class="pvn-section-title">Continuar assistindo como <span id="pvnDe">você</span></h3>
-                      <div class="pvn-carousel" id="pvnContinue"></div>
-                    </section>
-
-                    <section class="pvn-section">
-                      <h3 class="pvn-section-title">Top 10 momentos no Brasil <span>Atualizado hoje</span></h3>
-                      <div class="pvn-top10" id="pvnTop10"></div>
-                    </section>
-
-                    <section class="pvn-section">
-                      <h3 class="pvn-section-title">Episódios <span id="pvnSeason">Temporada 1</span></h3>
-                      <div class="pvn-episodes" id="pvnEpisodios"></div>
-                    </section>
-
-                    <section class="pvn-section pvn-about">
-                      <h3 class="pvn-section-title">Sobre <span id="pvnSobreTitulo">Nós Dois</span></h3>
-                      <div class="pvn-about-grid">
-                        <div><span>Elenco</span><b id="pvnElenco"></b></div>
-                        <div><span>Gênero</span><b>Romance</b></div>
-                        <div><span>Indicado</span><b class="pvn-age">14</b></div>
-                      </div>
-                      <p class="pvn-about-desc" id="pvnSobre"></p>
-                    </section>
-
-                    <nav class="pvn-nav">
-                      <button class="pvn-nav-item active" type="button"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg><span>Início</span></button>
-                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" /></svg><span>Séries</span></button>
-                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4v16h16V4z" /></svg><span>Filmes</span></button>
-                      <button class="pvn-nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg><span>Lista</span></button>
-                    </nav>
-                  </div>
-
-                  <!-- SPOTIFY -->
-                  <div class="layout-view" id="pvSpotify" style="display: none">
-                    <header class="pvsp-header" id="pvspHeader">
-                      <div class="pvsp-cover-wrap">
-                        <div class="pvsp-cover-glow" id="pvspGlow"></div>
-                        <div class="pvsp-cover" id="pvspCover"></div>
-                      </div>
-                      <div class="pvsp-type">Playlist</div>
-                      <h2 class="pvsp-title" id="pvspTitulo">Nós dois</h2>
-                      <div class="pvsp-meta" id="pvspMeta"></div>
-                    </header>
-
-                    <div class="pvsp-actions">
-                      <button class="pvsp-icon-btn" id="pvspHeart" type="button" title="Curtir">♡</button>
-                      <button class="pvsp-play-big" type="button">▶</button>
-                      <button class="pvsp-icon-btn" type="button" title="Mais">⋯</button>
-                    </div>
-
-                    <div class="pvsp-tracks" id="pvspTracks"></div>
-
-                    <section class="pvsp-section" id="pvspSecAlbums">
-                      <h3>Você também pode gostar</h3>
-                      <div class="pvsp-albums-grid" id="pvspAlbums"></div>
-                    </section>
-
-                    <div class="pvsp-lyrics">
-                      <div class="pvsp-lyrics-tag">♥ Sua carta</div>
-                      <p class="pvsp-lyrics-text" id="pvspLyricsText"></p>
-                    </div>
-
-                    <section class="pvsp-about">
-                      <div class="pvsp-avatar" id="pvspAvatar">♥</div>
-                      <div class="pvsp-about-body">
-                        <small>Criado por</small>
-                        <b id="pvspAuthor">Você</b>
-                        <p id="pvspCarta"></p>
-                      </div>
-                    </section>
-
-                    <div class="pvsp-player" id="pvspPlayer">
-                      <div class="pvsp-player-cover" id="pvspPlayerCover"></div>
-                      <div class="pvsp-player-body">
-                        <div class="pvsp-player-title" id="pvspMusNome">—</div>
-                        <div class="pvsp-player-artist" id="pvspMusArtista">—</div>
-                        <div class="pvsp-player-progress"><span id="pvspProgressFill"></span></div>
-                      </div>
-                      <button class="pvsp-player-btn" type="button">▶</button>
+                <div class="preview-screen" id="previewScreen">
+                  <div class="preview-scroll" id="previewScroll">
+                    <div id="previewEmpty">
+                      <span>♡</span>
+                      <h3>Uma história esperando<br>para acontecer.</h3>
+                      <p>Escolha seu tema para começar.</p>
                     </div>
                   </div>
-
-                  <!-- VINIL -->
-                  <div class="layout-view" id="pvVinil" style="display: none">
-                    <section class="pvl-hero">
-                      <div class="pvl-hero-deco">
-                        <span>33⅓ RPM</span>
-                        <span>STEREO</span>
-                      </div>
-                      <div class="pvl-vinyl-wrap">
-                        <div class="pvl-vinyl-glow"></div>
-                        <div class="pvl-vinyl" id="pvlVinyl">
-                          <div class="pvl-vinyl-label" id="pvlLabel"></div>
-                          <div class="pvl-vinyl-hole"></div>
-                        </div>
-                        <div class="pvl-needle" id="pvlNeedle">
-                          <svg viewBox="0 0 80 120" fill="none">
-                            <circle cx="70" cy="10" r="6" fill="#d4a24e" />
-                            <path d="M70 16 L70 60 L36 100" stroke="#d4a24e" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="36" cy="100" r="4" fill="#d4a24e" />
-                            <rect x="28" y="102" width="16" height="6" rx="2" fill="#d4a24e" />
-                          </svg>
-                        </div>
-                      </div>
-                      <div class="pvl-badge">Lado A • Edição de colecionador</div>
-                      <h2 class="pvl-title" id="pvlTitulo">Nós Dois</h2>
-                      <div class="pvl-meta" id="pvlMeta"></div>
-                      <p class="pvl-desc" id="pvlDesc"></p>
-                    </section>
-
-                    <section class="pvl-stats">
-                      <div class="pvl-stat"><strong id="pvlStatFaixas">0</strong><span>Faixas</span></div>
-                      <div class="pvl-stat"><strong id="pvlStatAnos">0</strong><span>Anos</span></div>
-                      <div class="pvl-stat"><strong id="pvlStatDias">0</strong><span>Dias</span></div>
-                    </section>
-
-                    <section class="pvl-sec">
-                      <div class="pvl-sec-head">
-                        <h3>Lado A — Nossa história</h3>
-                        <span class="pvl-sec-tag">Faixas I–VI</span>
-                      </div>
-                      <div class="pvl-tracks" id="pvlTracks"></div>
-                    </section>
-
-                    <section class="pvl-sec" id="pvlSecGaleria">
-                      <div class="pvl-sec-head">
-                        <h3>Capa & encarte</h3>
-                        <span class="pvl-sec-tag">Colecionador</span>
-                      </div>
-                      <div class="pvl-galeria" id="pvlGaleria"></div>
-                    </section>
-
-                    <section class="pvl-sec" id="pvlSecSideB">
-                      <div class="pvl-sec-head">
-                        <h3>Lado B — Favoritas</h3>
-                        <span class="pvl-sec-tag">Bônus</span>
-                      </div>
-                      <div class="pvl-side-b" id="pvlChips"></div>
-                    </section>
-
-                    <section class="pvl-liner">
-                      <span class="pvl-liner-tag">Liner notes</span>
-                      <h3>Notas do disco</h3>
-                      <p id="pvlCarta"></p>
-                      <div class="pvl-liner-assin" id="pvlAssin"></div>
-                    </section>
-
-                    <footer class="pvl-footer">
-                      <div class="pvl-footer-symbols"><span>◉</span><span>◉</span><span>◉</span></div>
-                      <div class="pvl-footer-logo">NOSSO<span>AMOR</span></div>
-                      <p id="pvlRodape">℗ © 2024 — gravado com amor</p>
-                    </footer>
-                  </div>
+                </div>
+                <div class="phone-home" aria-hidden="true">
                 </div>
               </div>
+              <div id="previewDots" hidden>
+              </div>
             </div>
-
-            <div class="preview-dots" id="previewDots"></div>
+            <p class="preview-help">Role dentro da tela e toque nos elementos.<br>Esta é a página real do tema escolhido.</p>
           </div>
-        </div>
-
-        <button class="preview-close" id="previewClose" type="button">✕</button>
-      </aside>
-    </div>
-
-    <button class="preview-btn" id="previewBtn" type="button">👁 Ver prévia</button>
-
-    <script src="js/core/config.js"></script>
-    <script src="js/api/client.js"></script>
-    <script src="js/api/purchases.js"></script>
-    <script src="app.js"></script>
-    <script src="js/core/navbar.js"></script>
-    <script src="js/core/theme-catalog.js"></script>
-    <script src="js/pages/theme-editor.js"></script>
-    <script src="js/pages/criar.js"></script>
-  </body>
-</html>
+          <button class="preview-close" id="previewClose" type="button" aria-label="Fechar prévia">Fechar prévia ✕</button>
+        </aside>
+      </div>
+      <button class="preview-btn" id="previewBtn" type="button">◉ Ver meu presente</button>
+      <script src="js/core/config.js">
+      </script>
+      <script src="js/api/client.js">
+      </script>
+      <script src="js/api/purchases.js">
+      </script>
+      <script src="js/core/gift-sync.js"></script>
+      <script src="app.js">
+      </script>
+      <script src="js/core/db.js"></script>
+      <script src="js/core/navbar.js">
+      </script>
+      <script src="js/core/theme-catalog.js">
+      </script>
+      <script src="js/pages/theme-editor.js">
+      </script>
+      <script src="js/pages/creator-workflow.js">
+      </script>
+      <script src="js/pages/criar.js">
+      </script>
+    </body>
+  </html>

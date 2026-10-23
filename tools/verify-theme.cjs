@@ -15,6 +15,8 @@ function files(dir) {
 async function main() {
   await require('./test-theme-persistence.cjs')();
   require('./test-exclusive-helpers.cjs')();
+  require('./test-creator-workflow.cjs')();
+  await require('./test-creator-saving.cjs')();
   // Exercita a ponte do formulário sem depender de autenticação ou mídia externa.
   const creator = fs.readFileSync(path.join(publicRoot, 'js/pages/criar.js'), 'utf8');
   const fields = Object.fromEntries(['titulo', 'de', 'para', 'inicio', 'carta', 'frase',
@@ -30,7 +32,7 @@ async function main() {
   const listeners = {};
   const scope = vm.createContext({
     THEMES: {},
-    $: id => fields[id], fotoURLs: ['blob:foto'], videoURLs: ['blob:video'], musicaPreviewURL: 'blob:musica',
+    $: id => fields[id], fotoURLs: ['blob:foto'], photoIds: ['photo-test-id'], videoURLs: ['blob:video'], musicaPreviewURL: 'blob:musica',
     location: { origin: 'http://localhost' },
     document: {
       querySelectorAll() { return []; },
@@ -41,7 +43,7 @@ async function main() {
   });
   vm.runInContext(fs.readFileSync(path.join(publicRoot, 'js/core/theme-catalog.js'), 'utf8'), scope);
   const bridge = creator.slice(creator.indexOf('let themePreviewFrame = null;'),
-    creator.indexOf('function renderPreviewPadrao'));
+    creator.indexOf('function renderFotosGrid'));
   vm.runInContext(bridge, scope);
   vm.runInContext("atualizarPreviewTema('namoro')", scope);
   assert.equal(frame.src, 'teste/namoro.html?embed=1');
@@ -96,8 +98,10 @@ async function main() {
   const config = require('../server/config');
   assert.equal(config.FRONTEND_ROOT, publicRoot);
   const port = 3198;
+  const isolated=fs.mkdtempSync(path.join(require('os').tmpdir(),'na-verify-'));
+  fs.copyFileSync(path.join(root,'server/data/config.json'),path.join(isolated,'config.json'));
   const server = spawn(process.execPath, ['server/index.js'], {
-    cwd: root, env: { ...process.env, PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'],
+    cwd: root, env: { ...process.env, PORT: String(port), NA_DATA_DIR: isolated }, stdio: ['ignore', 'pipe', 'pipe'],
   });
   let logs = '';
   const mediaFixtures=[];
@@ -146,6 +150,8 @@ async function main() {
   } finally {
     server.kill();
     for(const file of mediaFixtures)fs.unlinkSync(file);
+    await new Promise(resolve=>server.exitCode!==null?resolve():server.once('exit',resolve));
+    fs.rmSync(isolated,{recursive:true,force:true});
   }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

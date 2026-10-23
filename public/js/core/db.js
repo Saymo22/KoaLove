@@ -55,7 +55,27 @@ NA.db = (function () {
     });
   }
 
-  return { abrirDB, salvarPedido, buscarPedido, listarTodosPedidos, excluirPedidoDB };
+  async function buscarRascunho({serverId,requestId} = {}) {
+    if(requestId && !serverId) {
+      const active = await buscarPedido('__draft_'+requestId);
+      if(active) return active;
+    }
+    const db = await abrirDB();
+    return new Promise((resolve,reject) => {
+      let candidate = null;
+      const req = db.transaction(STORE).objectStore(STORE).openCursor(IDBKeyRange.bound('__draft_','__draft_\uffff'));
+      req.onsuccess = () => {
+        const cursor = req.result;
+        if(!cursor) {resolve(candidate);return;}
+        const item = cursor.value;
+        if((!serverId || item.serverId === serverId) && (!candidate || (item.updated_at||0) > (candidate.updated_at||0))) candidate = item;
+        cursor.continue();
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  return { abrirDB, salvarPedido, buscarPedido, listarTodosPedidos, excluirPedidoDB, buscarRascunho };
 })();
 
 /* Expor globais para compatibilidade com minha-conta.js */

@@ -59,10 +59,11 @@ function criarTemaCard(chave, t) {
         '</div>' +
         '<div class="tema-info">' +
             '<h3>' + t.emoji + ' ' + t.nome + '</h3>' +
-            '<p>' + t.desc + '.</p>' +
+            '<p class="tema-description"></p>' +
             '<a class="b">Criar com este tema <span class="arrow">→</span></a>' +
         '</div>';
 
+    el.querySelector(".tema-description").textContent = t.desc || t.pequeno || t.sufixo || "Personalize suas memórias neste tema.";
     el.querySelector(".tema-mock-titulo").textContent = a.chip;
     el.querySelector(".tema-mock-titulo-grande").textContent = a.titulo;
 
@@ -85,30 +86,20 @@ function criarTemaCard(chave, t) {
         fav.textContent = fav.classList.contains("on") ? "♥" : "♡";
     });
 
-    el.addEventListener("mousemove", (e) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        el.style.setProperty("--mouse-x", x + "px");
-        el.style.setProperty("--mouse-y", y + "px");
-        if (!window.matchMedia("(pointer: coarse)").matches) {
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -6;
-            const rotateY = ((x - centerX) / centerX) * 6;
-           el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale3d(1.02, 1.02, 1.02)`;
-        }
-    });
+    // Tracking do mouse → apenas para o glow radial.
+    // O tilt 3D fica por conta do CSS (:hover), igual ao criar.html.
+    if (!window.matchMedia("(pointer: coarse)").matches) {
+        el.addEventListener("mousemove", (e) => {
+            const rect = el.getBoundingClientRect();
+            el.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
+            el.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
+        });
+        el.addEventListener("mouseleave", () => {
+            el.style.setProperty("--mouse-x", "50%");
+            el.style.setProperty("--mouse-y", "50%");
+        });
+    }
 
-    el.addEventListener("mouseleave", () => {
-        if (!window.matchMedia("(pointer: coarse)").matches) {
-            el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale3d(1, 1, 1)`;
-        }
-        el.style.setProperty("--mouse-x", "50%");
-        el.style.setProperty("--mouse-y", "50%");
-    });
-
-    // Acessibilidade: navegar por teclado
     el.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -128,11 +119,6 @@ const caixaEspeciais = document.getElementById("temasEspeciais");
 const todosCards = [];
 let totClassicos = 0, totEspeciais = 0;
 
-/* Revela os cards depois que eles existem de fato.
-   Antes, o IntersectionObserver era criado com o array ainda vazio
-   (os temas chegam de /api/config), então nenhum card recebia .on.
-   Além disso há um fallback: se o observer não disparar (aba em segundo
-   plano), todos ficam visíveis mesmo assim. */
 function revelarTemas() {
     if (!todosCards.length) return;
     const mostrarTodos = () => todosCards.forEach(c => c.classList.add("on"));
@@ -155,7 +141,7 @@ function revelarTemas() {
 
 /* Temas e preço vêm de GET /api/config (nada hardcoded) */
 NA_CONFIG_READY.then(() => {
-    if (!Object.keys(THEMES).length) return; // sem config e sem cache: não renderiza a vitrine
+    if (!Object.keys(THEMES).length) return;
 
     Object.entries(THEMES).forEach(([chave, t]) => {
         const card = criarTemaCard(chave, t);
@@ -177,6 +163,8 @@ NA_CONFIG_READY.then(() => {
 
     const valor = CONFIG.preco;
     if (typeof valor !== "number") return;
+    const promoPrice=document.getElementById("promoPor");
+    if(promoPrice)promoPrice.textContent=formatarPreco(valor);
     const inteiro = Math.floor(valor);
     const centavos = String(Math.round((valor - inteiro) * 100)).padStart(2, "0");
     const el = document.getElementById("precoValor");
@@ -244,9 +232,6 @@ document.querySelectorAll(".filtro").forEach(btn => {
 
 /* =====================================================
    SCROLL
-   A classe ".scrolled" da navbar é gerenciada por js/core/navbar.js.
-   Não guardamos referência a #nav aqui: ele é injetado depois, e um
-   valor null estourava TypeError a cada scroll.
 ===================================================== */
 const progress = document.getElementById("scrollProgress");
 
@@ -385,40 +370,6 @@ document.querySelectorAll(".b").forEach(btn => {
 });
 
 /* =====================================================
-   TIMER PROMO
-===================================================== */
-(function () {
-    const hEl = document.getElementById("tHoras");
-    const mEl = document.getElementById("tMin");
-    const sEl = document.getElementById("tSeg");
-    if (!hEl) return;
-
-    function tick() {
-        const now = new Date();
-        const fim = new Date();
-        fim.setHours(23, 59, 59, 999);
-        let diff = Math.max(0, fim - now);
-        const h = Math.floor(diff / 3600000);
-        diff -= h * 3600000;
-        const m = Math.floor(diff / 60000);
-        diff -= m * 60000;
-        const s = Math.floor(diff / 1000);
-        hEl.textContent = String(h).padStart(2, "0");
-        mEl.textContent = String(m).padStart(2, "0");
-        sEl.textContent = String(s).padStart(2, "0");
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    const por = CONFIG.preco;
-    if (typeof por === "number") {
-        const de = Math.round((por * 1.1) * 100) / 100;
-        document.getElementById("promoDe").textContent = formatarPreco(de);
-        document.getElementById("promoPor").textContent = formatarPreco(por);
-    }
-})();
-
-/* =====================================================
    PARTÍCULAS CTA FINAL
 ===================================================== */
 (function () {
@@ -442,3 +393,65 @@ document.querySelectorAll(".b").forEach(btn => {
 })();
 
 document.getElementById("anoAtual").textContent = new Date().getFullYear();
+/* =====================================================
+   EFEITOS DE FUNDO DO HERO (PALAVRAS E BOLINHAS)
+   ===================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    const layerBack = document.getElementById("heroLayerBack");
+    const layerMid = document.getElementById("heroLayerMid");
+    const layerFront = document.getElementById("heroLayerFront");
+    const stardustEl = document.getElementById("heroStardust");
+
+    const words = ["Amor", "Eterno", "Sempre", "Destino", "Alma", "Paixão", "Juntos", "Infinito", "Promessa", "Coração"];
+
+    function createWords(container, count) {
+        if (!container) return;
+        for (let i = 0; i < count; i++) {
+            const span = document.createElement("span");
+            span.className = "floating-word";
+            span.textContent = words[Math.floor(Math.random() * words.length)];
+            
+            // Distribui as palavras pela tela
+            span.style.left = (Math.random() * 80 + 10) + "%";
+            span.style.top = (Math.random() * 80 + 10) + "%";
+            span.style.animationDelay = (Math.random() * 5) + "s";
+            
+            // Rotação leve para não ficar muito estático
+            const rot = Math.random() * 30 - 15;
+            span.style.transform = `rotate(${rot}deg)`;
+            
+            container.appendChild(span);
+        }
+    }
+
+    createWords(layerBack, 15);
+    createWords(layerMid, 12);
+    createWords(layerFront, 8);
+
+    // Cria as bolinhas (Poeira Estelar)
+    if (stardustEl) {
+        for (let i = 0; i < 35; i++) {
+            const star = document.createElement("div");
+            star.className = "star-dust";
+            star.style.left = Math.random() * 100 + "%";
+            star.style.animationDuration = (10 + Math.random() * 20) + "s";
+            star.style.animationDelay = (-Math.random() * 20) + "s";
+            
+            // Tamanhos variados para as bolinhas
+            const size = 1 + Math.random() * 2;
+            star.style.width = size + "px";
+            star.style.height = size + "px";
+            stardustEl.appendChild(star);
+        }
+    }
+
+    // Efeito Parallax 3D (As palavras se movem sutilmente com o mouse)
+    document.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 2;
+        const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+        if (layerBack) layerBack.style.transform = `translate(${x * 15}px, ${y * 15}px)`;
+        if (layerMid) layerMid.style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+        if (layerFront) layerFront.style.transform = `translate(${x * 50}px, ${y * 50}px)`;
+    });
+});

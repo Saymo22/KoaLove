@@ -6,7 +6,20 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "build:qr": "node ../tools/build-qr.cjs"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "file-type": "^22.2.0",
+    "nodemailer": "^10.2.1",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
 }

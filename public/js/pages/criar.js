@@ -6,29 +6,32 @@ let tema = null,
   legendasValores = [];
 let draggedIdx = null,
   videoURLs = [],
-  layoutAtual = null,
-  transicaoEmAndamento = false;
+  previewReturnFocus = null;
 
 let pedidoEditandoId = null;
 let pedidoAntigo = null;
 let musicaPreviewURL = null;
+let photoIds=[],videoIds=[],musicId=null;
+let requestId;
+try {requestId=sessionStorage.getItem('na_creator_request');}catch{}
+requestId ||= NAGift.id();
+try {sessionStorage.setItem('na_creator_request',requestId);}catch{}
+let draftKey='__draft_'+requestId;
+const mediaURL=NAGift.url;
+function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
+function captureDraft(){
+ const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
+ fotos:[...fotoFiles],videos:$('videos').files.length?[...$('videos').files].slice(0,4):(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
+ themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
+ usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
+ eventos:[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(e=>e.titulo||e.texto),
+ amo:[...document.querySelectorAll('.amo')].map(el=>el.value.trim()).filter(Boolean)};
+ for(const key of ['titulo','de','para','inicio','carta','frase','musicaNome','musicaArtista','rodapeCustom'])p[key]=$(key).value.trim();
+ if(window.NACreatorWorkflow.profile(tema).namesOnly)p.titulo=[p.de,p.para].join(' & ');
+ return NAGift.prepare(p);
+}
 
 const MAX_EVENTOS = 6;
-
-const SECOES = {
-  padrao: ["Capa", "Contador", "História", "Álbum", "Pequenas", "Vídeo", "Carta", "Música"],
-  netflix: ["Destaque", "Continuar", "Top 10", "Episódios", "Sobre"],
-  spotify: ["Capa", "Faixas", "Descubra", "Letra", "Sobre"],
-  vinil: ["Capa", "Lado A", "Encarte", "Lado B", "Notas"],
-  "carta-antiga": ["Capa", "Contador", "Carta", "História", "Álbum"],
-  scrapbook: ["Capa", "Contador", "Carta", "História", "Álbum", "Mixtape"],
-  cinema: ["Cartaz", "Contador", "Sinopse", "Cenas", "Álbum"],
-  jardim: ["Capa", "Contador", "Carta", "Estações", "Álbum", "Flores"],
-  retro: ["Capa", "Contador", "Carta", "Log", "Álbum", "Mixtape"],
-};
-let autoScrollTimer = null,
-  autoScrollPaused = false,
-  currentSectionIdx = 0;
 
 const AMOSTRA = {
   namoro: { titulo: "Nós dois", chip: "Uma história que continua...", cont: [["2", "Anos"], ["34", "Meses"], ["952", "Dias"]] },
@@ -83,79 +86,19 @@ setInterval(updatePhoneTime, 30000);
   $("inicio").max = h.getFullYear() + "-" + String(h.getMonth() + 1).padStart(2, "0") + "-" + String(h.getDate()).padStart(2, "0");
 })();
 
-function buildPreviewDots(layout) {
-  const dots = $("previewDots");
-  if (!dots) return;
-  const sections = SECOES[layout] || SECOES.padrao;
-  dots.innerHTML = "";
-  sections.forEach((label, i) => {
-    const b = document.createElement("button");
-    b.className = "preview-dot" + (i === 0 ? " on" : "");
-    b.type = "button";
-    b.title = label;
-    b.dataset.idx = i;
-    b.addEventListener("click", () => {
-      goToPreviewSection(i);
-      resetAutoScroll();
-    });
-    dots.appendChild(b);
-  });
-  currentSectionIdx = 0;
-}
-
-function getPreviewSections() {
-  const scroll = $("previewScroll");
-  const layout = scroll.querySelector(".layout-view:not([style*='display: none'])");
-  if (!layout) return [];
-  return [...layout.querySelectorAll(":scope > *")].filter((el) => el.getClientRects().length && el.offsetHeight >= 80);
-}
-
-function goToPreviewSection(idx) {
-  const sections = getPreviewSections();
-  if (!sections[idx]) return;
-  $("previewScroll").scrollTo({ top: sections[idx].offsetTop, behavior: "smooth" });
-  updateActiveDot(idx);
-}
-
-function updateActiveDot(idx) {
-  const dots = $("previewDots");
-  if (!dots) return;
-  [...dots.children].forEach((d, i) => d.classList.toggle("on", i === idx));
-  currentSectionIdx = idx;
-}
-
-function startAutoScroll() {
-  stopAutoScroll();
-  if (autoScrollPaused) return;
-  autoScrollTimer = setInterval(() => {
-    if (autoScrollPaused) return;
-    const sections = getPreviewSections();
-    if (sections.length < 2) return;
-    goToPreviewSection((currentSectionIdx + 1) % sections.length);
-  }, 4500);
-}
-function stopAutoScroll() {
-  if (autoScrollTimer) { clearInterval(autoScrollTimer); autoScrollTimer = null; }
-}
-function resetAutoScroll() {
-  stopAutoScroll();
-  setTimeout(startAutoScroll, 400);
-}
-
-$("previewScroll").addEventListener("scroll", () => {
-    const sections = getPreviewSections();
-    if (!sections.length) return;
-    const scrollTop = $("previewScroll").scrollTop + 80;
-    let active = 0;
-    sections.forEach((sec, i) => { if (sec.offsetTop <= scrollTop) active = i; });
-    updateActiveDot(active);
-  }, { passive: true });
-
-(function () {
-  const phone = $("previewPhone");
-  phone.addEventListener("mouseenter", () => { autoScrollPaused = true; stopAutoScroll(); });
-  phone.addEventListener("mouseleave", () => { autoScrollPaused = false; resetAutoScroll(); });
-})();
+/* Flash dourado nos números do contador ao mudar */
+["pAnos", "pMeses", "pDias", "pHoras"].forEach((id) => {
+  const el = $(id);
+  if (!el) return;
+  let last = el.textContent;
+  new MutationObserver(() => {
+    if (el.textContent === last) return;
+    last = el.textContent;
+    el.classList.remove("num-flash");
+    void el.offsetWidth;
+    el.classList.add("num-flash");
+  }).observe(el, { childList: true, characterData: true, subtree: true });
+});
 
 function marcarErro(campoNome) {
   const campo = document.querySelector(`[data-campo="${campoNome}"]`);
@@ -250,16 +193,6 @@ function criarCardTema(chave, t) {
   el.querySelector(".nome").textContent = t.nome;
   el.querySelector(".tema-info p").textContent = t.desc || t.pequeno || t.sufixo || '';
 
-  if (!window.matchMedia("(pointer: coarse)").matches) {
-    el.addEventListener("mousemove", (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      el.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-6px) scale(1.02)`;
-    });
-    el.addEventListener("mouseleave", () => { el.style.transform = ""; });
-  }
-
   function selecionar() {
     tema = chave;
     document.querySelectorAll(".tema").forEach((x) => {
@@ -321,6 +254,11 @@ NA_CONFIG_READY.then(() => {
     todosCards.push(card);
   });
   requestAnimationFrame(() => revelarCards());
+  if(!parametro('id')&&!parametro('resume')) {
+    const requested=parametro('tema');
+    const card=todosCards.find(item=>item.dataset.chave===requested);
+    card?.click();
+  }
 });
 
 function aplicarTemaPreview(chave) {
@@ -339,52 +277,6 @@ function pulsarPreview() {
   label.classList.add("updating");
   clearTimeout(pulseTimer);
   pulseTimer = setTimeout(() => label.classList.remove("updating"), 700);
-}
-
-function animarNumero(el, valorFinal, format) {
-  if (!el) return;
-  const atual = parseInt(el.textContent.replace(/\D/g, ""), 10) || 0;
-  if (atual === valorFinal) return;
-  const dur = 500, start = performance.now();
-  function tick(now) {
-    const p = Math.min((now - start) / dur, 1);
-    const eased = 1 - Math.pow(1 - p, 3);
-    const val = Math.round(atual + (valorFinal - atual) * eased);
-    el.textContent = format === "br" ? val.toLocaleString("pt-BR") : val;
-    if (p < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-function trocarLayout(novoLayout) {
-  const map = { netflix: "pvNetflix", spotify: "pvSpotify", vinil: "pvVinil" };
-  const id = map[novoLayout] || "pvPadrao";
-  const novo = $(id);
-  if (!novo) return;
-
-  const anterior = document.querySelector(".layout-view.atual");
-  if (anterior && anterior !== novo) {
-    anterior.style.display = "none";
-    anterior.classList.remove("atual");
-  }
-
-  // Garante que a view ativa esteja sempre visível (opacity 1 por padrão).
-  // A entrada é uma animação em CSS que NUNCA parte de opacity 0, para que
-  // uma aba em segundo plano (animação congelada) não deixe a prévia em branco.
-  novo.style.display = "block";
-  novo.classList.add("atual");
-
-  if (layoutAtual !== novoLayout) {
-    novo.classList.remove("layout-enter");
-    void novo.offsetWidth; // reinicia a animação
-    novo.classList.add("layout-enter");
-
-    layoutAtual = novoLayout;
-    buildPreviewDots(novoLayout);
-    $("previewScroll").scrollTop = 0;
-    currentSectionIdx = 0;
-    resetAutoScroll();
-  }
 }
 
 function atualizarPreview() {
@@ -407,9 +299,8 @@ function atualizarPreview() {
     ["pAnos", "pMeses", "pDias", "pHoras"].forEach((i) => ($(i).textContent = "0"));
     $("previaFrase").textContent = "Escolha a data para ver o contador.";
   }
-  const layout = t.layout || "padrao";
-  trocarLayout(layout);
-  renderPreviewPadrao(tempo, t);
+  window.NAThemeEditor?.setPhotos(fotoURLs,[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(ev=>ev.titulo||ev.texto),photoIds);
+  window.NACreatorWorkflow?.configure(temaChave);
   pulsarPreview();
 }
 
@@ -420,6 +311,7 @@ function atualizarPreviewTema(chave) {
   const ativo = !!window.NA_THEME_FILES?.[chave];
   $("previewScroll").classList.toggle("preview-tema", ativo);
   $("previewDots").hidden = ativo;
+  const empty=$("previewEmpty");if(empty)empty.hidden=ativo;
   if (!ativo) {
     themePreviewFrame?.remove();
     themePreviewFrame = null;
@@ -448,8 +340,10 @@ function enviarPreviewTema() {
   for (const campo of ["titulo", "de", "para", "inicio", "carta", "frase", "musicaNome", "musicaArtista", "rodapeCustom"]) {
     p[campo] = $(campo).value.trim();
   }
+  if(window.NACreatorWorkflow?.profile(temaPreviewKey).namesOnly)p.titulo=[p.de,p.para].filter(Boolean).join(' & ');
   p.de ||= "Alguém especial";
   p.para ||= "Você";
+  p.photoIds = [...photoIds];
   p.autoplay = $('autoplay').checked;
   p.usarIntro = $('usarIntro').checked;
   p.themeData = window.NAThemeEditor?.getData() || {};
@@ -473,112 +367,6 @@ window.addEventListener("message", event => {
     enviarPreviewTema();
   }else if(event.data?.type === "NOSSO_AMOR_NAMORO_READY") enviarPreviewTema();
 });
-
-function renderPreviewPadrao(tempo, t) {
-  const ini = $("inicio").value;
-  const sufixo = $("frase").value.trim();
-  $("pvPequeno").textContent = t.pequeno;
-  $("pvTitulo").textContent = $("titulo").value.trim() || "Nós dois";
-  $("pvFrase").textContent = ini ? (textoDuracao(tempo) + " " + (sufixo || t.sufixo)).trim() : "Sua história começa aqui...";
-  
-  const capaIdx = Math.min(Number($("fotoCapa").value) || 0, Math.max(0, fotoURLs.length - 1));
-  $("pvHero").style.backgroundImage = fotoURLs[capaIdx] ? "linear-gradient(rgba(80,25,43,.35), rgba(80,25,43,.65)), url('" + fotoURLs[capaIdx] + "')" : "";
-  
-  if (tempo) {
-    animarNumero($("pvAnos"), tempo.anos);
-    animarNumero($("pvMeses"), tempo.meses);
-    animarNumero($("pvDias"), tempo.dias, "br");
-    animarNumero($("pvHoras"), tempo.horas, "br");
-  }
-  
-  const tl = $("pvTimeline");
-  tl.innerHTML = "";
-  const evs = [...document.querySelectorAll(".ev-item")].map((el) => ({
-      data: el.querySelector(".ev-data").value.trim(),
-      titulo: el.querySelector(".ev-titulo").value.trim(),
-      texto: el.querySelector(".ev-texto").value.trim(),
-    })).filter((e) => e.titulo || e.texto);
-    
-  if (ini && tempo) evs.push({ data: new Date().toLocaleDateString("pt-BR"), titulo: "Hoje", texto: textoDuracao(tempo) + " construindo nossa história." });
-  
-  if (!evs.length) tl.innerHTML = '<p class="pv-empty">Adicione momentos para vê-los aqui...</p>';
-  else evs.forEach((ev) => {
-      const d = document.createElement("div");
-      d.className = "pv-ev";
-      d.innerHTML = '<div class="pv-ev-data"></div><h4></h4><p></p>';
-      d.querySelector(".pv-ev-data").textContent = ev.data;
-      d.querySelector("h4").textContent = ev.titulo;
-      d.querySelector("p").textContent = ev.texto;
-      tl.appendChild(d);
-    });
-    
-  const g = $("pvFotos");
-  g.innerHTML = "";
-  if (fotoURLs.length) {
-    $("pvSecGaleria").style.display = "";
-    fotoURLs.slice(0, 6).forEach((u, i) => {
-      const wrap = document.createElement("div");
-      wrap.className = "pv-photo-wrap";
-      const img = document.createElement("img");
-      img.src = u;
-      img.loading = "lazy";
-      wrap.appendChild(img);
-      const leg = (legendasValores[i] || "").trim();
-      if (leg) {
-        const span = document.createElement("span");
-        span.className = "pv-photo-leg";
-        span.textContent = leg;
-        wrap.appendChild(span);
-      }
-      g.appendChild(wrap);
-    });
-  } else $("pvSecGaleria").style.display = "none";
-  
-  const amo = [...document.querySelectorAll(".amo")].map((i) => i.value.trim()).filter(Boolean);
-  const cards = $("pvCards");
-  cards.innerHTML = "";
-  if (amo.length) {
-    $("pvSecAmo").style.display = "";
-    const emojis = ["😁", "😋", "❤️"];
-    amo.forEach((txt, i) => {
-      const c = document.createElement("div");
-      c.className = "pv-card";
-      c.innerHTML = "<div></div><b></b>";
-      c.children[0].textContent = emojis[i % emojis.length];
-      c.children[1].textContent = txt;
-      cards.appendChild(c);
-    });
-  } else $("pvSecAmo").style.display = "none";
-  $("pvAmoTitulo").textContent = t.amo || "O que eu amo em você";
-  
-  if (videoURLs.length) {
-    $("pvSecVideo").style.display = "";
-    const vf = $("pvVideoFrame");
-    vf.innerHTML = "";
-    const v = document.createElement("video");
-    v.src = videoURLs[0];
-    v.muted = true;
-    v.playsInline = true;
-    v.loop = true;
-    v.autoplay = true;
-    v.play && v.play().catch(() => {});
-    vf.appendChild(v);
-  } else $("pvSecVideo").style.display = "none";
-  
-  const para = $("para").value.trim(), carta = $("carta").value.trim();
-  $("pvCarta").textContent = (para ? para + "\n\n" : "") + (carta || "Sua mensagem aparece aqui...");
-  $("pvAssin").textContent = "Com todo meu amor, " + ($("de").value.trim() || "quem te ama");
-  
-  const musNome = $("musicaNome").value.trim(), musArt = $("musicaArtista").value.trim(), musFile = $("musica").files[0];
-  if (musNome || musFile) {
-    $("pvSecMusica").style.display = "";
-    $("pvMusNome").textContent = musNome || (musFile ? musFile.name.replace(/\.[^.]+$/, "") : "Nossa música");
-    $("pvMusArtista").textContent = musArt || "";
-  } else $("pvSecMusica").style.display = "none";
-  
-  const rodCustom = $("rodapeCustom") ? $("rodapeCustom").value.trim() : "";
-  $("pvRodape").textContent = rodCustom || (tempo ? textoDuracao(tempo) + "..." : "Nosso tempo juntos...");
-}
 
 function renderFotosGrid() {
   const grid = $("fotosGrid");
@@ -685,6 +473,8 @@ function renderFotosGrid() {
 }
 
 function reordenarFotos(from, to) {
+  preservePhotoRefs();
+  photoIds.splice(to,0,photoIds.splice(from,1)[0]);
   if (from === to) return;
   const itemURL = fotoURLs.splice(from, 1)[0];
   const itemFile = fotoFiles.splice(from, 1)[0];
@@ -708,6 +498,8 @@ function moverFoto(idx, dir) {
   const to = idx + dir;
   if (to < 0 || to >= fotoURLs.length) return;
   
+  preservePhotoRefs();
+  [photoIds[idx],photoIds[to]]=[photoIds[to],photoIds[idx]];
   const tU = fotoURLs[idx]; fotoURLs[idx] = fotoURLs[to]; fotoURLs[to] = tU;
   const tF = fotoFiles[idx]; fotoFiles[idx] = fotoFiles[to]; fotoFiles[to] = tF;
   const tL = legendasValores[idx]; legendasValores[idx] = legendasValores[to]; legendasValores[to] = tL;
@@ -721,6 +513,8 @@ function moverFoto(idx, dir) {
 }
 
 function removerFoto(idx) {
+  preservePhotoRefs();
+  photoIds.splice(idx,1);
   const removedURL = fotoURLs[idx];
   fotoURLs.splice(idx, 1);
   fotoFiles.splice(idx, 1);
@@ -738,9 +532,9 @@ function removerFoto(idx) {
 function atualizarPainelPersonalizacao() {
   const painel = $("painelPersonalizacao");
   if (fotoURLs.length > 0) {
-    painel.style.display = "";
+    painel.hidden = false;
     renderFotosGrid();
-  } else painel.style.display = "none";
+  } else painel.hidden = true;
 }
 
 let inputDebounce = null;
@@ -781,61 +575,29 @@ function addEvento() {
 
 $("btnAddEv").addEventListener("click", addEvento);
 
-function atualizarStepsVisual(n) {
-  document.querySelectorAll(".step-item").forEach((s, i) => {
-    s.classList.toggle("on", i === n - 1);
-    s.classList.toggle("done", i < n - 1);
-  });
-  document.querySelectorAll(".step-line").forEach((l, i) => l.classList.toggle("done", i < n - 1));
-}
+function atualizarStepsVisual(n) { window.NACreatorWorkflow.updateProgress(n); }
 
 function ir(n) {
-  if (transicaoEmAndamento) return;
-  const passoAtual = document.querySelector(".passo.ativo");
-  const passoDestino = document.querySelector(`.passo[data-passo="${n}"]`);
-  if (!passoDestino) return;
-  const idxAtual = passoAtual ? Number(passoAtual.dataset.passo) : 1;
-  const direcao = n >= idxAtual ? "avancando" : "voltando";
-  window.scrollTo({ top: 0, behavior: "auto" });
-  atualizarStepsVisual(n);
-  if (passoAtual === passoDestino) return;
-  transicaoEmAndamento = true;
-  if (passoAtual) passoAtual.classList.add(direcao, "saindo");
-  setTimeout(() => {
-    if (passoAtual) passoAtual.classList.remove("ativo", direcao, "saindo");
-    passoDestino.classList.add("ativo", direcao, "entrando");
-    setTimeout(() => {
-      passoDestino.classList.remove(direcao, "entrando");
-      transicaoEmAndamento = false;
-    }, 500);
-  }, 250);
+  const destino=document.querySelector('.passo[data-passo="'+n+'"]');if(!destino)return;
+  document.querySelectorAll('.passo').forEach(el=>{el.hidden=el!==destino;el.classList.toggle('ativo',el===destino);});
+  atualizarStepsVisual(n);window.scrollTo({top:0,behavior:'auto'});
+  destino.querySelector('h2')?.focus({preventScroll:true});
 }
 
 function validar(destino) {
   limparTodosErros();
-  if (destino >= 2 && !tema) {
-    $("erro1").textContent = "Escolha um tema para continuar.";
-    $("passo1").classList.add("temas-erro");
-    setTimeout(() => {
-      const t = document.querySelector(".tema");
-      if (t) t.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
-    return false;
-  }
-  if (destino >= 3) {
-    let primeiroErro = null;
-    if (!$("de").value.trim()) { marcarErro("de"); if (!primeiroErro) primeiroErro = "de"; }
-    if (!$("para").value.trim()) { marcarErro("para"); if (!primeiroErro) primeiroErro = "para"; }
-    if (!$("inicio").value) { marcarErro("inicio"); if (!primeiroErro) primeiroErro = "inicio"; }
-    if (!$("carta").value.trim()) { marcarErro("carta"); if (!primeiroErro) primeiroErro = "carta"; }
-    if (primeiroErro) return false;
-  }
+  if(destino>=2&&!tema){ir(1);$('erro1').textContent='Escolha um tema para continuar.';return false;}
+  const current=window.NACreatorWorkflow.current;
+  const fail=(step,field)=>{ir(step);marcarErro(field);return false;};
+  if((destino>current||destino===9)&&destino>=3){if(!$('de').value.trim())return fail(2,'de');if(!$('para').value.trim())return fail(2,'para');}
+  if((destino>current||destino===9)&&destino>=4&&!fotoFiles.length)return fail(3,'fotos');
+  if((destino>current||destino===9)&&destino>=7&&!$('carta').value.trim())return fail(6,'carta');
   return true;
 }
 
-document.querySelectorAll("[data-ir]").forEach((b) =>
+document.querySelectorAll("[data-ir], [data-step]").forEach((b) =>
   b.addEventListener("click", () => {
-    const n = Number(b.dataset.ir);
+    const n = Number(b.dataset.ir || b.dataset.step);
     if (validar(n)) ir(n);
   })
 );
@@ -843,11 +605,13 @@ document.querySelectorAll("[data-ir]").forEach((b) =>
 $("fotos").addEventListener("change", (e) => {
   fotoURLs.forEach((u) => URL.revokeObjectURL(u));
   const files = [...e.target.files].slice(0, 12);
+  preservePhotoRefs();
   fotoFiles = files;
-  fotoURLs = files.map((f) => URL.createObjectURL(f));
+  photoIds=files.map(()=>NAGift.id());
+  fotoURLs = files.map((f) => mediaURL(f));
   legendasValores = new Array(files.length).fill("");
   $("fotoCapa").value = 0;
-  if (e.target.files.length > 12) $("erro3").textContent = "Máximo de 12 fotos.";
+  if (e.target.files.length > 12) $("erroMedia").textContent = "Máximo de 12 fotos.";
   $("qtdFotos").textContent = files.length ? files.length + " foto(s) selecionada(s)" : "";
   atualizarPainelPersonalizacao();
   atualizarPreview();
@@ -857,6 +621,8 @@ $("fotos").addEventListener("change", (e) => {
 $("videos").addEventListener("change", (e) => {
   videoURLs.forEach((u) => URL.revokeObjectURL(u));
   const files = [...e.target.files].slice(0, 4);
+  videoIds=files.map(()=>NAGift.id());
+  if(pedidoAntigo)pedidoAntigo.videos=files;
   videoURLs = files.map((f) => URL.createObjectURL(f));
   if (e.target.files.length > 4) $("erro3").textContent = "Máximo de 4 vídeos.";
   $("qtdVideos").textContent = files.length ? files.length + " vídeo(s) selecionado(s)" : "";
@@ -865,6 +631,8 @@ $("videos").addEventListener("change", (e) => {
 
 $("musica").addEventListener("change", (e) => {
   const file = e.target.files[0];
+  musicId=file?NAGift.id():null;
+  if(pedidoAntigo)pedidoAntigo.musica=file||null;
   $("qtdMusica").textContent = file ? file.name : "";
   
   const wrap = $("musicaPreviewWrap");
@@ -873,33 +641,14 @@ $("musica").addEventListener("change", (e) => {
   if (file) {
     musicaPreviewURL = URL.createObjectURL(file);
     preview.src = musicaPreviewURL;
-    wrap.style.display = "block";
+    wrap.hidden = false;
   } else {
     preview.removeAttribute("src");
-    wrap.style.display = "none";
+    wrap.hidden = true;
   }
   atualizarPreview();
 });
 
-document.querySelectorAll(".btn, .b").forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const rect = btn.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const ripple = document.createElement("span");
-    ripple.className = "ripple";
-    ripple.style.width = ripple.style.height = size + "px";
-    ripple.style.left = e.clientX - rect.left - size / 2 + "px";
-    ripple.style.top = e.clientY - rect.top - size / 2 + "px";
-    btn.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 700);
-    btn.classList.remove("clicando");
-    void btn.offsetWidth;
-    btn.classList.add("clicando");
-    setTimeout(() => btn.classList.remove("clicando"), 320);
-  });
-});
-
-/* Gera uma miniatura JPEG (< 200KB) da capa para o admin ver */
 async function gerarPreviewThumb() {
   const url = fotoURLs[Number($("fotoCapa").value) || 0] || fotoURLs[0];
   if (!url) return null;
@@ -923,128 +672,89 @@ async function gerarPreviewThumb() {
 
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!validar(4)) return;
-
-  const fotos = fotoFiles.slice(0, 12);
-  const videos = $("videos").files.length > 0 ? [...$("videos").files].slice(0, 4) : (pedidoAntigo ? pedidoAntigo.videos : []);
-  const musica = $("musica").files[0] || (pedidoAntigo ? pedidoAntigo.musica : null);
-
-  if (!fotos || fotos.length === 0) {
-    marcarErro("fotos");
-    return;
+  if (window.NACreatorWorkflow.current !== 8) {
+    const next=window.NACreatorWorkflow.current+1;if(validar(next))ir(next);return;
   }
+  if (!validar(9)) return;
 
-  const eventos = [...document.querySelectorAll(".ev-item")].map((el) => ({
-      data: el.querySelector(".ev-data").value.trim(),
-      titulo: el.querySelector(".ev-titulo").value.trim(),
-      texto: el.querySelector(".ev-texto").value.trim(),
-    })).filter((ev) => ev.titulo || ev.texto);
-
-  const amo = [...document.querySelectorAll(".amo")].map((i) => i.value.trim()).filter(Boolean);
-  const legendas = [...document.querySelectorAll(".legenda-input")].map((i) => i.value.trim());
-  const fotoCapa = Number($("fotoCapa").value) || 0;
-  const usarIntro = $("usarIntro").checked, autoplay = $("autoplay").checked;
-  const rodapeCustom = $("rodapeCustom").value.trim();
-  
-  const btn = $("btnFinal");
-  btn.disabled = true;
-  btn.textContent = "Salvando...";
-
-  const titulo = $("titulo").value.trim() || "Nós dois";
-  const frase = $("frase").value.trim() || (THEMES[tema] ? THEMES[tema].sufixo : "");
-
+  const btn=$('btnFinal');btn.disabled=true;btn.textContent='Enviando presente…';
+  const draft=captureDraft();
+  photoIds=draft.photoIds;videoIds=draft.videoIds;musicId=draft.musicId;
+  let recoverable=false;
   try {
-    // 1) Metadados → backend (contrato: POST /api/purchases, status=pending)
-    const preview = await gerarPreviewThumb();
-    const { purchase } = await window.ApiPurchases.create({
-      tema, titulo,
-      de: $("de").value.trim(),
-      para: $("para").value.trim(),
-      inicio: $("inicio").value,
-      carta: $("carta").value.trim(),
-      has_media: fotos.length > 0 || videos.length > 0 || !!musica,
-      preview_data_url: preview,
-      themeData: window.NAThemeEditor?.getData() || {},
-    });
-
-    // 2) Mídia rica (blobs) → IndexedDB local (nunca vai ao servidor)
-    await salvarPedido({
-      id: purchase.id,
-      tema, titulo, frase,
-      themeData: window.NAThemeEditor?.getData() || {},
-      de: $("de").value.trim(),
-      para: $("para").value.trim(),
-      inicio: $("inicio").value,
-      carta: $("carta").value.trim(),
-      eventos,
-      amo,
-      musicaNome: $("musicaNome").value.trim(),
-      musicaArtista: $("musicaArtista").value.trim(),
-      fotos,
-      videos,
-      musica,
-      fotoCapa,
-      legendas,
-      usarIntro,
-      autoplay,
-      rodapeCustom,
-      status: purchase.status,
-      criadoEm: purchase.created_at,
-    });
-
-    location.href = "pagamento.html?id=" + purchase.id;
-  } catch (err) {
-    if (err && err.code === "NOT_AUTHENTICATED") {
-      $("erro3").textContent = "Faça login para salvar o presente. Redirecionando...";
-      setTimeout(() => (location.href = "login.html"), 1200);
-      return;
+    await salvarPedido(draft).then(()=>{recoverable=true;}).catch(()=>{});
+    let purchase;
+    if(!pedidoEditandoId){
+      ({purchase}=await ApiPurchases.create(draft));
+      pedidoEditandoId=purchase.id;draft.serverId=purchase.id;
+      await salvarPedido(draft).catch(()=>{});
     }
-    $("erro3").textContent = (err && err.message) || "Não foi possível salvar. Tente com arquivos menores.";
-    btn.disabled = false;
-    btn.textContent = "Ir para o pagamento →";
+    draft.preview_data_url=await gerarPreviewThumb();
+    ({purchase}=await NAGift.sync(draft,pedidoEditandoId));
+    // O cache local é opcional depois da confirmação do servidor.
+    await salvarPedido({...draft,...purchase,id:purchase.id}).catch(()=>{});
+    await excluirPedidoDB(draftKey).catch(()=>{});
+    try{sessionStorage.removeItem('na_creator_request');}catch{}
+    location.href='pagamento.html?id='+encodeURIComponent(purchase.id);
+  } catch(err) {
+    if(err?.status===401){
+      if(recoverable){location.href='login.html?next='+encodeURIComponent('criar.html?resume='+requestId);return;}
+      $('erroMedia').textContent='Não foi possível guardar o rascunho neste navegador. Abra o login em outra aba, entre e tente salvar novamente sem fechar esta página.';
+    }else $('erroMedia').textContent=err?.message||'Não foi possível salvar. Tente novamente.';
+    ir(3);btn.disabled=false;btn.textContent='Tentar salvar novamente →';
   }
 });
 
-$("previewBtn").addEventListener("click", () => $("previewCol").classList.add("mobile-open"));
-$("previewClose").addEventListener("click", () => $("previewCol").classList.remove("mobile-open"));
-
-(function () {
-  const phone = $("previewPhone"), stage = $("phoneStage");
-  if (window.matchMedia("(pointer: coarse)").matches) return;
-  stage.addEventListener("mouseenter", () => phone.classList.add("tilting"));
-  stage.addEventListener("mousemove", (e) => {
-    const rect = stage.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    phone.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(0)`;
-  });
-  stage.addEventListener("mouseleave", () => {
-    phone.style.transform = "rotateY(0) rotateX(0)";
-    phone.classList.remove("tilting");
-  });
-})();
+function abrirPrevia(expanded=false){if(!document.body.classList.contains('preview-open'))previewReturnFocus=document.activeElement;$('previewCol').classList.add('mobile-open');$('previewCol').classList.toggle('expanded',expanded);document.body.classList.add('preview-open');$('previewCol').setAttribute('role','dialog');$('previewCol').setAttribute('aria-modal','true');document.querySelector('.app-wrap').inert=true;$('navbar').inert=true;$('previewExpand').setAttribute('aria-pressed',String(expanded));$('previewClose').focus();}
+function fecharPrevia(){$('previewCol').classList.remove('mobile-open','expanded');document.body.classList.remove('preview-open');$('previewCol').removeAttribute('role');$('previewCol').removeAttribute('aria-modal');document.querySelector('.app-wrap').inert=false;$('navbar').inert=false;$('previewExpand').setAttribute('aria-pressed','false');(previewReturnFocus||$('previewBtn')).focus();}
+$('previewBtn').addEventListener('click',()=>abrirPrevia());
+$('reviewPreview').addEventListener('click',()=>abrirPrevia(true));
+$('previewClose').addEventListener('click',fecharPrevia);
+$('previewExpand').addEventListener('click',()=>{if($('previewCol').classList.contains('expanded'))fecharPrevia();else abrirPrevia(true);});
+$('previewHome').addEventListener('click',()=>{try{themePreviewFrame?.contentWindow.scrollTo({top:0,behavior:'smooth'});}catch{}});
+document.addEventListener('keydown',event=>{
+  if(!document.body.classList.contains('preview-open'))return;
+  if(event.key==='Escape'){event.preventDefault();fecharPrevia();}
+  if(event.key==='Tab'){const controls=[$('previewHome'),$('previewExpand'),themePreviewFrame,$('previewClose')].filter(Boolean);if(event.shiftKey&&document.activeElement===controls[0]){event.preventDefault();controls.at(-1).focus();}else if(!event.shiftKey&&document.activeElement===controls.at(-1)){event.preventDefault();controls[0].focus();}}
+});
+window.NACreatorMedia={videos:()=>videoURLs};
 
 async function carregarPedidoParaEdicao() {
   const id = parametro("id");
-  if (!id) return;
+  const resume=parametro('resume');
+  let recovered=null;
+  if(resume && /^[\w-]{16,100}$/.test(resume))recovered=await buscarPedido('__draft_'+resume).catch(()=>null);
+  if(!recovered) {
+    const candidate = await NA.db.buscarRascunho({serverId:id||null,requestId}).catch(()=>null);
+    if(candidate) recovered = await escolherRascunho(candidate);
+  }
+  if(!id&&!recovered)return;
 
   // Mídia rica (fotos, eventos etc.) fica no IndexedDB local
-  const local = await buscarPedido(id).catch(() => null);
+  const local = recovered || await buscarPedido(id).catch(() => null);
 
   // Metadados + status vêm do backend (contrato: GET /api/purchases/:id)
   let apiPedido = null;
   try {
-    ({ purchase: apiPedido } = await window.ApiPurchases.getOne(id));
+    const serverId = id || recovered?.serverId;
+    if(serverId)({ purchase: apiPedido } = await window.ApiPurchases.getOne(serverId));
   } catch (err) {
-    if (err && err.code === "NOT_AUTHENTICATED") { location.href = "login.html"; return; }
-    if ((!err || err.status === 404) && !local) { location.href = "criar.html"; return; }
+    if (err && err.code === "NOT_AUTHENTICATED") { location.href = 'login.html?next='+encodeURIComponent(recovered?'criar.html?resume='+recovered.client_request_id:'criar.html?id='+id); return; }
+    $('erroMedia').textContent=err.message||'Não foi possível carregar.';ir(3);return;
+
   }
 
-  const pedido = { ...(local || {}), ...(apiPedido || {}) };
+  // A cópia interrompida é mais recente que o último conteúdo confirmado.
+  const pedido = recovered ? { ...(apiPedido || {}), ...recovered } : { ...(local || {}), ...(apiPedido || {}) };
+  if(apiPedido&&apiPedido.content_version!==1&&local){pedido.fotos=local.fotos||[];pedido.videos=local.videos||[];pedido.musica=local.musica||null;}
   if (!apiPedido && !local) return;
-  if (apiPedido && apiPedido.status === "paid") { location.href = "resultado.html?id=" + id; return; }
+  if (apiPedido && apiPedido.status !== 'pending') { location.href = apiPedido.status === 'paid' ? 'resultado.html?id='+apiPedido.id : 'minha-conta.html'; return; }
 
-  pedidoEditandoId = pedido.id;
+  pedidoEditandoId = recovered ? recovered.serverId || null : pedido.id;
+  if(recovered){requestId=recovered.client_request_id;draftKey='__draft_'+requestId;try{sessionStorage.setItem('na_creator_request',requestId);}catch{}}
+  photoIds=pedido.fotos?.map((_,i)=>pedido.photoIds?.[i]||NAGift.id())||[];
+  videoIds=pedido.videoIds||pedido.media?.videos||[];musicId=pedido.musicId||pedido.media?.music||null;
+  pedido.themeData=NAGift.refs(pedido.themeData,photoIds);
   pedidoAntigo = pedido;
   
   document.querySelector(".criar-eyebrow").innerHTML = '<span class="dot"></span> Editando presente';
@@ -1088,7 +798,7 @@ async function carregarPedidoParaEdicao() {
 
   if (pedido.fotos && pedido.fotos.length > 0) {
     fotoFiles = pedido.fotos;
-    fotoURLs = fotoFiles.map(f => URL.createObjectURL(f));
+    fotoURLs = fotoFiles.map(f => mediaURL(f));
     legendasValores = pedido.legendas || new Array(fotoFiles.length).fill("");
     $("fotoCapa").value = pedido.fotoCapa || 0;
     atualizarPainelPersonalizacao();
@@ -1096,7 +806,7 @@ async function carregarPedidoParaEdicao() {
   }
 
   if (pedido.videos && pedido.videos.length > 0) {
-    videoURLs = pedido.videos.map(f => URL.createObjectURL(f));
+    videoURLs = pedido.videos.map(f => mediaURL(f));
     $("qtdVideos").textContent = videoURLs.length + " vídeo(s) carregado(s)";
   }
 
@@ -1105,13 +815,32 @@ async function carregarPedidoParaEdicao() {
     const wrap = $("musicaPreviewWrap");
     const preview = $("musicaPreview");
     if (musicaPreviewURL) { URL.revokeObjectURL(musicaPreviewURL); }
-    musicaPreviewURL = URL.createObjectURL(pedido.musica);
+    musicaPreviewURL = mediaURL(pedido.musica);
     preview.src = musicaPreviewURL;
-    wrap.style.display = "block";
+    wrap.hidden = false;
   }
 
   fraseEditada = true;
-  setTimeout(atualizarPreview, 150);
+  setTimeout(()=>{atualizarPreview();if(recovered)ir(Math.max(1,Math.min(8,recovered.step||1)));},150);
+}
+
+function escolherRascunho(candidate) {
+  return new Promise(resolve => {
+    const panel = $('draftRecovery'); panel.hidden = false;
+    // Impede que um formulário novo sobrescreva a cópia enquanto se decide.
+    const form = $('form'), wizard = $('steps'); form.inert = wizard.inert = true;
+    const finish = value => {panel.hidden=true;form.inert=wizard.inert=false;resolve(value);};
+    $('resumeDraft').onclick = () => {finish(candidate);};
+    $('discardDraft').onclick = async () => {
+      try {
+        await excluirPedidoDB(candidate.id);
+        requestId=NAGift.id();draftKey='__draft_'+requestId;
+        try{sessionStorage.setItem('na_creator_request',requestId);}catch{}
+        finish(null);
+      } catch {$('draftRecoveryError').textContent='Não foi possível descartar a cópia local. Tente novamente.';}
+    };
+    $('resumeDraft').focus();
+  });
 }
 
 /* Boot aguarda o GET /api/config (temas e cores) */

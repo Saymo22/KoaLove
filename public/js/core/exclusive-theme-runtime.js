@@ -9,14 +9,16 @@ window.NAExclusive = (() => {
   function items(defaults, custom, payload, mediaKeys, useEvents = false) {
     const base = clone(Array.isArray(custom) ? custom : defaults);
     return base.map((item, i) => {
-      const event = useEvents && !custom ? payload.events?.[i] : null;
+      const event = useEvents && (!custom || custom.__naOverrides) ? payload.events?.[i] : null;
       if (event) {
         item.title = event.titulo || item.title;
         for (const key of ['synopsis','desc']) if (key in item) item[key] = event.texto || item[key];
         if ('meta' in item) item.meta = event.data || item.meta;
         if ('year' in item) item.year = event.data || item.year;
       }
-      for (const key of mediaKeys) item[key] = asset(custom?.[i]?.[key]) || payload.photos[i % Math.max(1, payload.photos.length)] || payload.cover || placeholder(payload.p.titulo);
+      const overrides=custom?.__naOverrides;
+      if(overrides)for(const [path,value] of Object.entries(overrides)){const parts=path.split('.');if(parts.some(p=>['__proto__','constructor','prototype'].includes(p)))continue;if(Number(parts.shift())!==i)continue;let target=item;for(const part of parts.slice(0,-1))target=target?.[part];if(target)target[parts.at(-1)]=value;}
+      for (const key of mediaKeys) item[key] = asset(custom?.__naOverrides ? item[key] !== defaults[i]?.[key] ? item[key] : '' : custom?.[i]?.[key]) || payload.photos[i % Math.max(1, payload.photos.length)] || payload.cover || placeholder(payload.p.titulo);
       if ('audio' in item) item.audio = asset(item.audio);
       return item;
     });

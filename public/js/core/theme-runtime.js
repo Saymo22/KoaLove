@@ -12,6 +12,13 @@ window.NATheme = (() => {
   if (embedded && params.get('demo') !== '1') document.documentElement.classList.add('na-await-data');
   const set = (selector, value) => { const el = $(selector); if (el) el.textContent = value ?? ''; };
   const replaceArray = (target, values) => target.splice(0, target.length, ...values);
+  function resolvePhotoRefs(value, photos, ids=[]) {
+    if (typeof value === 'string' && value.startsWith('@media:')) return photos[ids.indexOf(value.slice(7))] || '';
+    if (typeof value === 'string' && /^@photo:\d+$/.test(value)) return photos[Number(value.slice(7))] || '';
+    if (Array.isArray(value)) return value.map(item => resolvePhotoRefs(item, photos, ids));
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, resolvePhotoRefs(item, photos, ids)]));
+    return value;
+  }
   function styledTitle(selector,value){
     const host=$(selector);if(!host)return;
       const slots=host.naTitleSlots ||= [...host.childNodes].filter(node=>[1,3].includes(node.nodeType)&&node.textContent.trim());
@@ -89,8 +96,8 @@ window.NATheme = (() => {
       if (stamp === previous) return;
       previous = stamp;
       const p = payload.p || {};
-      const custom = p.themeData?.[options.key] || {};
       const photos = (payload.photos || []).map(media).filter(Boolean);
+      const custom = resolvePhotoRefs(p.themeData?.[options.key] || {}, photos, p.photoIds||[]);
       const videos = (payload.videos || []).map(media).filter(Boolean);
       const from = p.de || 'Alguém especial', to = p.para || 'Você';
       const cover = media(payload.cover) || photos[0] || '';
@@ -118,7 +125,7 @@ window.NATheme = (() => {
       if(options.key==='amizade')set('.note-title','Para '+to+',');
       if(options.key==='familia'||options.key==='aniversario')set('.letter-title','Para '+to+',');
       const reasonCards=all('.motivos .flip');
-      if(payload.reasons?.length)reasonCards.forEach((card,i)=>{const reason=payload.reasons[i];card.hidden=!reason;if(reason){const title=card.querySelector('h4'),detail=card.querySelector('.flip-back p');if(title)title.textContent=reason;if(detail)detail.textContent=reason;}});
+      reasonCards.forEach((card,i)=>{const reason=payload.reasons?.[i];card.hidden=!reason;if(reason){const title=card.querySelector('h4'),detail=card.querySelector('.flip-back p');if(title)title.textContent=reason;if(detail)detail.textContent=reason;}});
       if(!reasonCards.length){let section=$('#naReasons');if(!section){section=document.createElement('section');section.id='naReasons';section.className='na-reasons';document.querySelector('footer')?.before(section);}section.replaceChildren();section.hidden=!payload.reasons?.length;if(!section.hidden){const h=document.createElement('h2');h.textContent='O que admiro em você';const list=document.createElement('div');list.className='na-reasons-list';for(const reason of payload.reasons){const p=document.createElement('p');p.textContent=reason;list.append(p);}section.append(h,list);}}
       originalImages.forEach((img, i) => {
         const source = img.closest('.hero, #inicio') ? cover : photos[i % Math.max(1, photos.length)];
@@ -181,5 +188,5 @@ window.NATheme = (() => {
       root.append(row);
     });
   }
-  return { escape, media, set, styledTitle, replaceArray, selectAudio, storyMedia, connect, timeline };
+  return { escape, media, set, styledTitle, replaceArray, resolvePhotoRefs, selectAudio, storyMedia, connect, timeline };
 })();

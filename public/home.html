@@ -27,6 +27,13 @@
 
     <!-- HERO -->
     <header class="hero-home">
+                <!-- Efeitos de Fundo: Palavras e Bolinhas -->
+        <div class="hero-bg-effects" aria-hidden="true">
+            <div class="hero-layer" id="heroLayerBack"></div>
+            <div class="hero-layer" id="heroLayerMid"></div>
+            <div class="hero-layer" id="heroLayerFront"></div>
+            <div class="hero-stardust" id="heroStardust"></div>
+        </div>
         <div class="hero-deco" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="wrap">
             <div>
@@ -39,7 +46,7 @@
                     <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
                     <a href="#temas" class="b sec magnetic">Ver os temas</a>
                 </div>
-                <div class="hero-nota stagger">Sem cadastro. Você paga uma vez e recebe o link na hora.</div>
+                <div class="hero-nota stagger">Crie sua conta para salvar o presente. O pagamento está em modo de demonstração.</div>
                 <div class="hero-pontos stagger">
                     <span>Link e QR Code</span>
                     <span>Fotos, vídeos e música</span>
@@ -285,21 +292,16 @@
         <div class="wrap">
             <div class="promo reveal reveal-zoom">
                 <div class="promo-text">
-                    <div class="promo-tag">Oferta limitada</div>
-                    <h2>Presenteie alguém<br>com <em>10% off</em> hoje</h2>
-                    <p>Só até meia-noite. Use qualquer tema, personalize do jeito que quiser e pague menos.</p>
+                    <div class="promo-tag">Do seu jeito</div>
+                    <h2>Transforme lembranças<br>em um <em>presente especial</em></h2>
+                    <p>Escolha um tema, personalize e confira o resultado antes de continuar.</p>
                 </div>
                 <div class="promo-side">
                     <div class="promo-preco">
-                        <span class="de" id="promoDe">R$ 21,90</span>
-                        <span class="por" id="promoPor">R$ 19,90</span>
+                        <span>Preço do presente</span>
+                        <span class="por" id="promoPor">Carregando…</span>
                     </div>
-                    <div class="promo-timer" id="promoTimer">
-                        <div><strong id="tHoras">00</strong><span>Horas</span></div>
-                        <div><strong id="tMin">00</strong><span>Min</span></div>
-                        <div><strong id="tSeg">00</strong><span>Seg</span></div>
-                    </div>
-                    <a href="criar.html" class="b ouro magnetic">Aproveitar agora</a>
+                    <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
                 </div>
             </div>
         </div>
@@ -320,7 +322,7 @@
                     <div class="preco-valor-wrap">
                         <span class="preco-tag">Pagamento único</span>
                         <div class="preco-valor" id="precoValor">
-                            <span class="cifrao">R$</span>19<span class="centavos">,90</span>
+                            <span class="centavos">Consultando preço…</span>
                         </div>
                         <span class="preco-valor-sub">para sempre — sem renovação</span>
                     </div>
@@ -348,7 +350,7 @@
             </div>
 
             <div class="incluso-grid">
-                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Fotos ilimitadas*</b><span>Até 12 fotos em alta qualidade, com molduras e efeitos elegantes</span></div></div>
+                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Até 12 fotos</b><span>Até 12 fotos em alta qualidade, com molduras e efeitos elegantes</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Vídeos especiais</b><span>Até 4 vídeos curtos para reviver os melhores momentos</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Trilha sonora</b><span>Uma música para tocar junto com a história de vocês</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Carta personalizada</b><span>Escreva e edite a carta até ficar exatamente do seu jeito</span></div></div>
@@ -387,7 +389,7 @@
                 <h2 class="mask-reveal"><span>Perguntas <em class="shimmer-gold">frequentes</em></span></h2>
             </div>
             <div class="faq reveal">
-                <details><summary>Preciso criar uma conta?</summary><p>Não. Você preenche, paga e recebe o link e o QR Code no final.</p></details>
+                <details><summary>Preciso criar uma conta?</summary><p>Sim. Você pode explorar os temas e preencher o formulário antes de entrar. Para salvar e gerenciar seus presentes, é necessário criar uma conta ou fazer login. Quem recebe o link não precisa de conta.</p></details>
                 <details><summary>Quando posso enviar para a pessoa?</summary><p>Logo depois que o pagamento é confirmado. A tela final mostra o link, o QR Code e o botão de enviar pelo WhatsApp.</p></details>
                 <details><summary>Posso mudar o texto depois?</summary><p>Você revisa tudo antes de pagar. Para alterar um presente já pago, entre em contato com o suporte.</p></details>
                 <details><summary>Quais fotos, vídeos e músicas posso usar?</summary><p>Fotos comuns (JPG, PNG), vídeos de celular, de preferência na vertical, e músicas em MP3. Use apenas conteúdo seu ou que você tenha permissão para compartilhar.</p></details>
@@ -400,12 +402,9 @@
     <section class="bloco" style="padding-bottom: 120px;">
         <div class="wrap">
             <div class="newsletter reveal reveal-zoom">
-                <h2>Não perca as <em>novidades</em></h2>
-                <p>Deixe seu e-mail para receber dicas de presentes, novos temas e ofertas exclusivas antes de todo mundo.</p>
-                <form class="news-form" onsubmit="event.preventDefault(); alert('Inscrição realizada com sucesso!');">
-                    <input type="email" placeholder="Seu melhor e-mail" required>
-                    <button type="submit" class="b">Inscrever</button>
-                </form>
+                <h2>Encontre seu próximo <em>presente</em></h2>
+                <p>Explore os temas disponíveis e escolha a experiência que combina com a sua história.</p>
+                <a class="b" href="#temas">Explorar os temas</a>
             </div>
         </div>
     </section>

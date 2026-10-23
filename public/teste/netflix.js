@@ -778,7 +778,7 @@ NAExclusive.connect({key:'netflix',letters:['#naNetflixLetter'],player:'#musicPl
   apply(payload){const {p,photos,custom}=payload,c=custom.collections||{};naNetflixPayload=payload;
     const shows=NAExclusive.items(naNetflixDefaults.shows,c.shows,payload,['poster','backdrop'],true);
     shows.forEach((show,i)=>{show.id=naNetflixDefaults.shows[i]?.id||i+1;show.categories=Array.isArray(show.categories)?show.categories:[];});
-    if(shows[0]){shows[0].title=p.titulo||'Nossa história';shows[0].synopsis=p.carta||p.frase||'Uma história feita para você.';}
+    if(shows[0]){shows[0].title=p.titulo||'Nossa história';shows[0].synopsis=p.frase||p.carta||'Uma história feita para você.';}
     NAExclusive.change(SHOWS,shows,()=>{heroShows=[SHOWS[0],SHOWS[9],SHOWS[17]].filter(Boolean);heroIndex=0;renderAll();});
     const notifs=NAExclusive.items(naNetflixDefaults.notifications,c.notifications,payload,['thumb']);NAExclusive.change(NOTIFS,notifs,renderNotifs);
     NATheme.set('[data-profile="ele"] .ps-name',p.de||'Eu');NATheme.set('[data-profile="ela"] .ps-name',p.para||'Você');

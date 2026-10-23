@@ -1,5 +1,5 @@
 /* Todos os endpoints /api/admin/* exigem role=admin. */
-const { stores } = require("../lib/db");
+const { stores, transactionAcross } = require("../lib/db");
 const http = require("../lib/http");
 const auth = require("../lib/auth");
 
@@ -121,24 +121,24 @@ async function refundDecision(req, res, id) {
   const admin = auth.requireAdmin(req);
   if (!admin) return http.fail(res, 401, "NOT_ADMIN", "Acesso restrito.");
 
-  const refund = stores.refunds.find(r => r.id === id);
-  if (!refund) return http.fail(res, 404, "REFUND_NOT_FOUND", "Solicitação de reembolso não encontrada.");
-  if (refund.status !== "pending") return http.fail(res, 409, "ALREADY_DECIDED", "Esta solicitação já foi processada.");
-
   const body = await http.readJsonBody(req);
   if (body.status !== "approved" && body.status !== "rejected")
     return http.fail(res, 400, "INVALID_STATUS", "Status deve ser 'approved' ou 'rejected'.");
 
-  await stores.refunds.update(id, {
-    status: body.status,
-    reviewed_at: Date.now(),
-    review_note: typeof body.note === "string" ? body.note.slice(0, 500) : null,
+  await transactionAcross(['refunds','purchases'], rows => {
+    const refund = rows.refunds.find(r => r.id === id);
+    const fail = (status, code, message) => {throw Object.assign(new Error(message), {status,code});};
+    if(!refund) fail(404,'REFUND_NOT_FOUND','Solicitação de reembolso não encontrada.');
+    if(refund.status !== 'pending') {
+      if(refund.status === body.status) return; // Retry da mesma decisão é idempotente.
+      fail(409,'ALREADY_DECIDED','Esta solicitação já foi processada.');
+    }
+    const purchase = rows.purchases.find(p => p.id === refund.purchase_id);
+    if(body.status === 'approved' && (!purchase || !['paid','refunded'].includes(purchase.status))) fail(409,'INVALID_PURCHASE','A compra não está disponível para reembolso.');
+    Object.assign(refund, {status:body.status, reviewed_at:Date.now(), reviewed_by:admin.id,
+      review_note:typeof body.note === 'string' ? body.note.slice(0,500) : null});
+    if(body.status === 'approved') Object.assign(purchase, {status:'refunded',updated_at:Date.now()});
   });
-
-  if (body.status === "approved") {
-    const p = stores.purchases.find(x => x.id === refund.purchase_id);
-    if (p) await stores.purchases.update(p.id, { status: "refunded" });
-  }
 
   http.ok(res, { ok: true });
 }
@@ -168,12 +168,14 @@ async function ticketReply(req, res, id) {
   const text = typeof body.text === "string" ? body.text.trim().slice(0, 2000) : "";
   if (!text) return http.fail(res, 400, "MISSING_TEXT", "Resposta não pode ser vazia.");
 
-  t.messages.push({ role: "admin", text, at: Date.now() });
-  t.status = "answered";
-  t.updated_at = Date.now();
-  await stores.tickets.save();
-
-  http.ok(res, { ticket: t });
+  const ticket = await stores.tickets.transaction(rows => {
+    const current = rows.find(x => x.id === id);
+    current.messages.push({ role: "admin", text, at: Date.now() });
+    current.status = "answered";
+    current.updated_at = Date.now();
+    return current;
+  });
+  http.ok(res, { ticket });
 }
 
 module.exports = { summary, clients, clientDetail, purchases, refunds, refundDecision, tickets, ticketReply };

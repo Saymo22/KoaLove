@@ -1,3 +1,5 @@
+> Atualização da primeira revisão: consulte [PURCHASES.md](PURCHASES.md) para o contrato vigente de salvamento, mídias, compartilhamento e exclusão. Os exemplos antigos de IndexedDB exclusivo foram substituídos.
+
 # Cenários de teste — verificação manual
 
 ## 1. Login e cadastro

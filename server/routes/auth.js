@@ -89,12 +89,10 @@ async function logout(req, res) {
   if (ctx) {
     // JsonStore.remove(id) procura por "id", mas sessões são identificadas
     // pelo "token". Remove pelo token para invalidar a sessão de fato.
-    const sessions = stores.sessions.all();
-    const i = sessions.findIndex(s => s.token === ctx.session.token);
-    if (i >= 0) {
-      sessions.splice(i, 1);
-      await stores.sessions.save();
-    }
+    await stores.sessions.transaction(sessions => {
+      const i = sessions.findIndex(s => s.token === ctx.session.token);
+      if (i >= 0) sessions.splice(i, 1);
+    });
   }
   http.clearSessionCookie(res);
   http.ok(res, { logged_out: true });
@@ -107,4 +105,41 @@ async function me(req, res) {
   http.ok(res, { user: auth.publicUser(user) });
 }
 
-module.exports = { register, login, logout, me };
+async function forgotPassword(req,res) {
+  const body = await http.readJsonBody(req);
+  const email = validate.sanitizeStr(body.email,254).toLowerCase();
+  if(!validate.isEmail(email)) return http.fail(res,400,'INVALID_EMAIL','Informe um e-mail válido.');
+  const mailer = require('../lib/mailer');
+  if(!mailer.ready()) return http.fail(res,503,'RECOVERY_UNAVAILABLE','A recuperação por e-mail ainda não está disponível. Tente novamente mais tarde.');
+  const token = security.randomToken(32), tokenHash = security.emailHash(token);
+  const user = await stores.users.transaction(rows => {
+    const user = rows.find(u => u.email_hash === security.emailHash(email));
+    if(!user) return null;
+    user.password_reset = {hash:tokenHash,expires_at:Date.now()+30*60*1000};
+    return {email:user.email};
+  });
+  if(user) {
+    try {await mailer.sendPasswordReset(user.email,token);}
+    catch {console.error('[auth] Falha no envio de recuperação de senha. Verifique o SMTP.');}
+  }
+  // Não revela se a conta existe; não envia tokens na resposta nem nos logs.
+  http.ok(res,{message:'Se existir uma conta com esse e-mail, você receberá um link para redefinir a senha.'});
+}
+async function resetPassword(req,res) {
+  const body = await http.readJsonBody(req);
+  const token = String(body.token || ''), password = String(body.password || '');
+  if(!/^[a-f0-9]{64}$/.test(token)) return http.fail(res,400,'INVALID_RESET_TOKEN','Link inválido ou expirado. Solicite outro.');
+  if(password.length < config.PASSWORD_MIN_LEN || password.length > 128) return http.fail(res,400,'WEAK_PASSWORD','Use uma senha de 6 a 128 caracteres.');
+  const {transactionAcross} = require('../lib/db');
+  const passwordHash = security.hashPassword(password);
+  await transactionAcross(['users','sessions'], rows => {
+    const user = rows.users.find(u => u.password_reset?.hash === security.emailHash(token) && u.password_reset.expires_at > Date.now());
+    if(!user) throw Object.assign(new Error('Link inválido ou expirado. Solicite outro.'),{status:400,code:'INVALID_RESET_TOKEN'});
+    user.password_hash = passwordHash;
+    delete user.password_reset;
+    rows.sessions = rows.sessions.filter(s => s.user_id !== user.id);
+  });
+  http.clearSessionCookie(res);
+  http.ok(res,{message:'Senha alterada. Entre novamente com a nova senha.'});
+}
+module.exports = { register, login, logout, me, forgotPassword, resetPassword };

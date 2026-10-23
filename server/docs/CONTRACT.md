@@ -1,3 +1,5 @@
+> Atualização da primeira revisão: consulte [PURCHASES.md](PURCHASES.md) para o contrato vigente de salvamento, mídias, compartilhamento e exclusão. Os exemplos antigos de IndexedDB exclusivo foram substituídos.
+
 # 🎯 Plano de Implementação — Servidor de Testes com Contrato Rígido
 
 Vou entregar um **servidor Node.js zero-dependência** (só `http`, `crypto`, `fs` nativos) com banco em arquivo JSON, rate limiting real, e migração do frontend para consumir a API.

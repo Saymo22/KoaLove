@@ -1359,3 +1359,23 @@ footer small{
 @media(pointer:coarse){button,[role=button],.flower,.polaroid,.member-card,.g-item{cursor:pointer}}
 @media(prefers-reduced-motion:reduce){[data-reveal]{opacity:1!important;transform:none!important}}
 @media(max-width:600px){.hero-inner,.hero-grid,.hero-text,.hero-content{min-width:0;max-width:100%}.hero-title,.hero-names,.hero-title span{overflow-wrap:anywhere}.hero-title .line1,.hero-title .line2{font-size:clamp(2rem,11vw,4.5rem)}.hero-sub,.hero-lede{max-width:100%}.hero-title{max-width:100%}}
+/* Trilhas podem encolher sem a largura intrínseca das fotografias. O recuo acomoda a rotação. */
+.polaroid-grid {
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  width:100%;
+  min-width:0;
+  padding-inline:clamp(16px,4vw,30px);
+}
+.polaroid { min-width:0; width:100%; }
+.polaroid img { min-width:0; max-width:100%; }
+@media (max-width:900px) {
+  .polaroid-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+  .polaroid:nth-child(n) { grid-column:auto; }
+}
+@media (max-width:560px) {
+  .polaroid-grid { grid-template-columns:minmax(0,1fr); gap:32px; }
+  .polaroid:hover { transform:rotate(0) translateY(-4px); }
+}
+
+.polaroid-grid[data-reveal] { transform:translateY(30px); }
+.polaroid-grid[data-reveal].in { transform:none; }

@@ -55,7 +55,7 @@ function parseCookies(req) {
     if (i < 0) continue;
     const k = part.slice(0, i).trim();
     const v = part.slice(i + 1).trim();
-    out[k] = decodeURIComponent(v);
+    try { out[k] = decodeURIComponent(v); } catch { /* Cookie inválido não autentica. */ }
   }
   return out;
 }
@@ -77,7 +77,18 @@ function clearSessionCookie(res) {
 }
 
 function clientIp(req) {
-  return (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+  const { isIP } = require('node:net');
+  const normalize = ip => ip.startsWith('::ffff:') ? ip.slice(7) : ip;
+  const peer = normalize(req.socket.remoteAddress || 'unknown');
+  const trusted = new Set(config.TRUSTED_PROXIES.map(normalize));
+  if (!trusted.has(peer)) return peer;
+  const chain = String(req.headers['x-forwarded-for'] || '').split(',').map(ip => normalize(ip.trim()));
+  let current = peer;
+  for (let i = chain.length - 1; i >= 0 && trusted.has(current); i--) {
+    if (!isIP(chain[i])) return peer;
+    current = chain[i];
+  }
+  return current;
 }
 
 module.exports = {

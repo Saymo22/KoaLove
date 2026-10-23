@@ -3,7 +3,7 @@
    (contrato: server/docs/CONTRACT.md)
    - Preços, temas e cupons NÃO são hardcoded: vêm de
      GET /api/config e ficam em cache local.
-   - Mídia (fotos/vídeos/música) continua no IndexedDB.
+   - Mídia local serve como rascunho/cache; a cópia de entrega fica no servidor.
    ===================================================== */
 window.NA = window.NA || {};
 
@@ -47,7 +47,7 @@ window.NA_CONFIG_READY = (async () => {
 
 /* =====================================================
    PERSISTÊNCIA DE MÍDIA (IndexedDB)
-   Os blobs nunca vão para o servidor — só metadados.
+   Rascunhos locais e cache opcional; a entrega usa o conteúdo do servidor.
    ===================================================== */
 
 const DB_NAME = "presente-db",

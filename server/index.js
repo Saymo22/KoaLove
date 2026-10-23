@@ -92,10 +92,12 @@ async function main() {
   await initAll();
 
   const server = http.createServer(async (req, res) => {
+    try {
     const url = new URL(req.url, "http://x");
+    decodeURIComponent(url.pathname);
     const pathname = url.pathname;
 
-    // Rate limit (aplica globalmente, mas as regras específicas têm prioridade)
+    // API, mídia e arquivos públicos têm orçamentos separados.
     const rl = rateLimit.check(req);
     for (const [k, v] of Object.entries(rl.headers)) res.setHeader(k, v);
     if (!rl.allowed) {
@@ -124,6 +126,12 @@ async function main() {
     }
 
     await serveStatic(req, res, pathname);
+    } catch (err) {
+      const invalid = err instanceof URIError || err.code === "ERR_INVALID_URL";
+      if (!res.headersSent) httpLib.fail(res, invalid ? 400 : 500, invalid ? "INVALID_URL" : "INTERNAL_ERROR", invalid ? "Endereço inválido." : "Erro interno do servidor.");
+      else res.destroy();
+      if (!invalid) console.error("[request]", err);
+    }
   });
 
   server.listen(config.PORT, config.HOST, () => {
