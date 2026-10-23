@@ -1,0 +1,58 @@
+name: Laravel e frontend
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_USER: nossoamor
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: projeto_na_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USERNAME: nossoamor
+      DB_PASSWORD: ci-only-password
+      DB_DATABASE: projeto_na_test
+      CACHE_STORE: database
+      SESSION_DRIVER: database
+      MAIL_MAILER: array
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5.12'
+          extensions: pdo_pgsql, pdo_sqlite, sqlite3, gd, mbstring, fileinfo, zip
+          ini-values: memory_limit=512M, post_max_size=102M, upload_max_filesize=100M
+          coverage: none
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer validate --strict && composer audit
+      - run: cp .env.example .env && php artisan key:generate
+      - run: npm ci && npm audit
+      - run: npm test && npm run build
+      - run: php vendor/bin/pint --test
+      - run: php vendor/bin/phpunit
+      - run: php vendor/bin/phpunit -c phpunit.pgsql.xml
+      - run: php artisan migrate --force
+      - run: npm run test:http
+        env:
+          HTTP_TEST_ALLOW: '1'

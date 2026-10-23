@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Família Silva — Nossa História</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(["resources/css/themes/familia.css","resources/js/entries/themes-familia.js"])
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-mark"><span>S</span></div>
+  <div class="loader-text">Tecendo nossa história</div>
+</div>
+
+<!-- BG -->
+<div class="bg-decor">
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+  <div class="bg-blob b3"></div>
+</div>
+<div class="grain"></div>
+<div class="scroll-bar" id="scrollBar"></div>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="inicio">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="hero-crest">S</div>
+      <p class="hero-eyebrow">Uma história em várias gerações</p>
+      <h1 class="hero-title">
+        <span>Família</span>
+        <em>Silva</em>
+      </h1>
+      <p class="hero-lede">Não somos só um sobrenome. Somos memória, mesa cheia, abraço apertado e gente que fica. Bem-vindo à nossa história.</p>
+      <div class="hero-meta">
+        <div class="m-item">
+          <span class="m-label">Desde</span>
+          <span class="m-value">1952</span>
+        </div>
+        <div class="m-item">
+          <span class="m-label">Gerações</span>
+          <span class="m-value">4</span>
+        </div>
+        <div class="m-item">
+          <span class="m-label">Pessoas</span>
+          <span class="m-value">28</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-photo-wrap">
+      <div class="hero-photo">
+        <!-- TROQUE PELA FOTO DA FAMÍLIA -->
+        <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=900&q=85&auto=format&fit=crop" alt="Nossa família">
+        <span class="hero-photo-stamp">Nossa<br>Raiz</span>
+        <div class="hero-photo-caption">— nós, todos juntos —</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Role</span>
+    <span class="line"></span>
+  </div>
+</section>
+
+<!-- ================= ESSÊNCIA ================= -->
+<section class="essence-sec">
+  <div class="wrap">
+    <div data-reveal>
+      <p class="eyebrow">Nossa essência</p>
+      <h2 class="title">O que nos <em>define</em></h2>
+      <p class="sub">Não é o sobrenome em comum. É o que fazemos com ele.</p>
+    </div>
+
+    <div class="values">
+      <div class="value" data-reveal>
+        <span class="value-num">01</span>
+        <div class="value-body">
+          <h3>Família em primeiro lugar</h3>
+          <p>Antes de qualquer coisa, antes de qualquer um, somos nós. E nada é mais importante do que isso.</p>
+        </div>
+      </div>
+      <div class="value" data-reveal data-d="1">
+        <span class="value-num">02</span>
+        <div class="value-body">
+          <h3>Mesa cheia, casa cheia</h3>
+          <p>Enquanto tiver comida e gente, a casa está aberta. O almoço de domingo é sagrado.</p>
+        </div>
+      </div>
+      <div class="value" data-reveal data-d="2">
+        <span class="value-num">03</span>
+        <div class="value-body">
+          <h3>Respeito aos mais velhos</h3>
+          <p>Quem veio antes carrega as histórias que nos formaram. Ouvir é honrar. Sempre.</p>
+        </div>
+      </div>
+      <div class="value" data-reveal data-d="3">
+        <span class="value-num">04</span>
+        <div class="value-body">
+          <h3>Amor que não se explica</h3>
+          <p>Aquele amor que não precisa de motivo, de ocasião ou de prova. A gente só sabe — e sente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÁRVORE ================= -->
+<section class="tree-sec" id="arvore">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Nossas raízes</p>
+      <h2 class="title">A árvore <em>da Silva</em></h2>
+      <p class="sub">Toque em cada pessoa para conhecer um pedaço da nossa história.</p>
+    </div>
+
+    <div class="tree" data-reveal data-d="1">
+      <!-- GERAÇÃO 1: RAÍZES -->
+      <div class="generation">
+        <div class="gen-header">
+          <span class="gen-label">Raízes</span>
+          <span class="gen-line"></span>
+          <span class="gen-sublabel">Geração I</span>
+        </div>
+        <div class="gen-cards">
+          <div class="member-card" data-member="voze">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1609220136736-443140cffec6?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Vô Zé</div>
+            <div class="member-role">Patriarca</div>
+          </div>
+          <div class="member-card" data-member="vomaria">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Vó Maria</div>
+            <div class="member-role">Matriarca</div>
+          </div>
+          <div class="member-card" data-member="vochico">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1552058544-f2b08422138a?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Vô Chico</div>
+            <div class="member-role">Avô materno</div>
+          </div>
+          <div class="member-card" data-member="voana">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Vó Ana</div>
+            <div class="member-role">Avó materna</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tree-connector"></div>
+
+      <!-- GERAÇÃO 2: TRONCO -->
+      <div class="generation">
+        <div class="gen-header">
+          <span class="gen-label">Tronco</span>
+          <span class="gen-line"></span>
+          <span class="gen-sublabel">Geração II</span>
+        </div>
+        <div class="gen-cards">
+          <div class="member-card" data-member="pai">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Seu Antônio</div>
+            <div class="member-role">Pai</div>
+          </div>
+          <div class="member-card" data-member="mae">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Dona Rosa</div>
+            <div class="member-role">Mãe</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tree-connector"></div>
+
+      <!-- GERAÇÃO 3: FRUTOS -->
+      <div class="generation">
+        <div class="gen-header">
+          <span class="gen-label">Frutos</span>
+          <span class="gen-line"></span>
+          <span class="gen-sublabel">Geração III</span>
+        </div>
+        <div class="gen-cards">
+          <div class="member-card" data-member="eu">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1521119989659-a83eee488004?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Seu Nome</div>
+            <div class="member-role">Filho</div>
+          </div>
+          <div class="member-card" data-member="irmao">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Pedro</div>
+            <div class="member-role">Irmão</div>
+          </div>
+          <div class="member-card" data-member="irma">
+            <div class="member-photo"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80&auto=format&fit=crop" alt=""></div>
+            <div class="member-name">Juliana</div>
+            <div class="member-role">Irmã</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LINHA DO TEMPO ================= -->
+<section class="na-original-1" id="historia">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Nossa história</p>
+      <h2 class="title">Os marcos que <em>nos formaram</em></h2>
+      <p class="sub">Cada data é um tijolo. Juntos, eles construíram tudo o que somos.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item" data-reveal>
+        <div class="tl-dot"></div>
+        <p class="tl-year">1952</p>
+        <h3 class="tl-title">O início de tudo</h3>
+        <p class="tl-desc">Vô Zé e Vó Maria se conhecem em uma festa junina no interior. Um olhar, um sorriso, e o resto é história.</p>
+      </div>
+      <div class="tl-item" data-reveal data-d="1">
+        <div class="tl-dot"></div>
+        <p class="tl-year">1968</p>
+        <h3 class="tl-title">Nasce o Seu Antônio</h3>
+        <p class="tl-desc">O primeiro filho do casal. A família cresce, a casa fica menor, e o coração fica maior.</p>
+      </div>
+      <div class="tl-item" data-reveal data-d="2">
+        <div class="tl-dot"></div>
+        <p class="tl-year">1985</p>
+        <h3 class="tl-title">O amor de Dona Rosa</h3>
+        <p class="tl-desc">Seu Antônio conhece Dona Rosa numa viagem. Em três meses já estavam noivos. Em um ano, casados.</p>
+      </div>
+      <div class="tl-item" data-reveal data-d="3">
+        <div class="tl-dot"></div>
+        <p class="tl-year">1998</p>
+        <h3 class="tl-title">A primeira casa</h3>
+        <p class="tl-desc">Comprada com muito suor e economia. Cada parede foi pintada à mão. Cada canto, escolhido com carinho.</p>
+      </div>
+      <div class="tl-item" data-reveal data-d="4">
+        <div class="tl-dot"></div>
+        <p class="tl-year">Hoje</p>
+        <h3 class="tl-title">A nossa geração</h3>
+        <p class="tl-desc">Os filhos cresceram. Os netos chegaram. E a mesa continua cheia — talvez até mais do que antes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALERIA ================= -->
+<section id="galeria">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Álbum de família</p>
+      <h2 class="title">Momentos que <em>guardamos</em></h2>
+      <p class="sub">Clique em qualquer foto para ampliar. Cada uma é uma página do nosso álbum.</p>
+    </div>
+    <div class="gallery" id="gallery" data-reveal data-d="1"></div>
+  </div>
+</section>
+
+<!-- ================= STORIES ================= -->
+<section class="stories-sec" id="stories">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Registros em movimento</p>
+      <h2 class="title">Nossos <em>stories</em></h2>
+      <p class="sub">Toque em um story para reviver. Momentos que merecem ser contados.</p>
+    </div>
+    <div class="stories-rail" id="storiesRail" data-reveal data-d="1"></div>
+  </div>
+</section>
+
+<!-- ================= TRADIÇÕES ================= -->
+<section id="tradicoes">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Nossas tradições</p>
+      <h2 class="title">O que a gente <em>nunca deixa morrer</em></h2>
+      <p class="sub">Vire cada carta para descobrir o que faz a nossa família ser única.</p>
+    </div>
+
+    <div class="traditions-grid" data-reveal data-d="1">
+      <div class="tradition">
+        <div class="tradition-face tradition-front">
+          <span class="t-icon">❦</span>
+          <div>
+            <h3>Almoço de domingo</h3>
+            <span class="t-tag">Vire →</span>
+          </div>
+        </div>
+        <div class="tradition-face tradition-back">
+          <p>Todo domingo, sem exceção, a casa da vó enche. Comida boa, conversa alta, e a certeza de que a família está bem.</p>
+          <span class="t-date">Sempre</span>
+        </div>
+      </div>
+
+      <div class="tradition">
+        <div class="tradition-face tradition-front">
+          <span class="t-icon">✿</span>
+          <div>
+            <h3>Festa junina da família</h3>
+            <span class="t-tag">Vire →</span>
+          </div>
+        </div>
+        <div class="tradition-face tradition-back">
+          <p>Desde 1960, a família se reúne em junho. Bandeirinhas, forró e a quadrilha improvisada que só nós sabemos dançar.</p>
+          <span class="t-date">Junho</span>
+        </div>
+      </div>
+
+      <div class="tradition">
+        <div class="tradition-face tradition-front">
+          <span class="t-icon">✦</span>
+          <div>
+            <h3>Natal na casa da vó</h3>
+            <span class="t-tag">Vire →</span>
+          </div>
+        </div>
+        <div class="tradition-face tradition-back">
+          <p>Ceia às 22h em ponto. Cada família leva um prato. À meia-noite, todos de mãos dadas em volta da mesa.</p>
+          <span class="t-date">Dezembro</span>
+        </div>
+      </div>
+
+      <div class="tradition">
+        <div class="tradition-face tradition-front">
+          <span class="t-icon">✧</span>
+          <div>
+            <h3>O bolo de aniversário</h3>
+            <span class="t-tag">Vire →</span>
+          </div>
+        </div>
+        <div class="tradition-face tradition-back">
+          <p>Não importa a idade. O bolo é sempre o mesmo: receita da vó, cobertura de chocolate, velinha no centro.</p>
+          <span class="t-date">Todo aniversário</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECEITA ================= -->
+<section class="recipe-sec" id="receita">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Herança de cozinha</p>
+      <h2 class="title">A receita que <em>atravessa gerações</em></h2>
+      <p class="sub">Toda família tem um sabor. O nosso é esse.</p>
+    </div>
+
+    <div class="recipe-card" data-reveal data-d="1">
+      <div class="recipe-img">
+        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=700&q=85&auto=format&fit=crop" alt="Bolo da vó">
+      </div>
+      <div class="recipe-body">
+        <p class="recipe-eyebrow">Receita de família</p>
+        <h3 class="recipe-title">Bolo de cenoura <em>da Vó Maria</em></h3>
+        <p class="recipe-author">— passada de mãe para filha há 70 anos —</p>
+        <p class="na-original-2">Nada é mais nosso do que o cheiro desse bolo saindo do forno num domingo à tarde. A receita está guardada no caderno de capa marrom da vó — e agora com você.</p>
+
+        <div class="recipe-ingredients">
+          <h4>Ingredientes que não podem faltar:</h4>
+          <ul>
+            <li>3 cenouras médias, bem picadas com carinho</li>
+            <li>4 ovos — de preferência daqueles que a vó ainda compra na feira</li>
+            <li>2 xícaras de açúcar mascavo</li>
+            <li>1 xícara de óleo (a vó usa a mesma caneca há 40 anos)</li>
+            <li>2 xícaras de farinha de trigo peneirada duas vezes</li>
+            <li>1 colher de sopa de fermento — nunca mais que isso</li>
+            <li>E uma pitada generosa de saudade</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FRASES MARQUEE ================= -->
+<section class="frases-sec">
+  <div class="frases-header" data-reveal>
+    <p class="eyebrow center">Frases de família</p>
+    <h2 class="title">O que a gente <em>sempre diz</em></h2>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+</section>
+
+<!-- ================= CARTA ================= -->
+<section class="letter-sec" id="carta">
+  <div class="wrap">
+    <div class="center-text" data-reveal>
+      <p class="eyebrow center">Uma carta</p>
+      <h2 class="title">Para quem <em>vem depois</em></h2>
+      <p class="sub">Algumas coisas precisam ser ditas. E guardadas por escrito.</p>
+    </div>
+
+    <div class="letter-stage" data-reveal data-d="1">
+      <div class="letter-paper" id="letterPaper">
+        <div class="letter-seal">S</div>
+        <p class="letter-eyebrow">Do nosso coração para o seu</p>
+        <h3 class="letter-title">Carta à nossa família</h3>
+        <p class="letter-preview">Se você está lendo isso, é porque a nossa história chegou até você. E isso, por si só, já é motivo de orgulho…</p>
+        <div class="letter-full">
+          <p>Não sei em que tempo você está lendo. Talvez sejamos nós mesmos, daqui a alguns anos. Talvez sejam nossos filhos. Ou os filhos dos nossos filhos. Não importa — o que importa é que você está aqui, e isso significa que a família continua.</p>
+          <p>A gente cresceu aprendendo que família não é sobre sangue. É sobre quem fica. Quem aparece no aniversário. Quem manda mensagem quando você some. Quem guarda o último pedaço de bolo pra você.</p>
+          <p>Se você é da nova geração: saiba que antes de você existir, muita gente se amou, brigou, riu, chorou e reconstruiu essa família um milhão de vezes. Tudo o que você é hoje carrega um pouco de todos eles.</p>
+          <p>Cuide bem desse legado. Não do sobrenome — do jeito. Do jeito de receber, do jeito de perdoar, do jeito de fazer o almoço de domingo mesmo quando ninguém está com vontade.</p>
+          <p>E se um dia você se sentir sozinho(a), lembre: você é fruto de gente que ficou. E isso é a maior prova de amor que existe.</p>
+          <p class="sig">Com todo o nosso amor,<br>Família Silva ❦</p>
+        </div>
+        <button class="letter-btn" id="letterBtn">Ler a carta completa</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="f-mark">❦</span>
+  <p>Feito com carinho, café e histórias que atravessam gerações.</p>
+  <div class="f-names">Família Silva</div>
+  <small>Desde 1952 · Uma história que não termina</small>
+</footer>
+
+<!-- ================= MODAL MEMBER ================= -->
+<div id="memberModal">
+  <div class="member-modal-card">
+    <button class="member-modal-close" id="modalClose">✕</button>
+    <div class="member-modal-photo"><img id="modalImg" src="" alt=""></div>
+    <p class="member-modal-role" id="modalRole"></p>
+    <h3 class="member-modal-name" id="modalName"></h3>
+    <p class="member-modal-years" id="modalYears"></p>
+    <p class="member-modal-bio" id="modalBio"></p>
+  </div>
+</div>
+
+<!-- ================= LIGHTBOX ================= -->
+<div id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+</div>
+
+<!-- ================= STORY VIEWER ================= -->
+<div id="storyViewer">
+  <div class="story-frame">
+    <div class="story-progress" id="storyProgress"></div>
+    <div class="story-media" id="storyMedia"></div>
+    <div class="story-veil"></div>
+    <div class="story-head">
+      <img class="story-ava" id="storyAva" src="" alt="">
+      <div>
+        <div class="story-name" id="storyName">Família Silva</div>
+        <div class="story-time" id="storyTime">agora</div>
+      </div>
+    </div>
+    <button class="story-close" id="storyClose">✕</button>
+    <p class="story-cap" id="storyCap"></p>
+    <div class="story-tap l" id="tapPrev"></div>
+    <div class="story-tap r" id="tapNext"></div>
+  </div>
+</div>
+
+<!-- ================= PLAYER ================= -->
+<div class="player" id="player">
+  <div class="disc" id="disc">
+    <img id="discCover" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=200&q=80&auto=format&fit=crop" alt="">
+    <div class="disc-hole"></div>
+  </div>
+  <div class="p-info">
+    <div class="p-title" id="pTitle">A Casa</div>
+    <div class="p-artist" id="pArtist">Trilha da família</div>
+  </div>
+  <div class="p-eq"><i></i><i></i><i></i><i></i></div>
+  <button class="p-btn" id="playBtn" aria-label="Play/Pause">▶</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<button id="toTop" aria-label="Voltar ao topo">↑</button>
+
+<!-- ÁUDIO -->
+<audio id="audio" loop preload="none">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+</audio>
+
+
+
+</body>
+</html>

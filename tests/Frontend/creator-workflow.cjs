@@ -1,0 +1,28 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+module.exports=function testCreatorWorkflow(){
+  const source=fs.readFileSync('resources/js/pages/criar.js','utf8');
+  const fields=Object.fromEntries(['de','para','carta','inicio','erro1'].map(id=>[id,{value:'',textContent:''}]));
+  let current=1,redirect=null,invalid=null;
+  const context=vm.createContext({tema:null,fotoFiles:[],window:{NACreatorWorkflow:{get current(){return current;}}},$:id=>fields[id],limparTodosErros(){},ir(n){redirect=n;},marcarErro(field){invalid=field;}});
+  vm.runInContext(source.slice(source.indexOf('function validar(destino)'),source.indexOf('document.querySelectorAll("[data-ir], [data-step]")')),context);
+  const valid=n=>{redirect=null;invalid=null;return vm.runInContext(`validar(${n})`,context);};
+  assert.equal(valid(2),false);assert.equal(redirect,1);
+  context.tema='aniversario';current=2;
+  assert.equal(valid(3),false);assert.equal(invalid,'de');
+  fields.de.value='Ana';assert.equal(valid(3),false);assert.equal(invalid,'para');
+  fields.para.value='Bia';assert.equal(valid(3),true,'Data opcional não bloqueia a criação');
+  current=3;assert.equal(valid(4),false);assert.equal(redirect,3);assert.equal(invalid,'fotos');
+  context.fotoFiles=[{}];assert.equal(valid(4),true);
+  current=5;assert.equal(valid(6),true);assert.equal(valid(8),false);assert.equal(redirect,6);assert.equal(invalid,'carta');
+  fields.carta.value='Uma mensagem especial';assert.equal(valid(8),true);
+  current=8;fields.de.value='';assert.equal(valid(2),true,'Voltar para corrigir dados é sempre possível');
+  assert.equal(valid(9),false,'A revisão revalida todos os campos antes de salvar');assert.equal(redirect,2);
+  fields.de.value='Ana';fields.carta.value='';assert.equal(valid(9),false);assert.equal(redirect,6);
+  fields.carta.value='Uma carta';assert.equal(valid(9),true);
+  const html=fs.readFileSync('resources/views/criar.blade.php','utf8');
+  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,'IDs do formulário devem ser únicos');
+  assert.equal([...html.matchAll(/data-passo="\d+"/g)].length,8);
+  assert.ok(!/pvNetflix|pvSpotify|pvVinil|phone-pol/.test(html),'Prévia usa apenas o modelo real');
+};
