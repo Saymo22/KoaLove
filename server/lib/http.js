@@ -23,6 +23,13 @@ function fail(res, status, code, message, meta, extra) {
 }
 
 async function readJsonBody(req) {
+  // A Vercel pode entregar o corpo já interpretado; não espere um stream consumido.
+  if(req.body !== undefined) {
+    const raw=Buffer.isBuffer(req.body)?req.body:typeof req.body==='string'?Buffer.from(req.body):Buffer.from(JSON.stringify(req.body));
+    if(raw.length>config.MAX_BODY_BYTES)throw Object.assign(new Error('Payload muito grande'),{status:413,code:'PAYLOAD_TOO_LARGE'});
+    try{return raw.length?JSON.parse(raw.toString('utf8')):{};}
+    catch{throw Object.assign(new Error('JSON inválido'),{status:400,code:'INVALID_JSON'});}
+  }
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
@@ -80,6 +87,11 @@ function clientIp(req) {
   const { isIP } = require('node:net');
   const normalize = ip => ip.startsWith('::ffff:') ? ip.slice(7) : ip;
   const peer = normalize(req.socket.remoteAddress || 'unknown');
+  // Cabeçalho preenchido pela borda Vercel, que substitui o valor do cliente.
+  if(process.env.VERCEL === '1') {
+    const edgeIp=String(req.headers['x-vercel-forwarded-for']||'').split(',')[0].trim();
+    return isIP(edgeIp)?normalize(edgeIp):peer;
+  }
   const trusted = new Set(config.TRUSTED_PROXIES.map(normalize));
   if (!trusted.has(peer)) return peer;
   const chain = String(req.headers['x-forwarded-for'] || '').split(',').map(ip => normalize(ip.trim()));

@@ -1,7 +1,10 @@
 /* Configuração central — TODAS as regras de negócio ficam aqui. */
 const path = require("path");
+const cloud = process.env.VERCEL === '1' || process.env.NA_STORAGE === 'postgres';
 
 module.exports = {
+  CLOUD: cloud,
+  DATABASE_URL: process.env.DATABASE_URL || process.env.POSTGRES_URL || '',
   PORT: Number(process.env.PORT) || 3000,
   HOST: process.env.HOST || "127.0.0.1",
   // Somente proxies explicitamente autorizados podem informar o IP do cliente.
@@ -14,7 +17,7 @@ module.exports = {
   },
 
   // Diretório de dados (criado automaticamente)
-  DATA_DIR: process.env.NA_DATA_DIR ? path.resolve(process.env.NA_DATA_DIR) : path.join(__dirname, "data"),
+  DATA_DIR: cloud ? path.join(require('os').tmpdir(), 'nossoamor') : process.env.NA_DATA_DIR ? path.resolve(process.env.NA_DATA_DIR) : path.join(__dirname, "data"),
 
   // Apenas os arquivos públicos do site são servidos por HTTP.
   FRONTEND_ROOT: path.resolve(__dirname, "../public"),
@@ -22,7 +25,7 @@ module.exports = {
   // Sessão
   SESSION_TTL_MS: 7 * 24 * 60 * 60 * 1000,          // 7 dias
   COOKIE_NAME: "nossoamor_sid",
-  COOKIE_SECURE: false,                              // true apenas com HTTPS
+  COOKIE_SECURE: process.env.VERCEL === '1' || process.env.COOKIE_SECURE === 'true',
   COOKIE_SAMESITE: "Strict",
 
   // Senhas

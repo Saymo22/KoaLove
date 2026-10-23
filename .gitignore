@@ -7,3 +7,5 @@ tools/screenshots/
 server/data/
 server/node_modules/
 server/.env
+.vercel/
+.env.local

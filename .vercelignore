@@ -1,0 +1,7 @@
+.git
+.snapshots
+server/data
+server/.env
+**/*.log
+tools/screenshots
+REVISAO-*.md

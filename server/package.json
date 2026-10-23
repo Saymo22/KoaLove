@@ -14,12 +14,15 @@
   },
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@vercel/blob": "^2.8.2",
     "file-type": "^22.2.0",
     "nodemailer": "^10.2.1",
+    "pg": "^8.23.1",
     "qrcode": "^1.5.4",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "esbuild": "^0.28.2"
   }
 }

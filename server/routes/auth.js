@@ -34,7 +34,10 @@ async function register(req, res) {
     role: "user",
     created_at: Date.now(),
   };
-  await stores.users.insert(user);
+  await stores.users.transaction(rows => {
+    if(rows.some(u=>u.email_hash===user.email_hash))throw Object.assign(new Error('Não foi possível criar a conta. Verifique os dados e tente novamente.'),{status:409,code:'EMAIL_TAKEN'});
+    rows.push(user);
+  });
 
   // Cria sessão + cookie
   const token = security.randomToken(32);
