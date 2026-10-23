@@ -501,23 +501,20 @@ body {
         min-height: 0;
         padding-block: 90px 20px;
     }
-    .portal {
-        max-height: calc(100dvh - 110px);
-    }
 }
 @media (min-width: 1025px) and (max-height: 850px) {
-    .experience > .portal { zoom: .9; max-height: calc((100dvh - 110px) / .9); }
+    .experience > .portal { zoom: .9; }
 }
 @media (min-width: 1025px) and (max-height: 750px) {
-    .experience > .portal { zoom: .75; max-height: calc((100dvh - 110px) / .75); }
+    .experience > .portal { zoom: .75; }
     .experience > .editorial { zoom: .9; }
 }
 @media (min-width: 1025px) and (max-height: 600px) {
     .experience { padding-block: 76px 12px; }
-    .experience > .portal { zoom: .65; max-height: calc((100dvh - 88px) / .65); }
+    .experience > .portal { zoom: .65; }
     .experience > .editorial { zoom: .7; }
 }
 @media (min-width: 1025px) and (max-height: 500px) {
-    .experience > .portal { zoom: .55; max-height: calc((100dvh - 88px) / .55); overflow-y: auto; }
+    .experience > .portal { zoom: .55; }
     .experience > .editorial { zoom: .6; }
 }
