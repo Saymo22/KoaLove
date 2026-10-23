@@ -1,5 +1,9 @@
 <?php
 
+// O front controller está em /api, mas as rotas Laravel continuam relativas à raiz.
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
 $set = static function (string $name, string $value): void {
     putenv($name.'='.$value);
     $_ENV[$name] = $_SERVER[$name] = $value;

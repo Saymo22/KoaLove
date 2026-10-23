@@ -7,6 +7,14 @@ use Tests\TestCase;
 
 class VercelBootstrapTest extends TestCase
 {
+    public function test_front_controller_preserves_the_api_prefix_when_symfony_captures_the_request(): void
+    {
+        $script = 'require '.var_export(base_path('vendor/autoload.php'), true).'; $_SERVER["REQUEST_URI"]="/api/config"; $_SERVER["SCRIPT_NAME"]="/api/index.php"; $_SERVER["PHP_SELF"]="/api/index.php"; $_SERVER["SCRIPT_FILENAME"]="/var/task/user/api/index.php"; require '.var_export(base_path('bootstrap/vercel.php'), true).'; echo Symfony\\Component\\HttpFoundation\\Request::createFromGlobals()->getPathInfo();';
+        $process = new Process([PHP_BINARY, '-r', $script], base_path());
+        $process->mustRun();
+        $this->assertSame('/api/config', $process->getOutput());
+    }
+
     public function test_neon_url_sets_endpoint_for_the_runtime_postgres_client(): void
     {
         $script = 'require '.var_export(base_path('bootstrap/vercel.php'), true).'; echo json_encode([getenv("DB_URL"),getenv("PGOPTIONS")]);';
