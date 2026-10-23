@@ -35,7 +35,7 @@ class CloudUploadController extends ApiController
 
                 return $old;
             }
-            $pending = MediaUpload::where('purchase_id', $p->id)->where('expires_at', '>', now());
+            $pending = MediaUpload::where('purchase_id', $p->id)->where('bytes', '>', 0)->where('expires_at', '>', now());
             if ($same = (clone $pending)->where('asset_id', $asset)->first()) {
                 abort_unless($same->mime === $data['mime'] && $same->bytes === $data['bytes'], 409, 'Arquivo diferente da reserva anterior.');
 
@@ -50,7 +50,7 @@ class CloudUploadController extends ApiController
         if (! $result instanceof MediaUpload) {
             return $this->ok(['complete' => true, 'id' => $asset, 'kind' => $result->kind]);
         }
-        $signed = Storage::disk($result->disk)->temporaryUploadUrl($result->path, now()->addMinutes(5), ['ContentType' => $result->mime, 'ContentLength' => $result->bytes]);
+        $signed = Storage::disk($result->disk)->temporaryUploadUrl($result->path, now()->addMinutes(5)->min($result->expires_at), ['ContentType' => $result->mime, 'ContentLength' => $result->bytes]);
         $headers = [];
         foreach ($signed['headers'] ?? [] as $key => $value) {
             if (! in_array(strtolower($key), ['host', 'content-length'], true)) {
@@ -67,6 +67,11 @@ class CloudUploadController extends ApiController
         $gifts->editable($purchase, true);
         $data = $request->validate(['upload_id' => 'required|uuid']);
         $upload = MediaUpload::whereKey($data['upload_id'])->where('purchase_id', $purchase->id)->where('asset_id', $asset)->where('expires_at', '>', now())->firstOrFail();
+        if ($upload->bytes === 0) {
+            $saved = $purchase->assets()->where('asset_id', $asset)->firstOrFail();
+
+            return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
+        }
         $disk = Storage::disk($upload->disk);
         abort_unless($disk->size($upload->path) === $upload->bytes, 422, 'O tamanho enviado não corresponde à reserva.');
         $tmp = tempnam(sys_get_temp_dir(), 'na_cloud_');
@@ -83,7 +88,9 @@ class CloudUploadController extends ApiController
             abort_unless($bytes === $upload->bytes, 422, 'Mídia incompleta.');
             $saved = $media->store($purchase, $asset, $tmp, $upload->mime, $upload->id);
             $disk->delete($upload->path);
-            $upload->delete();
+            // Preserve a cleanup record: a signed PUT can be replayed until its URL expires.
+            // Zero bytes marks a completed reservation and releases its quota immediately.
+            $upload->update(['bytes' => 0]);
 
             return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
         } finally {

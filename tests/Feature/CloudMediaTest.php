@@ -41,6 +41,23 @@ class CloudMediaTest extends TestCase
         $this->assertDatabaseCount('media_uploads', 0);
     }
 
+    public function test_renewed_put_url_cannot_outlive_its_cleanup_reservation(): void
+    {
+        [$disk, $p] = $this->setupCloud();
+        $until = null;
+        $disk->buildTemporaryUploadUrlsUsing(function ($path, $expires) use (&$until) {
+            $until = $expires;
+
+            return ['url' => 'https://storage.example.test/'.$path, 'headers' => []];
+        });
+        $ticket = $this->reserve($p, 100);
+        $intent = MediaUpload::findOrFail($ticket['upload_id']);
+        $this->travel(18)->minutes();
+        $retry = $this->reserve($p, 100);
+        $this->assertSame($ticket['upload_id'], $retry['upload_id']);
+        $this->assertTrue($until->lessThanOrEqualTo($intent->expires_at));
+    }
+
     public function test_direct_upload_is_private_until_validation_and_finalization(): void
     {
         [$disk,$p] = $this->setupCloud();
@@ -51,7 +68,7 @@ class CloudMediaTest extends TestCase
         $disk->put($intent->path, $bytes);
         $this->getJson('/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890')->assertNotFound();
         $this->postJson('/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890/complete-upload', ['upload_id' => $intent->id])->assertOk();
-        $this->assertDatabaseMissing('media_uploads', ['id' => $intent->id]);
+        $this->assertDatabaseHas('media_uploads', ['id' => $intent->id, 'bytes' => 0]);
         $disk->assertMissing($intent->path);
         $asset = Purchase::find($p['id'])->assets()->firstOrFail();
         $this->assertSame('s3', $asset->disk);
@@ -60,6 +77,13 @@ class CloudMediaTest extends TestCase
         $this->assertDatabaseCount('media_assets', 1);
         $this->postJson('/api/purchases/'.$p['id'].'/update', ['tema' => 'netflix', 'para' => 'Bia', 'media' => ['photos' => ['cloud-asset-1234567890'], 'videos' => [], 'music' => null]])->assertOk();
         $this->get('/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890')->assertRedirect('https://storage.example.test/'.$asset->path.'?temporary=1');
+        $this->postJson('/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890/complete-upload', ['upload_id' => $intent->id])->assertOk();
+        // A reused signed PUT must not leave an orphaned object after completion.
+        $disk->put($intent->path, $bytes);
+        $this->travel(21)->minutes();
+        $this->artisan('privacy:prune')->assertSuccessful();
+        $disk->assertMissing($intent->path);
+        $this->assertDatabaseMissing('media_uploads', ['id' => $intent->id]);
     }
 
     public function test_intents_enforce_owner_mime_size_and_quota(): void
