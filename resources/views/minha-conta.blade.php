@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta — Nosso Amor</title>
+    @include('partials.seo')
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
     @vite(["resources/css/base.css","resources/css/minha-conta.css","resources/css/pages/minha-conta-extracted.css","resources/js/entries/minha-conta.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <!-- Fundo Premium -->
     <div class="world" aria-hidden="true">

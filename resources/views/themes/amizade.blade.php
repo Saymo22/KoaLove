@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amizade Lendária — Para Você</title>
+@include('partials.seo')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
     @vite(["resources/css/themes/amizade.css","resources/js/entries/themes-amizade.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
 <!-- LOADER -->
 <div id="loader">

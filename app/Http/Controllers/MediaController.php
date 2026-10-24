@@ -15,6 +15,9 @@ class MediaController extends ApiController
     {
         Gate::authorize('update', $purchase);
         $gifts->editable($purchase, true);
+        if ($unavailable = $this->mediaUnavailable()) {
+            return $unavailable;
+        }
         abort_unless(preg_match('/^[\w-]{16,100}$/', $asset), 422, 'Identificador inválido.');
         $mime = strtolower(explode(';', $request->header('Content-Type', ''))[0]);
         $kind = MediaValidator::TYPES[$mime] ?? null;

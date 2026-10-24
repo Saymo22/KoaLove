@@ -7,6 +7,9 @@
     update: (id, payload) => post(`/purchases/${encodeURIComponent(id)}/update`, payload),
     remove: (id) => post(`/purchases/${encodeURIComponent(id)}/delete`, {}),
     upload: async (id, assetId, blob) => {
+      if (window.APP_CONFIG?.MEDIA_STORAGE_CONFIGURED === false) {
+        throw new window.ApiClient.ApiError({status:503,code:'MEDIA_UNAVAILABLE',message:'O armazenamento de mídia está indisponível. Seu rascunho foi mantido; tente novamente mais tarde.'});
+      }
       if (window.APP_CONFIG?.DIRECT_UPLOADS) {
         const path='/purchases/'+encodeURIComponent(id)+'/media/'+encodeURIComponent(assetId);
         const ticket=await post(path+'/upload-url',{mime:blob.type,bytes:blob.size});

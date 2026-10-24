@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Amor ❤️ — Presentes digitais que emocionam</title>
-    <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Envie por link ou QR Code.">
+    @include('partials.seo')
 
 
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -15,6 +14,7 @@
     @vite(["resources/css/base.css","resources/css/home.css","resources/css/pages/home-extracted.css","resources/js/entries/home.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <div class="scroll-progress" id="scrollProgress"></div>
 

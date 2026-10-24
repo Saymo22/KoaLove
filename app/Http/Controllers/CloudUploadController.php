@@ -20,8 +20,8 @@ class CloudUploadController extends ApiController
         Gate::authorize('update', $purchase);
         $gifts->editable($purchase, true);
         abort_unless(config('filesystems.default') === 's3', 409, 'Upload direto indisponível.');
-        if (! config('filesystems.disks.s3.bucket') || ! config('filesystems.disks.s3.region')) {
-            return response()->json(['ok' => false, 'error' => ['code' => 'MEDIA_UNAVAILABLE', 'message' => 'Armazenamento de mídia ainda não configurado.']], 503);
+        if ($unavailable = $this->mediaUnavailable()) {
+            return $unavailable;
         }
         abort_unless(preg_match('/^[\w-]{16,100}$/', $asset), 422, 'Identificador inválido.');
         $data = $request->validate(['mime' => ['required', Rule::in(array_keys(MediaValidator::TYPES))], 'bytes' => 'required|integer|min:1|max:104857600']);
@@ -65,6 +65,9 @@ class CloudUploadController extends ApiController
     {
         Gate::authorize('update', $purchase);
         $gifts->editable($purchase, true);
+        if ($unavailable = $this->mediaUnavailable()) {
+            return $unavailable;
+        }
         $data = $request->validate(['upload_id' => 'required|uuid']);
         $upload = MediaUpload::whereKey($data['upload_id'])->where('purchase_id', $purchase->id)->where('asset_id', $asset)->where('expires_at', '>', now())->firstOrFail();
         if ($upload->bytes === 0) {

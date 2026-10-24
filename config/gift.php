@@ -21,6 +21,7 @@ return [
     'privacy_email' => env('PRIVACY_EMAIL'),
     'privacy_controller' => env('PRIVACY_CONTROLLER'),
     'cron_secret' => env('CRON_SECRET'),
+    'serverless' => (bool) env('VERCEL', false),
     'upload_origins' => array_values(array_filter(explode(',', env('MEDIA_UPLOAD_ORIGINS', $uploadOrigin)))),
     'dummy_hash' => '$2y$12$Vi9K49Zt2fc7PtEs0YAk3uVC6pOM8SeSVbc.R46/gPSm/HrlHxWJC',
 ];

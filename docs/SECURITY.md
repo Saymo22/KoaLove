@@ -12,7 +12,9 @@ Mídias ficam em storage/app/private, sem symlink público. Downloads verificam 
 
 ## Acesso, retenção e LGPD
 
-Na Vercel, use PostgreSQL externo para dados/sessões/cache e S3 privado para arquivos. Upload direto usa uma reserva autenticada com cota e objeto em quarentena; a confirmação valida o conteúdo no servidor. URLs assinadas de upload expiram em 5 minutos e as de download em 1 minuto. Uma URL de download já emitida permanece utilizável até expirar, inclusive após revogação do presente. Configure CORS somente para origens do projeto, bloqueie acesso público ao bucket e monitore a limpeza diária das reservas expiradas. Não armazene dados persistentes em `/tmp`. Declare Neon/AWS ou os provedores efetivamente escolhidos na política pública antes do lançamento.
+A estratégia atual armazena arquivos no disco privado do próprio servidor, em `storage/app/private` ou no volume indicado por `MEDIA_STORAGE_PATH`. Não exponha esse volume por symlink ou pela raiz pública. Funções Vercel não oferecem esse disco persistente, por isso o upload local é recusado nesse ambiente, sem fallback para `/tmp`. Os dados estruturados permanecem no Neon; nenhum novo provedor externo de arquivos foi contratado.
+
+Se futuramente ativar o adapter S3, o upload direto usa reserva autenticada, cota e quarentena; a confirmação valida o conteúdo no servidor. URLs assinadas de upload expiram em até 5 minutos e nunca ultrapassam a reserva; downloads expiram em 1 minuto. Uma URL de download já emitida continua utilizável até expirar, inclusive após revogação do presente. Configure CORS somente para origens do projeto, bloqueie acesso público ao bucket e monitore a limpeza das reservas, inclusive registros concluídos com bytes zero que permitem remover reenvios de URLs ainda válidas. Declare somente os provedores efetivamente utilizados na política pública.
 
 - Conta e presentes ativos: utilizados para entregar o serviço enquanto a conta permanecer ativa. Nenhuma promessa técnica de hospedagem eterna.
 - Rascunhos não pagos: 30 dias desde a última atualização; upload renova essa atividade.
