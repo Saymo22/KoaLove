@@ -25,3 +25,11 @@ test('Build limita tentativas em indisponibilidade persistente',async t=>{
   const f=await fixture(t,(_req,res)=>{requests++;res.writeHead(503);res.end();});
   await assert.rejects(downloadRelease(f.url,f.file,{delayMs:1}),/HTTP 503/);assert.equal(requests,3);
 });
+
+test('Build usa HTTPS do sistema quando a conexão do Node é reiniciada',async t=>{
+  const {downloadRelease}=await import('../../tools/download-release.mjs');let requests=0;
+  const f=await fixture(t,(_req,res)=>{requests++;res.end('expected-release');});
+  const mocked=t.mock.method(globalThis,'fetch',async()=>{throw Object.assign(new TypeError('fetch failed'),{cause:{code:'ECONNRESET'}});});
+  await downloadRelease(f.url,f.file,{delayMs:1});
+  assert.equal(mocked.mock.callCount(),3);assert.equal(requests,1);assert.equal(await fs.readFile(f.file,'utf8'),'expected-release');
+});
