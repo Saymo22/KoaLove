@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
 class SeoTest extends TestCase
@@ -59,6 +60,15 @@ class SeoTest extends TestCase
             $this->assertStringNotContainsString('?', $url);
             $this->get(parse_url($url, PHP_URL_PATH))->assertOk()->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
         }
+    }
+
+    public function test_sitemap_xml_declaration_works_with_php_short_tags_enabled(): void
+    {
+        $script = 'require '.var_export(base_path('vendor/autoload.php'), true).'; $app=require '.var_export(base_path('bootstrap/app.php'), true).'; $app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap(); echo view("sitemap",["urls"=>["https://site.example.test/home.html"]])->render();';
+        $process = new Process([PHP_BINARY, '-d', 'short_open_tag=1', '-r', $script], base_path());
+        $process->mustRun();
+        $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $process->getOutput());
+        $this->assertNotFalse(simplexml_load_string($process->getOutput()));
     }
 
     public function test_robots_allows_public_search_and_separates_gptbot_training(): void
