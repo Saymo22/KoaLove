@@ -14,7 +14,7 @@ A API continua Laravel/PHP na Vercel. O Supabase fornece PostgreSQL persistente 
 
 ## Variáveis da Vercel
 
-Configure em cada ambiente desejado, sem trocar as chaves Laravel existentes:
+Configure em cada ambiente desejado, sem trocar as chaves Laravel existentes. Se Preview compartilhar o banco de produção, mantenha `SIMULATED_PAYMENTS=false` também em Preview; `APP_ENV=staging` sozinho não protege esse banco contra pagamentos simulados:
 
 | Variável | Valor |
 | --- | --- |
