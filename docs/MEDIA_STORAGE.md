@@ -1,8 +1,10 @@
 # Fotos, vídeos e músicas no servidor
 
-## Decisão atual
+## Supabase na Vercel e alternativa local
 
-As mídias ficam no disco privado do próprio servidor, sem contratar S3, R2, Blob ou outro armazenamento externo. Configure `FILESYSTEM_DISK=local`. PostgreSQL mantém contas, compras e referências; não recebe os bytes das mídias.
+Para Vercel, a integração [Supabase](SUPABASE.md) usa PostgreSQL e bucket privado, com `FILESYSTEM_DISK=supabase`. Mídias vão diretamente ao Storage por URL assinada e são validadas pelo Laravel antes de entrar no presente. O limite no plano Free é de 50 MB por arquivo (fotos e músicas mantêm limites menores). A ativação exige configurar as chaves S3 e verificar o provedor real.
+
+Este documento também descreve a alternativa `FILESYSTEM_DISK=local`, para hospedar no próprio servidor com disco persistente. PostgreSQL mantém contas, compras e referências; não recebe os bytes das mídias.
 
 O destino padrão é:
 
@@ -30,13 +32,13 @@ Não grave presentes em `public/` e não crie `storage:link` para a pasta privad
 
 Se usar múltiplas instâncias, todas precisam do mesmo volume privado montado no mesmo caminho. Um disco separado por instância não atende um link que cair em outro servidor.
 
-## Limitação da Vercel atual
+## Limitação do modo local na Vercel
 
 As funções da Vercel não fornecem um diretório local persistente para arquivos enviados pelos usuários. `/tmp` é temporário e o pacote publicado não funciona como um volume gravável permanente. Colocar uploads em `public/` ou trocar o nome do diretório para `storage/` não resolve essa limitação.
 
-Com a decisão de usar somente disco local, o site na Vercel mantém páginas, SEO, contas e dados no Neon, mas **o upload permanece indisponível**. `GET /api/config` informa `media_storage.configured=false`; o cliente preserva o rascunho e a API recusa a gravação com `503 MEDIA_UNAVAILABLE`. Não há simulação de upload salvo e não fazemos fallback silencioso para `/tmp`.
+Se a Vercel estiver configurada com disco local ou com credenciais Supabase ausentes, **o upload permanece indisponível**. `GET /api/config` informa `media_storage.configured=false`; o cliente preserva o rascunho e a API recusa a gravação com `503 MEDIA_UNAVAILABLE`. Não há simulação de upload salvo nem fallback silencioso para `/tmp`.
 
-Para ativar essa estratégia em produção é necessário hospedar o backend em um servidor com volume persistente, conforme a seção anterior. A integração S3 existente permanece opcional para uma decisão futura; não é habilitada por esta entrega e nenhum serviço externo de arquivos foi contratado.
+Para ativar upload na Vercel, conclua a configuração [Supabase](SUPABASE.md). Para usar disco local em produção, hospede o backend em um servidor com volume persistente, conforme a seção anterior. A mudança de variável não transporta arquivos existentes entre os discos.
 
 ## Envio, validação e entrega
 

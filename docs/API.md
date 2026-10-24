@@ -26,6 +26,8 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 
 ## Limites
 
+Com `FILESYSTEM_DISK=supabase`, o teto configurado do provedor também se aplica: no plano Free são 50.000.000 bytes por arquivo. `media_storage.limits` publica os limites efetivos; o cliente verifica antes do envio e o servidor verifica a reserva e o arquivo normalizado. O disco é registrado em cada asset/reserva; referências dos temas permanecem estáveis.
+
 Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recuperação 3, criação 10, mutações 90, admin 120. O cache deve ser compartilhado entre workers. Metadados JSON: 2 MiB e profundidade limitada. themeData: 200 KB, profundidade 10, máximo 300 itens por nível, texto 4000 caracteres. Upload: foto 15 MiB/16 MP, áudio 25 MiB, vídeo 100 MiB; 300 MiB e 80 assets por compra. Manifesto: 1–12 fotos, até 4 vídeos e 1 música.
 
 Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. URLs .html foram preservadas; são views Laravel, não arquivos públicos.

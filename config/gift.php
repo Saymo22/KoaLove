@@ -8,6 +8,10 @@ if ($endpoint && ! env('AWS_USE_PATH_STYLE_ENDPOINT', false) && $bucket) {
     $parts = parse_url($endpoint);
     $uploadOrigin = ($parts['scheme'] ?? 'https').'://'.$bucket.'.'.($parts['host'] ?? '');
 }
+if (env('FILESYSTEM_DISK') === 'supabase' && env('SUPABASE_S3_ENDPOINT')) {
+    $parts = parse_url(env('SUPABASE_S3_ENDPOINT'));
+    $uploadOrigin = ($parts['scheme'] ?? 'https').'://'.($parts['host'] ?? '');
+}
 
 return [
     'themes' => json_decode(file_get_contents(__DIR__.'/catalog.json'), true, 512, JSON_THROW_ON_ERROR),

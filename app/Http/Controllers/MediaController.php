@@ -22,7 +22,7 @@ class MediaController extends ApiController
         $mime = strtolower(explode(';', $request->header('Content-Type', ''))[0]);
         $kind = MediaValidator::TYPES[$mime] ?? null;
         abort_unless($kind, 415, 'Formato não suportado.');
-        $limit = MediaValidator::LIMITS[$kind];
+        $limit = MediaValidator::limits()[$kind];
         abort_if((int) $request->header('Content-Length') > $limit, 413, 'Arquivo muito grande.');
         $tmp = tempnam(sys_get_temp_dir(), 'na_');
         try {

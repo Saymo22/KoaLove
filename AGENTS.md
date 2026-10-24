@@ -22,3 +22,9 @@
 - sessions, password_reset_tokens, cache/cache_locks, jobs/job_batches/failed_jobs: infraestrutura Laravel.
 
 Atualize este resumo junto com mudanças no esquema.
+
+## Supabase
+- O mesmo esquema Laravel pode residir em app_private (DB_SCHEMA), fora da Data API. Não exponha esse schema nem crie políticas públicas para as tabelas de contas/sessões/compras.
+- A autenticação continua Laravel; auth.users do Supabase não substitui users e não deve receber cópias das senhas.
+- O disco supabase usa bucket privado e S3 com chaves somente no backend, sem ACLs de objeto. Plano Free: teto conservador de 50.000.000 bytes por arquivo, anunciado pela API e aplicado antes/depois da normalização.
+- Não executar supabase db reset/push para reconstruir as tabelas Laravel; database/migrations é a fonte do esquema. supabase/bootstrap.sql prepara somente role/schema/permissões de um projeto novo.

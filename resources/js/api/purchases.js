@@ -7,6 +7,11 @@
     update: (id, payload) => post(`/purchases/${encodeURIComponent(id)}/update`, payload),
     remove: (id) => post(`/purchases/${encodeURIComponent(id)}/delete`, {}),
     upload: async (id, assetId, blob) => {
+      const kind = blob.type?.startsWith('image/') ? 'photo' : blob.type?.startsWith('audio/') ? 'music' : 'video';
+      const limit = window.APP_CONFIG?.MEDIA_LIMITS?.[kind];
+      if (limit && blob.size > limit) {
+        throw new window.ApiClient.ApiError({status:413,code:'FILE_TOO_LARGE',message:`Este arquivo ultrapassa o limite de ${Math.round(limit / 1000000)} MB do armazenamento. Seu rascunho foi mantido.`});
+      }
       if (window.APP_CONFIG?.MEDIA_STORAGE_CONFIGURED === false) {
         throw new window.ApiClient.ApiError({status:503,code:'MEDIA_UNAVAILABLE',message:'O armazenamento de mídia está indisponível. Seu rascunho foi mantido; tente novamente mais tarde.'});
       }

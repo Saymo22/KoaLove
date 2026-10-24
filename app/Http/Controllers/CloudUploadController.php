@@ -19,15 +19,16 @@ class CloudUploadController extends ApiController
     {
         Gate::authorize('update', $purchase);
         $gifts->editable($purchase, true);
-        abort_unless(config('filesystems.default') === 's3', 409, 'Upload direto indisponível.');
+        $disk = config('filesystems.default');
+        abort_unless(in_array(config('filesystems.disks.'.$disk.'.driver'), ['s3', 'supabase'], true), 409, 'Upload direto indisponível.');
         if ($unavailable = $this->mediaUnavailable()) {
             return $unavailable;
         }
         abort_unless(preg_match('/^[\w-]{16,100}$/', $asset), 422, 'Identificador inválido.');
         $data = $request->validate(['mime' => ['required', Rule::in(array_keys(MediaValidator::TYPES))], 'bytes' => 'required|integer|min:1|max:104857600']);
         $kind = MediaValidator::TYPES[$data['mime']];
-        abort_if($data['bytes'] > MediaValidator::LIMITS[$kind], 413, 'Arquivo muito grande.');
-        $result = DB::transaction(function () use ($purchase, $asset, $data, $gifts, $kind) {
+        abort_if($data['bytes'] > MediaValidator::limits()[$kind], 413, 'Arquivo muito grande para o armazenamento configurado.');
+        $result = DB::transaction(function () use ($purchase, $asset, $data, $gifts, $kind, $disk) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             $gifts->editable($p, true);
             if ($old = $p->assets()->where('asset_id', $asset)->first()) {
@@ -45,7 +46,7 @@ class CloudUploadController extends ApiController
             $id = (string) Str::uuid();
             $p->touch();
 
-            return MediaUpload::create(['id' => $id, 'purchase_id' => $p->id, 'asset_id' => $asset, ...$data, 'disk' => 's3', 'path' => 'gifts/'.$p->id.'/incoming/'.$id, 'expires_at' => now()->addMinutes(20)]);
+            return MediaUpload::create(['id' => $id, 'purchase_id' => $p->id, 'asset_id' => $asset, ...$data, 'disk' => $disk, 'path' => 'gifts/'.$p->id.'/incoming/'.$id, 'expires_at' => now()->addMinutes(20)]);
         });
         if (! $result instanceof MediaUpload) {
             return $this->ok(['complete' => true, 'id' => $asset, 'kind' => $result->kind]);
