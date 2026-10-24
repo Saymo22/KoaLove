@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Models\Refund;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +31,9 @@ class PrivacyController extends ApiController
     {
         $data = $request->validate(['password' => 'required|string|max:128']);
         $user = $request->user();
-        abort_unless(Hash::check($data['password'], $user->password), 422, 'Senha incorreta.');
-        DB::transaction(function () use ($user) {
+        DB::transaction(function () use ($user, $data) {
+            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+            abort_unless(Hash::check($data['password'], $user->password), 422, 'Senha incorreta.');
             $user->forceFill(['deletion_requested_at' => now(), 'remember_token' => null])->save();
             Purchase::where('user_id', $user->id)->delete();
             DB::table('sessions')->where('user_id', $user->id)->delete();

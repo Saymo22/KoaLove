@@ -53,7 +53,7 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
             Route::post('purchases/{purchase}/media/{asset}/upload-url', [CloudUploadController::class, 'reserve']);
             Route::post('purchases/{purchase}/media/{asset}/complete-upload', [CloudUploadController::class, 'complete']);
             Route::get('privacy/export', [PrivacyController::class, 'export']);
-            Route::post('privacy/delete', [PrivacyController::class, 'destroy']);
+            Route::post('privacy/delete', [PrivacyController::class, 'destroy'])->middleware('throttle:sensitive');
         });
         Route::prefix('admin')->middleware(['admin', 'throttle:admin'])->group(function () {
             Route::get('summary', [AdminController::class, 'summary']);

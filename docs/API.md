@@ -33,4 +33,6 @@ Com `FILESYSTEM_DISK=supabase`, o teto configurado do provedor também se aplica
 
 Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recuperação 3, criação 10, mutações 90, admin 120. O cache deve ser compartilhado entre workers. Metadados JSON: 2 MiB e profundidade limitada. themeData: 200 KB, profundidade 10, máximo 300 itens por nível, texto 4000 caracteres. Upload: foto 15 MiB/16 MP, áudio 25 MiB, vídeo 100 MiB; 300 MiB e 80 assets por compra. Manifesto: 1–12 fotos, até 4 vídeos e 1 música.
 
+Além do IP, login permite 5 tentativas/minuto por e-mail normalizado; solicitação de recuperação, 3/hora por e-mail; redefinição, 5/minuto por e-mail. As chaves do cache usam HMAC, sem o e-mail em texto aberto. Exclusão de conta exige a senha atual e permite 5 tentativas/minuto por usuário e IP. Não há bloqueio permanente de conta. Recuperação usa sempre APP_URL para o link; validação, troca de senha, revogação de sessões e consumo do token são atômicos.
+
 Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. URLs .html foram preservadas; são views Laravel, não arquivos públicos.
