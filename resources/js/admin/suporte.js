@@ -33,9 +33,9 @@
   tbody.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-act='reply']");
     if (!btn) return;
-    btn.disabled = true;
     const text = await adminReplyDialog();
-    if (!text) { btn.disabled=false; return; }
+    if (!text) return;
+    btn.disabled = true;
     try {
       await window.ApiAdmin.ticketReply(btn.dataset.id, text);
       adminNotify("Resposta enviada.");
