@@ -48,4 +48,6 @@ Execute composer install --no-dev --optimize-autoloader, npm ci, npm run build, 
 
 ## Organização e próximos módulos
 
+O admin usa `resources/css/admin.css` e o shell em `resources/js/admin/header.js`: menu lateral, breadcrumb, ícones SVG, notificações e diálogo acessível de atendimento. Em telas de até 760px, o menu vira uma gaveta com fechamento por Escape e navegação por teclado; tabelas rolam dentro do próprio painel. `admin-pricing.css` trata os formulários do catálogo. Preserve os IDs consumidos pelos scripts das seis páginas administrativas; o redesign não altera os contratos de autorização ou de pagamento. Para conferir visualmente, use dados sintéticos em um banco isolado, nunca contas/pedidos de produção.
+
 resources/assets.json é o catálogo de entradas; cada página possui um bundle que preserva o escopo legado. O plugin classic-page-boundaries em vite.config.js concatena fontes existentes sem duplicá-las. A separação futura em ES modules/componentes Blade exige testes dos consumidores e mantém os scripts fora das views. O QR é gerado localmente pelo adapter resources/js/adapters/qr-code.js; o gateway implementa App/Contracts/PaymentGateway.

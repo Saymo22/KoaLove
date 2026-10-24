@@ -33,13 +33,15 @@
   tbody.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-act='reply']");
     if (!btn) return;
-    const text = prompt("Resposta para o cliente:");
-    if (!text) return;
+    btn.disabled = true;
+    const text = await adminReplyDialog();
+    if (!text) { btn.disabled=false; return; }
     try {
       await window.ApiAdmin.ticketReply(btn.dataset.id, text);
-      alert("Resposta enviada.");
+      adminNotify("Resposta enviada.");
       await load();
-    } catch (err) { alert("Erro: " + err.message); }
+    } catch (err) { adminNotify("Não foi possível enviar: " + err.message); }
+    finally { btn.disabled=false; }
   });
 
   await load();
