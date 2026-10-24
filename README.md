@@ -1,10 +1,12 @@
 # Nosso Amor
 
+O recebimento escolhido é [Pix com conferência manual](docs/PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+
 Crie presentes digitais com fotos, vídeos, música, cartas e uma linha do tempo. O destinatário recebe um link e um QR Code para abrir a página no celular ou computador.
 
 O projeto oferece 13 temas: Namoro, Casamento, Amizade, Família, Aniversário, Carta Antiga, Scrapbook, Jardim Secreto, Cinema Clássico, Retrô, Netflix, Spotify e Vinil. O criador tem oito etapas e mostra a prévia do tema escolhido.
 
-A aplicação está em fase de desenvolvimento. O pagamento disponível no ambiente local é uma simulação: não cobra cartão nem gera um Pix real. Em produção, a simulação fica bloqueada até existir uma integração de pagamento.
+A aplicação recebe por Pix com conferência manual quando esse modo está configurado. A integração opcional [Mercado Pago Checkout Pro](docs/PAYMENTS.md) exige credenciais, webhook e ativação própria por ambiente. Sem um método configurado, o pagamento permanece indisponível. A simulação local não cobra cartão nem gera Pix real e continua bloqueada em produção.
 
 ## Usar localmente
 
@@ -17,6 +19,7 @@ Suas fotos ficam privadas no servidor. Quem possui o link de um presente liberad
 - [Desenvolvimento e testes](docs/DEVELOPMENT.md)
 - [Implantação na Vercel](docs/VERCEL.md)
 - [Banco e mídias no Supabase](docs/SUPABASE.md)
+- [Pagamentos Mercado Pago](docs/PAYMENTS.md)
 - [Contrato da API](docs/API.md)
 - [Segurança](docs/SECURITY.md)
 - [SEO, indexação e noscript](docs/SEO.md)

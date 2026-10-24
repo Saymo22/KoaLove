@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? fmtCents(pedido.amount_paid_cents)
                 : "—";
 
-            const metodos = { pix: "Pix", card: "Cartão" };
+            const metodos = { pix: "Pix", card: "Cartão", mercadopago: "Mercado Pago" };
             const metodo = metodos[pedido.payment_method] || "Pix";
 
             // Aviso visual caso o presente tenha sido apagado da coleção
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? fmtCents(pedido.amount_paid_cents)
             : "—";
 
-        const metodos = { pix: "Pix", card: "Cartão de Crédito" };
+        const metodos = { pix: "Pix", card: "Cartão de Crédito", mercadopago: "Mercado Pago" };
         const metodo = metodos[pedido.payment_method] || "Pix (Aprovação Imediata)";
 
         $('receiptTitle').textContent=pedido.status==='refunded'?'Pagamento reembolsado':'Pagamento confirmado';

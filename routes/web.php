@@ -4,15 +4,18 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
 use App\Services\MediaStorage;
+use App\Services\PaymentSettings;
 use App\Services\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home.html');
+Route::post('/api/webhooks/mercadopago', PaymentWebhookController::class)->middleware('throttle:api');
 Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
 Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
 foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
@@ -20,7 +23,7 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware('throttle:api')->group(function () {
-    Route::get('config', fn (MediaStorage $storage) => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn (MediaStorage $storage) => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);
@@ -57,6 +60,7 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
             Route::get('clients', [AdminController::class, 'clients']);
             Route::get('clients/{user}', [AdminController::class, 'detail']);
             Route::get('purchases', [AdminController::class, 'purchases']);
+            Route::post('purchases/{purchase}/confirm-pix', [AdminController::class, 'confirmPix']);
             Route::get('refunds', [AdminController::class, 'refunds']);
             Route::post('refunds/{refund}/decision', [AdminController::class, 'decision']);
             Route::get('tickets', [AdminController::class, 'tickets']);

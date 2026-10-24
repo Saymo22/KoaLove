@@ -1,5 +1,7 @@
 # Laravel na Vercel
 
+O recebimento escolhido é [Pix com conferência manual](PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+
 O backend continua Laravel/PHP. `api/index.php` usa o runtime comunitário `vercel-php@0.9.0` (PHP 8.5.12), com Node 22 para o builder. PostgreSQL mantém contas, sessões, cache e compras; `/tmp` contém somente temporários e caches compilados.
 
 A integração [Supabase](SUPABASE.md) fornece banco no schema privado e armazenamento persistente das mídias. Configure as variáveis e conclua os testes descritos nesse guia antes de considerar o upload disponível. `FILESYSTEM_DISK=local` continua recusado na Vercel, porque a função não oferece volume persistente.
@@ -7,7 +9,7 @@ A integração [Supabase](SUPABASE.md) fornece banco no schema privado e armazen
 ## Configuração e implantação
 
 1. Conecte o repositório ao projeto Vercel. Use Framework Other e Node 22, sem comandos antigos de instalação/build/output no painel; `vercel.json` define os builders.
-2. Preserve `APP_KEY` e `CRON_SECRET`. Mantenha `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` com domínio HTTPS, cookies seguros, sessões/cache no banco e `SIMULATED_PAYMENTS=false`. Configure `MAIL_*` e identificação do controlador antes do lançamento. Não há gateway de pagamento real.
+2. Preserve `APP_KEY` e `CRON_SECRET`. Mantenha `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` com domínio HTTPS, cookies seguros, sessões/cache no banco e `SIMULATED_PAYMENTS=false`. Configure `MAIL_*` e identificação do controlador antes do lançamento. Para Mercado Pago, siga [PAYMENTS.md](PAYMENTS.md): migre as tabelas, configure segredos somente em Production e reimplante. Mantenha `PAYMENTS_ENABLED=false` em Preview com banco compartilhado; ative produção somente após configurar e verificar a conta.
 3. Prepare o PostgreSQL privado e o bucket conforme [SUPABASE.md](SUPABASE.md). Execute migrations com Session pooler; a aplicação usa Transaction pooler com TLS e prepared statements emulados. Não altere DB_URL sem migrar e verificar os dados existentes.
 4. Configure as chaves S3 diretamente nas variáveis secretas Production/Preview. Nunca publique `.env*`, `.vercel`, exports ou arquivos privados. O comando `vercel env pull` pode escrever segredos locais: mantenha o resultado ignorado pelo Git e excluído do pacote.
 5. Publique uma implantação, valide cadastro/login anterior, permissões, criador/13 temas, SEO, mídia real acima de 4,5 MB, CORS, download/Range e isolamento. No modo indisponível, `/api/config` deve informar `configured=false` e preservar rascunhos.

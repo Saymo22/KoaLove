@@ -1,5 +1,7 @@
 # Supabase e Vercel
 
+O recebimento escolhido é [Pix com conferência manual](PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+
 A API continua Laravel/PHP na Vercel. O Supabase fornece PostgreSQL persistente e Storage privado para fotos, vídeos e músicas. As rotas `.html`, os 13 temas, a sessão, as senhas existentes, os perfis administrativos e os contratos JSON continuam os mesmos. Não há uma segunda API de compras em Edge Functions nem migração das contas para Supabase Auth.
 
 ## Criar a infraestrutura
@@ -60,6 +62,6 @@ Em caso de falha, restaure as variáveis e a implantação anteriores e remova a
 - Valide login de conta anterior, permissões de admin, cadastro, rascunho e os 13 temas. Confira que a Data API e um GET público do bucket não revelam contas ou objetos.
 - No navegador, envie foto, áudio, vídeo e um arquivo válido acima de 4,5 MB. Confirme upload, normalização, download/Range e bloqueio de outro usuário/quarentena. Use somente fixtures sintéticas em verificações automáticas.
 - O cron Vercel `/api/internal/prune` continua às 04:00 UTC, com bearer `CRON_SECRET`: expira reservas, remove reenvios e aplica retenção. Monitore falhas no Supabase e na Vercel.
-- Pagamento real e SMTP continuam sendo integrações independentes. Supabase não ativa cobrança nem correio de recuperação do Laravel automaticamente.
+- Pagamento real e SMTP continuam sendo integrações independentes. O checkout [Mercado Pago](PAYMENTS.md) usa as tabelas privadas payment_checkouts/payment_receipts, com RLS e acesso somente pelo backend Laravel. Supabase não ativa cobrança nem correio de recuperação automaticamente. Prévia com banco compartilhado mantém PAYMENTS_ENABLED=false e SIMULATED_PAYMENTS=false.
 
 Fontes: [conexões PostgreSQL](https://supabase.com/docs/guides/database/connecting-to-postgres), [S3 e credenciais](https://supabase.com/docs/guides/storage/s3/authentication), [compatibilidade S3](https://supabase.com/docs/guides/storage/s3/compatibility), [limites](https://supabase.com/docs/guides/storage/uploads/file-limits) e [proteção da Data API](https://supabase.com/docs/guides/database/hardening-data-api).

@@ -182,3 +182,8 @@ body.admin-body {
 .admin-input:focus { border-color: var(--admin-gold); box-shadow: 0 0 0 4px rgba(201, 168, 106, 0.15); }
 .btn-admin-login { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--admin-wine), #4a1b28); color: #fff; border: none; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; }
 .btn-admin-login:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(125, 48, 72, 0.4); }
+
+.pix-review { flex-wrap: wrap; gap: 16px; }
+.pix-review .recent-info { min-width: 0; overflow-wrap: anywhere; flex: 1 1 260px; }
+.pix-review input { width: 100%; box-sizing: border-box; padding: 10px; margin-top: 8px; border-radius: 8px; border: 1px solid #c9a86a; }
+.pix-review button { white-space: normal; max-width: 100%; }

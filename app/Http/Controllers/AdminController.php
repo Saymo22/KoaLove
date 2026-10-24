@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentCheckout;
 use App\Models\Purchase;
 use App\Models\Refund;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +49,31 @@ class AdminController extends ApiController
         })]);
     }
 
+    public function confirmPix(Request $request, Purchase $purchase)
+    {
+        $data = $request->validate(['amount_cents' => 'required|integer|min:1', 'bank_reference' => ['required', 'string', 'regex:/\A[A-Za-z0-9-]{8,64}\z/'], 'received' => 'required|accepted']);
+        $data['bank_reference'] = strtoupper($data['bank_reference']);
+        try {
+            DB::transaction(function () use ($request, $purchase, $data) {
+                $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
+                abort_if(User::findOrFail($p->user_id)->deletion_requested_at, 409, 'Conta desativada.');
+                $checkout = PaymentCheckout::where('purchase_id', $p->id)->lockForUpdate()->firstOrFail();
+                abort_unless($checkout->provider === 'pix_manual', 409, 'Este pedido não usa Pix manual.');
+                abort_unless($checkout->amount_cents === (int) $data['amount_cents'], 422, 'O valor recebido precisa corresponder ao pedido.');
+                if ($p->status === 'paid' && $checkout->bank_reference === $data['bank_reference']) {
+                    return;
+                }
+                abort_unless($p->status === 'pending' && $checkout->status === 'awaiting_confirmation', 409, 'Pedido já processado.');
+                $checkout->update(['bank_reference' => $data['bank_reference'], 'confirmed_by' => $request->user()->id, 'confirmed_at' => now(), 'status' => 'approved']);
+                $p->update(['status' => 'paid', 'paid_at' => now(), 'payment_method' => 'pix', 'amount_paid_cents' => $checkout->amount_cents, 'coupon' => $checkout->coupon, 'discount_percent' => $checkout->discount_percent]);
+            });
+        } catch (UniqueConstraintViolationException) {
+            abort(409, 'Esse identificador bancário já foi usado em outro pedido.');
+        }
+
+        return $this->ok(['confirmed' => true]);
+    }
+
     public function refunds()
     {
         return $this->ok(['refunds' => Refund::latest()->get()->map(function ($r) {
@@ -58,7 +85,7 @@ class AdminController extends ApiController
 
     public function decision(Request $request, Refund $refund)
     {
-        $data = $request->validate(['status' => 'required|in:approved,rejected', 'note' => 'nullable|string|max:500']);
+        $data = $request->validate(['status' => 'required|in:approved,rejected', 'note' => 'nullable|string|max:500', 'refund_sent' => 'sometimes|boolean']);
         DB::transaction(function () use ($refund, $data) {
             $r = Refund::whereKey($refund->id)->lockForUpdate()->firstOrFail();
             if ($r->status === $data['status']) {
@@ -66,6 +93,12 @@ class AdminController extends ApiController
             }abort_unless($r->status === 'pending', 409, 'Solicitação já processada.');
             $p = Purchase::withTrashed()->whereKey($r->purchase_id)->lockForUpdate()->firstOrFail();
             if ($data['status'] === 'approved') {
+                $checkout = PaymentCheckout::where('purchase_id', $p->id)->lockForUpdate()->first();
+                abort_if($checkout?->provider === 'mercadopago', 409, 'Efetue o estorno no painel Mercado Pago. A confirmação será sincronizada pelo webhook.');
+                if ($checkout?->provider === 'pix_manual') {
+                    abort_unless($data['refund_sent'] ?? false, 422, 'Devolva o Pix no banco antes de confirmar o reembolso.');
+                    $checkout->update(['status' => 'refunded']);
+                }
                 abort_unless($p->status === 'paid', 409, 'Compra não reembolsável.');
                 $p->update(['status' => 'refunded']);
             }$r->update(['status' => $data['status'], 'review_note' => $data['note'] ?? null, 'reviewed_at' => now()]);

@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $middleware->trustProxies(at: ['127.0.0.1', '::1'], headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO);
         }
         $middleware->alias(['api.auth' => ApiAuthentication::class, 'admin' => Administrator::class]);
+        $middleware->validateCsrfTokens(except: ['api/webhooks/mercadopago']);
         $middleware->prepend([SecurityHeaders::class, LimitJsonBody::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

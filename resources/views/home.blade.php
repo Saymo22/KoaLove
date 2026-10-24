@@ -48,7 +48,7 @@
                     <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
                     <a href="#temas" class="b sec magnetic">Ver os temas</a>
                 </div>
-                <div class="hero-nota stagger">Crie sua conta para salvar o presente. O pagamento está em modo de demonstração.</div>
+                <div class="hero-nota stagger">Crie sua conta para salvar o presente e acompanhar o pagamento.</div>
                 <div class="hero-pontos stagger">
                     <span>Link e QR Code</span>
                     <span>Fotos, vídeos e música</span>
