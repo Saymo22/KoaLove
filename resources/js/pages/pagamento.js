@@ -5,10 +5,19 @@ let metodoSelecionado = "pix";
 const $ = (x) => document.getElementById(x);
 
 /* =====================================================
-   CUPONS — vêm de GET /api/config (nada hardcoded)
+   CUPONS — validados no servidor para o pedido
 ===================================================== */
 let descontoAtivo = null;
 let precoOriginal = null; // CONFIG.preco (price_cents / 100)
+let currentQuote = null;
+async function refreshQuote(coupon = null) {
+    const {quote}=await window.ApiPurchases.quote(id,coupon);
+    currentQuote=quote;precoOriginal=quote.base_price_cents/100;
+    animarTotal(formatarPreco(quote.amount_cents/100));
+    const notice=$('pgCupomOk');notice.textContent=quote.discount_percent?`${quote.discount_percent}% de desconto aplicado. Você economiza ${formatarPreco((quote.base_price_cents-quote.amount_cents)/100)}.`:'';
+    notice.style.display=quote.discount_percent?'block':'none';
+    return quote;
+}
 
 /* =====================================================
    NAVBAR SCROLL
@@ -71,6 +80,7 @@ NA_CONFIG_READY.then(async () => {
     const fotos = pedido.content_version===1 ? pedido.fotos||[] : midia?.fotos||[];
     const videos = pedido.content_version===1 ? pedido.videos||[] : midia?.videos||[];
     const linhas = [
+        ["Plano", pedido.plan?.name || "Presente completo", "🎁"],
         ["Tema", (t.emoji || "🎁") + " " + (t.nome || pedido.tema), "🎨"],
         ["Para", pedido.para, "💌"],
         ["Fotos", fotos.length + (fotos.length === 1 ? " foto" : " fotos"), "📸"],
@@ -90,7 +100,8 @@ NA_CONFIG_READY.then(async () => {
         $("resumo").appendChild(li);
     });
 
-    animarTotal(formatarPreco(precoOriginal));
+    try { await refreshQuote(pedido.checkout?.coupon || null); }
+    catch(error){$('erro').textContent=error.message;$('btnPagar').disabled=true;return;}
 
     // A disponibilidade vem do backend; retorno do provedor não prova aprovação.
     $("avisoTeste").classList.toggle("on",CONFIG.modoTeste);
@@ -198,67 +209,20 @@ document.querySelectorAll(".pg-metodo").forEach(m => {
 /* =====================================================
    CUPOM (validado contra GET /api/config)
 ===================================================== */
-$("pgCupomBtn").addEventListener("click", () => {
-    const codigo = $("pgCupom").value.trim().toUpperCase();
-    const el = $("pgCupom");
-    const btn = $("pgCupomBtn");
-    const aviso = $("pgCupomOk");
-
-    if (!codigo) {
-        el.focus();
-        el.style.borderColor = "#b3263e";
-        setTimeout(() => el.style.borderColor = "", 900);
-        return;
-    }
-
-    // Remove cupom já aplicado se clicar novamente
-    if (descontoAtivo && descontoAtivo.codigo === codigo) {
-        descontoAtivo = null;
-        el.value = "";
-        el.style.borderColor = "";
-        el.style.background = "#faf6f1";
-        btn.textContent = "Aplicar";
-        btn.style.background = "";
-        btn.style.color = "";
-        aviso.style.display = "none";
-        animarTotal(formatarPreco(precoOriginal));
-        return;
-    }
-
-    const cupom = (CONFIG.coupons || {})[codigo];
-
-    if (!cupom) {
-        el.style.borderColor = "#b3263e";
-        el.style.background = "#fde8ec";
-        btn.textContent = "✕ Inválido";
-        btn.style.background = "#fde8ec";
-        btn.style.color = "#b3263e";
-        aviso.style.display = "none";
-        setTimeout(() => {
-            el.style.borderColor = "";
-            el.style.background = "#faf6f1";
-            btn.textContent = "Aplicar";
-            btn.style.background = "";
-            btn.style.color = "";
-        }, 1800);
-        return;
-    }
-
-    // Aplicar (cálculo local apenas para preview; o servidor é a autoridade)
-    const desc = cupom.discount_percent || 0;
-    const novoPreco = precoOriginal * (1 - desc / 100);
-    descontoAtivo = { codigo, desc, preco: novoPreco };
-
-    el.style.borderColor = "var(--ouro)";
-    el.style.background = "linear-gradient(135deg, #fff8e6, #fffbe9)";
-    btn.textContent = "✓ " + desc + "% off";
-    btn.style.background = "linear-gradient(135deg, #46d369, #2ea854)";
-    btn.style.color = "#fff";
-
-    animarTotal(formatarPreco(novoPreco));
-
-    aviso.innerHTML = "🎉 Cupom aplicado! Você economizou " + formatarPreco(precoOriginal - novoPreco);
-    aviso.style.display = "block";
+$("pgCupomBtn").addEventListener("click", async () => {
+    const code=$("pgCupom").value.trim().toUpperCase();
+    if(!code){$("pgCupom").focus();return;}
+    const remove=descontoAtivo?.codigo===code;
+    $("pgCupomBtn").disabled=true;$("erro").textContent='';
+    try{
+        const quote=await refreshQuote(remove?null:code);
+        descontoAtivo=remove?null:{codigo:quote.coupon};
+        if(remove)$("pgCupom").value='';
+        $("pgCupomBtn").textContent=remove?'Aplicar':'Remover';
+    }catch(error){
+        descontoAtivo=null;$("pgCupomBtn").textContent='Aplicar';$("erro").textContent=error.message;
+        try{await refreshQuote();}catch{$('btnPagar').disabled=true;}
+    }finally{$("pgCupomBtn").disabled=false;}
 });
 
 /* =====================================================
@@ -268,7 +232,8 @@ async function pagar() {
     return window.ApiPurchases.pay(
         id,
         metodoSelecionado,
-        descontoAtivo ? descontoAtivo.codigo : null
+        descontoAtivo ? descontoAtivo.codigo : null,
+        currentQuote?.amount_cents
     );
 }
 
@@ -315,6 +280,10 @@ $("btnPagar").addEventListener("click", async (e) => {
             location.href = "resultado.html?id=" + id;
         }, 900);
     } catch (err) {
+        if ((err.status===409 || err.status===422) && !pedido?.checkout) {
+            try { await refreshQuote(descontoAtivo?.codigo || null); }
+            catch { descontoAtivo=null;$('pgCupom').value='';$('pgCupomBtn').textContent='Aplicar';try{await refreshQuote();}catch{} }
+        }
         if (err && (err.code === "RATE_LIMITED" || err.code === "CLIENT_RATE_LIMITED")) {
             $("erro").textContent = `Muitas tentativas. Aguarde ${err.retryAfter || 60}s e tente de novo.`;
         } else {

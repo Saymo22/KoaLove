@@ -22,7 +22,7 @@ class SeoTest extends TestCase
         foreach ($pages as $page) {
             $response = $this->get($page['url'])->assertOk();
             $html = $response->getContent();
-            $this->assertSame(1, substr_count($html, 'name="description"'), $page['url']);
+            $this->assertSame(1, preg_match_all('/<meta\b[^>]*\bname="description"/i', $html), $page['url']);
             $this->assertSame(1, substr_count($html, 'name="robots"'), $page['url']);
             $this->assertSame(1, substr_count($html, '<noscript>'), $page['url']);
             $this->assertStringContainsString('Ative o JavaScript', $html);

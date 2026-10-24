@@ -55,7 +55,7 @@ class ManualPix
     {
         abort_unless(config('payments.driver') === 'pix_manual' && config('payments.enabled') && $this->configured(), 503, 'Pix ainda não configurado.');
         abort_unless($method === 'pix' && $amount > 0, 422, 'Somente Pix está disponível.');
-        $checkout = DB::transaction(function () use ($purchase, $coupon, $discount, $amount) {
+        $checkout = DB::transaction(function () use ($purchase, $coupon, $amount) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             abort_unless($p->status === 'pending' && $p->content_version === 1 && count($p->manifest['photos'] ?? []) > 0, 409, 'Pedido indisponível para pagamento.');
             if ($existing = PaymentCheckout::where('purchase_id', $p->id)->first()) {
@@ -64,6 +64,9 @@ class ManualPix
                 return $existing;
             }
             $id = (string) Str::uuid();
+            $pricing = app(Pricing::class)->quote($p, $coupon);
+            abort_unless($pricing['amount_cents'] === $amount, 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
+            $p->update(['price_cents' => $pricing['base_price_cents']]);
             $key = $this->key();
             $name = $this->label((string) config('payments.pix.name'), 25);
             $city = $this->label((string) config('payments.pix.city'), 15);
@@ -71,7 +74,7 @@ class ManualPix
             $p->touch();
 
             return PaymentCheckout::create(['id' => $id, 'purchase_id' => $p->id, 'provider' => 'pix_manual', 'method' => 'pix', 'live' => true,
-                'amount_cents' => $amount, 'coupon' => $coupon ?: null, 'discount_percent' => $discount, 'status' => 'awaiting_confirmation',
+                'amount_cents' => $amount, 'coupon' => $coupon ?: null, 'discount_percent' => $pricing['discount_percent'], 'pricing_details' => $pricing, 'status' => 'awaiting_confirmation',
                 'pix_details' => ['key' => $key, 'name' => $name, 'city' => $city, 'txid' => $txid, 'payload' => $this->payload($key, $name, $city, $amount, $txid)]]);
         });
 

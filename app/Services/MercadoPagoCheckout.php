@@ -19,7 +19,7 @@ class MercadoPagoCheckout
         abort_unless($this->settings->status()['configured'], 503, 'Pagamento não configurado.');
         abort_unless($amount > 0, 422, 'Valor de pagamento inválido.');
         $this->gateway->collector();
-        $checkout = DB::transaction(function () use ($purchase, $method, $coupon, $discount, $amount) {
+        $checkout = DB::transaction(function () use ($purchase, $method, $coupon, $amount) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             abort_unless($p->status === 'pending', 409, 'Pedido já processado.');
             abort_unless($p->content_version === 1 && count($p->manifest['photos'] ?? []) > 0, 409, 'Salve as mídias antes de pagar.');
@@ -29,9 +29,11 @@ class MercadoPagoCheckout
 
                 return $existing;
             }
-            $p->touch();
+            $pricing = app(Pricing::class)->quote($p, $coupon);
+            abort_unless($pricing['amount_cents'] === $amount, 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
+            $p->update(['price_cents' => $pricing['base_price_cents']]);
 
-            return PaymentCheckout::create(['id' => (string) Str::uuid(), 'purchase_id' => $p->id, 'method' => $method, 'amount_cents' => $amount, 'coupon' => $coupon ?: null, 'discount_percent' => $discount, 'live' => config('payments.mercadopago.live')]);
+            return PaymentCheckout::create(['id' => (string) Str::uuid(), 'purchase_id' => $p->id, 'method' => $method, 'amount_cents' => $amount, 'coupon' => $coupon ?: null, 'discount_percent' => $pricing['discount_percent'], 'pricing_details' => $pricing, 'live' => config('payments.mercadopago.live')]);
         });
         $result = Cache::lock('mercadopago-checkout:'.$checkout->id, 60)->get(function () use ($checkout) {
             $checkout->refresh();

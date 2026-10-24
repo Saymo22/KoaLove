@@ -29,7 +29,7 @@ Nenhum usuário/admin com senha padrão é criado. Registre uma conta pela tela 
 ## Testes
 
 - npm test: runtime dos temas, referências estáveis, etapas, retomada/salvamento, CSRF no cliente e assets.
-- npm run build: compila todas as 30 páginas e seus assets pelo Vite.
+- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo admin/planos.html.
 - php vendor/bin/phpunit: suíte HTTP Laravel em SQLite :memory:.
 - php vendor/bin/phpunit -c phpunit.pgsql.xml: mesma suíte no banco projeto_na_test. DB_HOST, DB_PORT, DB_USERNAME e DB_PASSWORD vêm do ambiente. Nunca apontar para o banco de uso.
 - php vendor/bin/pint --test: convenções PHP Laravel.
