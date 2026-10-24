@@ -1,6 +1,6 @@
 # API Laravel
 
-O recebimento escolhido é [Pix com conferência manual](PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+Pix e cartão usam o [Mercado Pago Checkout Pro](PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
 
 Mesma origem e prefixo /api. Sessão Laravel em cookie HttpOnly/SameSite=Lax; mutações exigem CSRF e Content-Type application/json, exceto o upload binário. O meta csrf-token vem de uma página Blade. Não há CORS aberto nem autenticação por ID/token de dono na URL.
 
@@ -25,7 +25,7 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - Para mídia S3, o GET autorizado retorna redirecionamento para uma URL privada assinada por 1 minuto; o armazenamento atende Range. Objetos em quarentena não são acessíveis por essas rotas.
 - GET /privacy/export: exportação autenticada JSON. Arquivos binários seguem disponíveis nos presentes da conta; não estão embutidos na exportação.
 - POST /privacy/delete: confirma password, desativa conta e links imediatamente; purga em até 30 dias.
-- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Para compras simuladas, reembolso e status mudam na mesma transação. Para Pix manual, aprovar reembolso exige refund_sent=true após devolver no banco. Para checkout Mercado Pago, aprovar estorno nessa rota retorna 409: o operador deve efetuá-lo no provedor, cujo webhook revoga o acesso.
+- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Para compras simuladas, reembolso e status mudam na mesma transação. Para Pix manual, aprovar reembolso exige refund_sent=true após devolver no banco. Para Mercado Pago, aprovar a solicitação retorna 409 até o provedor confirmar status refunded pelo webhook; depois disso, o admin pode concluir o atendimento sem efetuar uma nova devolução.
 
 ## Limites
 

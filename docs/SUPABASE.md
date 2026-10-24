@@ -1,6 +1,6 @@
 # Supabase e Vercel
 
-O recebimento escolhido é [Pix com conferência manual](PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+Pix e cartão usam o [Mercado Pago Checkout Pro](PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
 
 A API continua Laravel/PHP na Vercel. O Supabase fornece PostgreSQL persistente e Storage privado para fotos, vídeos e músicas. As rotas `.html`, os 13 temas, a sessão, as senhas existentes, os perfis administrativos e os contratos JSON continuam os mesmos. Não há uma segunda API de compras em Edge Functions nem migração das contas para Supabase Auth.
 

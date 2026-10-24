@@ -1,6 +1,6 @@
 # Pix com conferência manual
 
-Este é o modo escolhido para a implantação atual. Recebimento direto na chave Pix, sem credenciais de Mercado Pago ou API bancária. O servidor gera um BR Code estático com chave, recebedor, cidade, valor em BRL, referência aleatória do pedido e CRC16. QR Code e Copia e Cola são gerados localmente; nenhum serviço externo recebe os dados para gerar a imagem.
+Este é o modo opcional de conferência manual, preservado para pedidos que já geraram esse Pix. Novos checkouts de produção usam Mercado Pago. Recebimento direto na chave Pix, sem credenciais de Mercado Pago ou API bancária. O servidor gera um BR Code estático com chave, recebedor, cidade, valor em BRL, referência aleatória do pedido e CRC16. QR Code e Copia e Cola são gerados localmente; nenhum serviço externo recebe os dados para gerar a imagem.
 
 ## Configuração
 
@@ -35,6 +35,6 @@ Exportação do titular inclui provider, valores, estado, ID bancário e data da
 
 Testes cobrem geração estável, pendência, preço calculado no servidor, QR/Copia e Cola no cliente, autorização, valor divergente, referência duplicada, idempotência, conta desativada, exclusão e devolução. Testes automáticos usam dados sintéticos e não realizam transferências. A validação no aplicativo bancário permanece necessária antes de divulgar o recebimento.
 
-O adapter [Mercado Pago](PAYMENTS.md) permanece opcional e desativado neste modo; seu webhook retorna indisponível. Para ativação futura, configure e valide o provedor separadamente, sem converter silenciosamente pedidos Pix manuais existentes.
+Quando PAYMENT_GATEWAY=pix_manual, o webhook Mercado Pago retorna indisponível. Na configuração de produção com Mercado Pago ativo, os pedidos manuais existentes continuam sem conversão automática e exigem conferência no admin.
 
 Referência: [Pix Cobrança — Banco Central](https://www.bcb.gov.br/estabilidadefinanceira/pix-cobranca) e [padrões do QR Code Pix](https://www.bcb.gov.br/content/estabilidadefinanceira/pix/Regulamento_Pix/II_ManualdePadroesparaIniciacaodoPix.pdf).

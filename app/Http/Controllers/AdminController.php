@@ -94,12 +94,14 @@ class AdminController extends ApiController
             $p = Purchase::withTrashed()->whereKey($r->purchase_id)->lockForUpdate()->firstOrFail();
             if ($data['status'] === 'approved') {
                 $checkout = PaymentCheckout::where('purchase_id', $p->id)->lockForUpdate()->first();
-                abort_if($checkout?->provider === 'mercadopago', 409, 'Efetue o estorno no painel Mercado Pago. A confirmação será sincronizada pelo webhook.');
+                if ($checkout?->provider === 'mercadopago') {
+                    abort_unless($checkout->status === 'refunded' && $p->status === 'refunded', 409, 'Efetue o estorno no painel Mercado Pago e aguarde a confirmação pelo webhook.');
+                }
                 if ($checkout?->provider === 'pix_manual') {
                     abort_unless($data['refund_sent'] ?? false, 422, 'Devolva o Pix no banco antes de confirmar o reembolso.');
                     $checkout->update(['status' => 'refunded']);
                 }
-                abort_unless($p->status === 'paid', 409, 'Compra não reembolsável.');
+                abort_unless($p->status === 'paid' || ($checkout?->provider === 'mercadopago' && $checkout->status === 'refunded' && $p->status === 'refunded'), 409, 'Compra não reembolsável.');
                 $p->update(['status' => 'refunded']);
             }$r->update(['status' => $data['status'], 'review_note' => $data['note'] ?? null, 'reviewed_at' => now()]);
         });

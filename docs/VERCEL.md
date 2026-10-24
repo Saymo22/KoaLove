@@ -1,6 +1,6 @@
 # Laravel na Vercel
 
-O recebimento escolhido é [Pix com conferência manual](PIX_MANUAL.md), com liberação pelo admin após conferir o crédito no banco.
+Pix e cartão usam o [Mercado Pago Checkout Pro](PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
 
 O backend continua Laravel/PHP. `api/index.php` usa o runtime comunitário `vercel-php@0.9.0` (PHP 8.5.12), com Node 22 para o builder. PostgreSQL mantém contas, sessões, cache e compras; `/tmp` contém somente temporários e caches compilados.
 

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\PaymentCheckout;
 use App\Models\Purchase;
+use App\Models\Refund;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Factory;
@@ -261,5 +262,38 @@ class MercadoPagoTest extends TestCase
         $this->getJson('/api/privacy/export')->assertOk()->assertJsonCount(1, 'payments')->assertJsonCount(1, 'payment_receipts')
             ->assertJsonPath('payments.0.purchase_id', $p->id)->assertJsonPath('payment_receipts.0.id', '789')
             ->assertJsonMissingPath('payments.0.checkout_url')->assertDontSee('synthetic-access-token')->assertDontSee('synthetic-webhook-secret');
+    }
+
+    public function test_activating_mercado_pago_preserves_existing_manual_pix(): void
+    {
+        $p = $this->ready();
+        config(['payments.mercadopago.live' => true]);
+        PaymentCheckout::create(['id' => (string) Str::uuid(), 'purchase_id' => $p->id, 'provider' => 'pix_manual', 'method' => 'pix', 'amount_cents' => 1990, 'live' => true, 'status' => 'awaiting_confirmation', 'pix_details' => ['payload' => 'synthetic-existing-pix']]);
+        $this->fake();
+        $this->start($p)->assertConflict();
+        Http::assertSentCount(1); // Merchant preflight only; no new preference.
+        $this->fake($this->payment(['live_mode' => true]));
+        $this->notify()->assertOk();
+        $this->assertSame('pending', $p->fresh()->status);
+        $this->assertDatabaseCount('payment_receipts', 0);
+        $this->getJson('/api/purchases/'.$p->id)->assertJsonPath('data.purchase.checkout.provider', 'pix_manual')->assertJsonPath('data.purchase.checkout.pix.payload', 'synthetic-existing-pix');
+    }
+
+    public function test_admin_can_close_refund_request_only_after_provider_confirms_full_refund(): void
+    {
+        $p = $this->ready();
+        $this->fake();
+        $this->start($p)->assertOk();
+        $this->fake($this->payment());
+        $this->notify()->assertOk();
+        $refund = Refund::create(['id' => 'r_provider_fixture', 'purchase_id' => $p->id, 'user_id' => $p->user_id, 'reason' => 'Solicitação sintética', 'status' => 'pending']);
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $url = '/api/admin/refunds/'.$refund->id.'/decision';
+        $this->postJson($url, ['status' => 'approved'])->assertConflict();
+        $this->fake($this->payment(['status' => 'refunded']));
+        $this->notify()->assertOk();
+        $this->postJson($url, ['status' => 'approved'])->assertOk();
+        $this->assertSame('approved', $refund->fresh()->status);
+        $this->assertSame('refunded', $p->fresh()->status);
     }
 }

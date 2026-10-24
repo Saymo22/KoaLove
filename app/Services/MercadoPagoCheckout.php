@@ -24,6 +24,7 @@ class MercadoPagoCheckout
             abort_unless($p->status === 'pending', 409, 'Pedido já processado.');
             abort_unless($p->content_version === 1 && count($p->manifest['photos'] ?? []) > 0, 409, 'Salve as mídias antes de pagar.');
             if ($existing = PaymentCheckout::where('purchase_id', $p->id)->first()) {
+                abort_unless($existing->provider === 'mercadopago', 409, 'Este pedido já tem um Pix manual. Continue o pagamento existente e aguarde a conferência.');
                 abort_unless($existing->amount_cents === $amount && $existing->coupon === ($coupon ?: null) && $existing->method === $method && $existing->live === (bool) config('payments.mercadopago.live'), 409, 'O checkout já foi iniciado com outra condição. Continue o pagamento existente.');
 
                 return $existing;

@@ -26,6 +26,8 @@ Ausência de credenciais/HTTPS ou modo de teste em `APP_ENV=production` mantém 
 
 Preview compartilhando o banco de produção deve manter `PAYMENTS_ENABLED=false` e `SIMULATED_PAYMENTS=false`. Testes do provedor exigem contas/credenciais de teste, `APP_ENV=staging`, `MERCADO_PAGO_LIVE_MODE=false`, HTTPS público e **banco isolado**. Não use um webhook de teste com o banco de produção.
 
+Pedidos que já geraram Pix manual preservam seu código e a conferência pelo admin. A ativação do Mercado Pago vale para novos checkouts: não converte cobranças existentes, não cria outra preferência para elas e não permite que um webhook aprove um Pix manual.
+
 Execute `php artisan migrate --force` com as credenciais do ambiente e Session pooler. As duas tabelas são criadas no schema Laravel configurado. Em `app_private` PostgreSQL, RLS é habilitado como camada adicional sem policies para `anon/authenticated`; o backend é o proprietário das tabelas. Nunca exponha esse schema pela Data API. As FKs e índices preservam associação, unicidade e limpeza na exclusão definitiva. O deploy não executa migrations automaticamente. Reimplante após alterar variáveis.
 
 ## Fluxo e confirmação
@@ -42,7 +44,7 @@ Eventos repetidos atualizam o mesmo recibo. Cada transação do provedor fica em
 
 ## Estornos, contestação e exclusão
 
-Estorno total/parcial, chargeback ou mediação do pagamento que liberou o presente revogam o acesso compartilhado. Repetições antigas de aprovação não reativam estados terminais; eventual resolução favorável de contestação exige análise manual antes de restaurar acesso. Estorno de outra transação não revoga o pagamento original válido. O sistema não efetua estornos automaticamente: faça-os no painel Mercado Pago, e o webhook sincroniza a aplicação. O admin local recusa registrar um estorno financeiro real como se já tivesse ocorrido.
+Estorno total/parcial, chargeback ou mediação do pagamento que liberou o presente revogam o acesso compartilhado. Repetições antigas de aprovação não reativam estados terminais; eventual resolução favorável de contestação exige análise manual antes de restaurar acesso. Estorno de outra transação não revoga o pagamento original válido. O sistema não efetua estornos automaticamente: faça-os no painel Mercado Pago, e o webhook sincroniza a aplicação. O admin local só permite concluir a solicitação de reembolso depois de o webhook confirmar status refunded; estorno parcial, mediação e chargeback não são tratados como devolução total.
 
 Excluir conta/presente não cancela uma cobrança no Mercado Pago. Uma aprovação tardia nunca restaura um presente excluído; se houver cobrança de conteúdo já removido, o operador precisa tratar o estorno. O job de retenção continua eliminando os dados do aplicativo conforme a política; registros mantidos pelo provedor seguem a política dele. Os recibos não armazenam payload bruto ou dados de cartão.
 

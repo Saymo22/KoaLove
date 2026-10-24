@@ -39,4 +39,4 @@ Reporte suspeitas de vulnerabilidade ao mantenedor por canal privado. Não abra 
 
 ## Pix manual
 
-O modo atual usa [Pix manual](PIX_MANUAL.md). Chave/recebedor são apresentados somente no checkout autenticado. A aplicação não consulta o banco: um admin declara o crédito conferido, informa identificador bancário único e confirma o valor. A rota exige sessão, role admin e CSRF; grava operador/data. Nenhum botão do cliente aprova compras. Devoluções devem ser feitas no banco antes de registrar o reembolso no painel.
+O modo opcional [Pix manual](PIX_MANUAL.md) continua atendendo pedidos manuais existentes; novos checkouts de produção usam Mercado Pago. Chave/recebedor são apresentados somente no checkout autenticado. A aplicação não consulta o banco: um admin declara o crédito conferido, informa identificador bancário único e confirma o valor. A rota exige sessão, role admin e CSRF; grava operador/data. Nenhum botão do cliente aprova compras. Devoluções devem ser feitas no banco antes de registrar o reembolso no painel.
