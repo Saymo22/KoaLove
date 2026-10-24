@@ -14,6 +14,8 @@ Mídias ficam em storage/app/private, sem symlink público. Downloads verificam 
 
 ## Acesso, retenção e LGPD
 
+Novas senhas com bcrypt são limitadas a 72 bytes para evitar truncamento; bytes nulos são rejeitados. O limite é por bytes UTF-8, não apenas quantidade de caracteres, e vale para cadastro/redefinição. Não há alteração automática das senhas já existentes.
+
 A infraestrutura Supabase usa PostgreSQL no schema `app_private`, fora da Data API, e bucket privado `gift-media`; o backend Laravel continua na Vercel. Contas, hashes e sessões permanecem no esquema Laravel, sem duplicação em Supabase Auth. O role dedicado não é superusuário nem administra outros roles; segredos S3 ficam somente no backend. Consulte [SUPABASE.md](SUPABASE.md) para configurar e verificar a implantação. A alternativa local continua exigindo volume persistente privado; funções Vercel recusam esse modo, sem fallback para `/tmp`.
 
 O adapter S3/Supabase de upload direto usa reserva autenticada, cota e quarentena; a confirmação valida o conteúdo no servidor. URLs assinadas de upload expiram em até 5 minutos e nunca ultrapassam a reserva; downloads expiram em 1 minuto. Uma URL de download já emitida continua utilizável até expirar, inclusive após revogação do presente. Configure CORS somente para origens do projeto, bloqueie acesso público ao bucket e monitore a limpeza das reservas, inclusive registros concluídos com bytes zero que permitem remover reenvios de URLs ainda válidas. Declare somente os provedores efetivamente utilizados na política pública.

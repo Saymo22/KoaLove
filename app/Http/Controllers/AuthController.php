@@ -18,7 +18,7 @@ class AuthController extends ApiController
         if (is_string($request->input('email'))) {
             $request->merge(['email' => strtolower(trim($request->input('email')))]);
         }
-        $data = $request->validate(['name' => 'required|string|min:2|max:60', 'email' => 'required|email:rfc|max:254|unique:users,email', 'password' => ['required', 'string', PasswordRule::min(8), 'max:128']]);
+        $data = $request->validate(['name' => 'required|string|min:2|max:60', 'email' => 'required|email:rfc|max:254|unique:users,email', 'password' => $this->passwordRules()]);
         $data['email'] = strtolower($data['email']);
         try {
             $user = User::create($data);
@@ -72,7 +72,7 @@ class AuthController extends ApiController
         if (is_string($request->input('email'))) {
             $request->merge(['email' => strtolower(trim($request->input('email')))]);
         }
-        $data = $request->validate(['email' => 'required|email:rfc|max:254', 'token' => 'required|string|max:128', 'password' => 'required|string|min:8|max:128']);
+        $data = $request->validate(['email' => 'required|email:rfc|max:254', 'token' => 'required|string|max:128', 'password' => $this->passwordRules()]);
         $result = DB::transaction(function () use ($data) {
             // Serialize token validation and consumption with account deletion and
             // concurrent resets. A failed token deletion must roll back the password.
@@ -89,6 +89,18 @@ class AuthController extends ApiController
         abort_unless($result === Password::PASSWORD_RESET, 400, 'Link inválido ou expirado. Solicite outro.');
 
         return $this->ok(['message' => 'Senha alterada. Entre novamente com a nova senha.']);
+    }
+
+    private function passwordRules(): array
+    {
+        return ['bail', 'required', 'string', PasswordRule::min(8), 'max:128', function ($attribute, $value, $fail) {
+            if (str_contains($value, "\0")) {
+                $fail('A senha contém um caractere inválido.');
+            }
+            if (config('hashing.driver') === 'bcrypt' && strlen($value) > 72) {
+                $fail('A senha deve ter no máximo 72 bytes. Acentos e emojis ocupam mais de um byte.');
+            }
+        }];
     }
 
     private function user(User $user): array

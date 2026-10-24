@@ -13,6 +13,7 @@ Revisão de rotas, autenticação, autorização, recuperação/exclusão de con
 5. A CSP não delimitava os destinos de formulários. Adicionado form-action 'self', preservando o redirecionamento normal ao Checkout Pro.
 6. A recuperação retornava antes de entrar no broker para contas inexistentes/inativas, pulando seu tempo mínimo de resposta. Todos os casos agora passam pelo broker, com filtro de conta ativa e a mesma resposta pública. O tempo de entrega de SMTP ainda depende do provedor; esse ajuste não promete latência idêntica em todos os cenários.
 7. O logger padrão podia registrar mensagens de exceções e bindings SQL com conteúdo privado. O reporte de erros inesperados agora guarda somente tipo da exceção, arquivo/linha e padrão da rota, sem mensagem original, parâmetros, SQL ou trace com dados. Esse diagnóstico reduz o detalhe dos logs e deve ser combinado com os testes e a monitoração operacional.
+8. Cadastro e redefinição permitiam senhas maiores que o limite de entrada do bcrypt (72 bytes), além de bytes nulos inválidos para o hasher. Essas entradas agora retornam validação 422 antes de criar/alterar conta, inclusive para caracteres multibyte. A autenticação de senhas existentes foi preservada.
 
 A redefinição também normaliza o e-mail e limita seu tamanho como cadastro/login.
 
@@ -28,7 +29,7 @@ A redefinição também normaliza o e-mail e limita seu tamanho como cadastro/lo
 
 ## Evidência e limites
 
-Validação local concluída: 66 testes PHP / 891 assertions em SQLite e novamente em PostgreSQL, incluindo 10 regressões desta revisão; 15 testes do front-end; build Vite; integração HTTP com CSRF real, cookies, upload, compartilhamento/Range e pagamento simulado; Pint e composer validate --strict. As auditorias npm/Composer foram consultadas sem avisos de vulnerabilidade conhecidos.
+Validação local concluída: 67 testes PHP / 912 assertions em SQLite e novamente em PostgreSQL, incluindo 11 regressões desta revisão; 15 testes do front-end; build Vite; integração HTTP com CSRF real, cookies, upload, compartilhamento/Range e pagamento simulado; Pint e composer validate --strict. As auditorias npm/Composer foram consultadas sem avisos de vulnerabilidade conhecidos. As suítes PHP devem rodar em sequência porque os testes de mídia usam a mesma pasta temporária, mesmo com bancos distintos.
 
 Testes de regressão reproduzem o contorno do limite por IP, a origem do link e a ausência da diretiva CSP; validam também rollback quando a remoção do token falha, revogação de sessões, token de uso único, conta desativada e limites de exclusão/recuperação. A suíte existente cobre separação de contas, mídia, CSRF real e pagamentos simulados/verificados com mocks.
 

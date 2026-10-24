@@ -144,4 +144,21 @@ class SecurityReviewTest extends TestCase
             return true;
         });
     }
+
+    public function test_new_bcrypt_passwords_cannot_be_truncated_or_contain_null_bytes(): void
+    {
+        config(['hashing.driver' => 'bcrypt']);
+        $user = User::factory()->create(['email' => 'password-limit@example.test', 'password' => 'original-password']);
+        $token = Password::createToken($user);
+        foreach ([str_repeat('a', 73), str_repeat('á', 37), "valid-password\0suffix"] as $i => $password) {
+            $this->travel(1)->minutes();
+            $this->postJson('/api/auth/register', ['name' => 'Teste', 'email' => 'password-'.$i.'@example.test', 'password' => $password])
+                ->assertUnprocessable()->assertJsonValidationErrors('password', 'error.meta.fields');
+            $this->postJson('/api/auth/reset-password', ['email' => $user->email, 'token' => $token, 'password' => $password])
+                ->assertUnprocessable()->assertJsonValidationErrors('password', 'error.meta.fields');
+        }
+        $this->assertDatabaseCount('users', 1);
+        $this->assertTrue(Hash::check('original-password', $user->fresh()->password));
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => $user->email]);
+    }
 }
