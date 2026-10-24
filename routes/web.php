@@ -5,10 +5,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PaymentWebhookController;
+use App\Http\Controllers\PricingController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
 use App\Services\MediaStorage;
 use App\Services\PaymentSettings;
+use App\Services\Pricing;
 use App\Services\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -23,7 +25,7 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware('throttle:api')->group(function () {
-    Route::get('config', fn (MediaStorage $storage) => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'themes' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);
@@ -45,6 +47,7 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
         Route::get('purchases/{purchase}/media/{asset}', [MediaController::class, 'own']);
         Route::post('purchases', [PurchaseController::class, 'store'])->middleware('throttle:create');
         Route::middleware('throttle:write')->group(function () {
+            Route::post('purchases/{purchase}/quote', [PricingController::class, 'quote']);
             Route::post('purchases/{purchase}/update', [PurchaseController::class, 'update']);
             Route::post('purchases/{purchase}/migrate', [PurchaseController::class, 'update'])->name('purchases.migrate');
             Route::post('purchases/{purchase}/delete', [PurchaseController::class, 'destroy']);
@@ -56,6 +59,10 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
             Route::post('privacy/delete', [PrivacyController::class, 'destroy'])->middleware('throttle:sensitive');
         });
         Route::prefix('admin')->middleware(['admin', 'throttle:admin'])->group(function () {
+            Route::get('pricing', [PricingController::class, 'index']);
+            Route::post('plans', [PricingController::class, 'plan']);
+            Route::post('plans/{plan}', [PricingController::class, 'plan'])->whereUuid('plan');
+            Route::post('pricing/{kind}/{id?}', [PricingController::class, 'offer'])->where('kind', 'promotions|coupons')->whereUuid('id');
             Route::get('summary', [AdminController::class, 'summary']);
             Route::get('clients', [AdminController::class, 'clients']);
             Route::get('clients/{user}', [AdminController::class, 'detail']);
