@@ -126,6 +126,21 @@
         </div>
     </main>
 
+    <dialog id="refundDialog" class="refund-dialog" aria-labelledby="refundDialogTitle" aria-describedby="refundIntro">
+        <form id="refundForm">
+            <span class="refund-kicker">Cuidado com a sua experiência</span>
+            <h2 id="refundDialogTitle">Solicitar reembolso</h2>
+            <p id="refundIntro">Conte o motivo para nossa equipe analisar sua solicitação.</p>
+            <div class="refund-summary"><strong id="refundGiftTitle"></strong><span id="refundAmount"></span></div>
+            <label for="refundReason">Motivo da solicitação</label>
+            <textarea id="refundReason" minlength="5" maxlength="1000" rows="4" required placeholder="Como podemos ajudar?"></textarea>
+            <p class="refund-note">O envio inicia a análise; o estorno depende da confirmação do reembolso.</p>
+            <a class="refund-policy" href="reembolso.html" target="_blank" rel="noopener">Consultar política de reembolso ↗</a>
+            <p id="refundError" role="alert"></p>
+            <div class="refund-dialog-actions"><button type="button" id="cancelRefund">Cancelar</button><button type="submit" id="submitRefund">Enviar solicitação</button></div>
+        </form>
+    </dialog>
+
     <!-- Modal de Exclusão -->
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-box">

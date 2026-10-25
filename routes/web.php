@@ -48,6 +48,7 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
         Route::post('purchases', [PurchaseController::class, 'store'])->middleware('throttle:create');
         Route::middleware('throttle:write')->group(function () {
             Route::post('purchases/{purchase}/quote', [PricingController::class, 'quote']);
+            Route::post('purchases/{purchase}/refund', [PurchaseController::class, 'requestRefund']);
             Route::post('purchases/{purchase}/update', [PurchaseController::class, 'update']);
             Route::post('purchases/{purchase}/migrate', [PurchaseController::class, 'update'])->name('purchases.migrate');
             Route::post('purchases/{purchase}/delete', [PurchaseController::class, 'destroy']);
