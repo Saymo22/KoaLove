@@ -19,7 +19,8 @@
             const list=node('ul','preco-lista');for(const feature of plan.features||[])list.append(node('li','',feature));
             const media=node('p','plan-media',`${plan.photos_limit} fotos · ${plan.videos_limit} vídeos · ${plan.music_limit} música`);
             const link=node('a','b ouro magnetic','Criar meu presente');link.href='criar.html?plano='+encodeURIComponent(plan.id);
-            card.append(head,media,list,link,node('div','preco-garantia','Garantia de 7 dias'));return card;
+            const guarantee=node('a','preco-garantia','Garantia comercial de 3 dias · antes de abrir o link');guarantee.href='reembolso.html';
+            card.append(head,media,list,link,guarantee);return card;
         });
         $('pricingCards').replaceChildren(...cards);
         const plan=catalog.plans.find(p=>p.id===catalog.default_plan_id&&live(p))||catalog.plans.find(live)||catalog.plans.find(p=>p.id===catalog.default_plan_id)||catalog.plans[0];

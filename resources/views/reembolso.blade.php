@@ -21,50 +21,48 @@
     <header class="legal-hero">
         <div class="legal-eyebrow">Institucional</div>
         <h1 class="legal-title">Política de Reembolso</h1>
-        <p class="legal-date">Última atualização: 24 de Maio de 2024</p>
+        <p class="legal-date">Última atualização: 24 de outubro de 2026</p>
     </header>
 
     <main class="legal-container">
 
         <aside class="legal-sidebar">
             <h4>Nesta página</h4>
-            <a href="#garantia">1. Garantia de 7 Dias</a>
+            <a href="#garantia">1. Garantia Comercial de 3 Dias</a>
             <a href="#solicitar">2. Como Solicitar</a>
             <a href="#estorno">3. Processamento</a>
-            <a href="#excecoes">4. Exceções</a>
-            <a href="#suporte">5. Suporte</a>
+            <a href="#excecoes">4. Direitos Legais</a>
+            <a href="#suporte">5. Acompanhamento</a>
             <div class="sidebar-divider"></div>
             <a href="termos.html">Termos de Uso →</a>
             <a href="privacidade.html">Política de Privacidade →</a>
         </aside>
 
         <article class="legal-content">
-            <p>Queremos que você tenha a melhor experiência possível ao criar e presentear alguém com o <strong>Nosso Amor</strong>. Por isso, oferecemos uma política de reembolso transparente e alinhada ao Código de Defesa do Consumidor (CDC).</p>
+            <p>Esta política distingue a garantia comercial do <strong>Nosso Amor</strong> dos direitos legais do consumidor. Enviar uma solicitação inicia a análise; não confirma nem executa automaticamente um estorno.</p>
 
-            <h2 id="garantia">1. Garantia de 7 Dias</h2>
-            <p>Conforme o Artigo 49 do CDC, você tem o direito de desistir da compra no prazo de <strong>7 (sete) dias corridos</strong> a partir da data de confirmação do pagamento, desde que o link do presente ainda não tenha sido acessado pela pessoa presenteada (o que descaracteriza o uso do serviço).</p>
+            <h2 id="garantia">1. Garantia Comercial de 3 Dias</h2>
+            <p>A garantia comercial permite solicitar reembolso por até <strong>3 dias (72 horas) após a confirmação do pagamento</strong>, desde que o <strong>link compartilhado ainda não tenha sido aberto</strong>. Ao completar 72 horas ou ocorrer o primeiro acesso ao conteúdo compartilhado, o botão dessa garantia fica indisponível.</p>
+            <p>A consulta do criador pela prévia privada da própria conta não conta como abertura do link compartilhado. O registro não permite reconstruir acessos anteriores à sua ativação; nesses casos, a solicitação segue para análise individual.</p>
 
-            <h2 id="solicitar">2. Como Solicitar o Reembolso</h2>
-            <p>Para solicitar o reembolso, siga os passos abaixo:</p>
+            <h2 id="solicitar">2. Como Solicitar</h2>
             <ol>
                 <li>Acesse <a href="minha-conta.html">Minha Conta</a> e encontre o presente pago.</li>
-                <li>Clique em <strong>Reembolso</strong>, ao lado dos dados do presente.</li>
-                <li>Explique brevemente o motivo e envie a solicitação. O botão mostrará o andamento da análise.</li>
+                <li>Se a garantia comercial estiver disponível, clique em <strong>Reembolso</strong>.</li>
+                <li>Descreva o motivo e envie a solicitação. O card mostrará o andamento da análise.</li>
             </ol>
-            <p>Nossa equipe de suporte responderá em até 48 horas úteis.</p>
+            <p>Mesmo após o prazo comercial ou a abertura do link, você pode usar <strong>Solicitar análise de direitos legais</strong>, no mesmo card. Esse canal recebe pedidos para avaliação individual, sem negar automaticamente direitos previstos em lei.</p>
 
             <h2 id="estorno">3. Processamento do Estorno</h2>
-            <p>Após a aprovação do reembolso, o estorno será processado da seguinte forma:</p>
-            <ul>
-                <li><strong>Pix:</strong> O valor será devolvido à chave Pix de origem em até 5 dias úteis.</li>
-                <li><strong>Cartão de Crédito:</strong> O estorno será solicitado à operadora do cartão, e o prazo para constar na fatura pode variar de 5 a 30 dias úteis, dependendo do banco emissor.</li>
-            </ul>
+            <p>Depois da análise, uma devolução aprovada precisa ser confirmada pelo meio de pagamento. Para compras pelo Mercado Pago, o sistema aguarda a confirmação do provedor. Para Pix manual, o responsável confere a devolução antes de registrá-la no painel.</p>
+            <p>O prazo para o valor aparecer depende do meio de pagamento, banco ou operadora. A solicitação, por si só, não altera o estado do pagamento. Quando o estorno é confirmado, o presente deixa de estar disponível pelo link.</p>
 
-            <h2 id="excecoes">4. Exceções</h2>
-            <p>Não serão aceitos pedidos de reembolso após o prazo de 7 dias ou em casos onde foi constatado uso indevido da plataforma, envio de conteúdo ilegal ou violação dos <a href="termos.html">Termos de Uso</a>.</p>
+            <h2 id="excecoes">4. Direitos Legais Preservados</h2>
+            <p>A garantia comercial de 3 dias não reduz nem substitui direitos legais obrigatórios. Quando aplicável, o <a href="https://planalto.gov.br/ccivil_03/leis/l8078compilado.htm" target="_blank" rel="noopener">artigo 49 do Código de Defesa do Consumidor</a> prevê prazo de 7 dias para arrependimento nas contratações fora do estabelecimento. A abertura do link não elimina, por si só, os direitos previstos em lei.</p>
+            <p>Pedidos por vícios, falhas na prestação ou outras situações protegidas pela legislação podem ser apresentados pelo canal de análise de direitos legais em Minha Conta. A equipe avalia o caso e o fundamento informado; não há recusa automática com base apenas no prazo comercial ou na abertura do link.</p>
 
-            <h2 id="suporte">5. Suporte</h2>
-            <p>Se tiver qualquer problema com o seu presente (links quebrados, falhas na música, etc.), entre em contato conosco antes de pedir o reembolso. Muitas vezes, podemos resolver o problema rapidamente sem que você precise perder a surpresa!</p>
+            <h2 id="suporte">5. Acompanhamento</h2>
+            <p>O card do presente informa se a solicitação está em análise, foi aprovada ou não aprovada. Solicitações já registradas e decisões anteriores permanecem no histórico. Se uma solicitação comercial não for aprovada, o canal de análise de direitos legais continua disponível para avaliação específica.</p>
         </article>
     </main>
 

@@ -10,6 +10,7 @@ use App\Models\Refund;
 use App\Services\ManualPix;
 use App\Services\MercadoPagoCheckout;
 use App\Services\Pricing;
+use App\Services\RefundEligibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -21,16 +22,22 @@ class PurchaseController extends ApiController
     public function requestRefund(Request $request, Purchase $purchase)
     {
         Gate::authorize('update', $purchase);
-        $data = $request->validate(['reason' => 'required|string|min:5|max:1000']);
+        $data = $request->validate(['reason' => 'required|string|min:5|max:1000', 'request_kind' => 'sometimes|string|in:commercial,legal_review']);
         $refund = DB::transaction(function () use ($purchase, $data, $request) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             Gate::authorize('update', $p);
-            if ($existing = Refund::where('purchase_id', $p->id)->latest()->first()) {
+            $kind = $data['request_kind'] ?? 'commercial';
+            $existing = Refund::latestForPurchase($p->id)->first();
+            if ($existing && ($existing->status !== 'rejected' || $kind === 'commercial' || $existing->request_kind === 'legal_review')) {
                 return $existing;
             }
             abort_unless($p->status === 'paid', 409, 'Somente compras pagas podem receber uma solicitação de reembolso.');
+            $policy = app(RefundEligibility::class);
+            $eligibility = $policy->forPurchase($p);
+            abort_if($kind === 'commercial' && ! $eligibility['eligible'], 409, $policy->message($eligibility['reason']));
 
-            return Refund::create(['id' => 'r_'.Str::random(24), 'purchase_id' => $p->id, 'user_id' => $request->user()->id, 'reason' => $data['reason'], 'status' => 'pending']);
+            return Refund::create(['id' => 'r_'.Str::random(24), 'purchase_id' => $p->id, 'user_id' => $request->user()->id, 'reason' => $data['reason'], 'status' => 'pending',
+                'request_kind' => $kind, 'eligibility_snapshot' => $eligibility]);
         });
 
         return $this->ok(['refund' => $this->refundStatus($refund)]);
@@ -38,7 +45,7 @@ class PurchaseController extends ApiController
 
     private function refundStatus(Refund $refund): array
     {
-        return ['id' => $refund->id, 'status' => $refund->status, 'created_at' => $refund->created_at?->getTimestampMs()];
+        return ['id' => $refund->id, 'status' => $refund->status, 'request_kind' => $refund->request_kind, 'created_at' => $refund->created_at?->getTimestampMs()];
     }
 
     public function index(Request $request)
@@ -154,13 +161,25 @@ class PurchaseController extends ApiController
     public function shared(string $token)
     {
         $p = $this->sharedPurchase($token);
+        if (! request()->isMethod('HEAD') && ! $p->first_shared_opened_at) {
+            $p = DB::transaction(function () use ($token) {
+                $p = $this->sharedPurchase($token, true);
+                if (! $p->first_shared_opened_at) {
+                    $openedAt = now();
+                    DB::table('purchases')->where('id', $p->id)->update(['first_shared_opened_at' => $openedAt]);
+                    $p->first_shared_opened_at = $openedAt;
+                }
 
-        return $this->ok(['purchase' => $this->project($p, true)]);
+                return $p;
+            });
+        }
+
+        return $this->ok(['purchase' => $this->project($p, true)])->header('Cache-Control', 'private, no-store');
     }
 
-    public function sharedPurchase(string $token): Purchase
+    public function sharedPurchase(string $token, bool $lock = false): Purchase
     {
-        return Purchase::where('share_token', $token)->where('status', 'paid')->where('content_version', 1)->firstOrFail();
+        return Purchase::where('share_token', $token)->where('status', 'paid')->where('content_version', 1)->when($lock, fn ($query) => $query->lockForUpdate())->firstOrFail();
     }
 
     public function editable(Purchase $p, bool $legacy = false): void
@@ -189,8 +208,9 @@ class PurchaseController extends ApiController
         if (! $shared) {
             $out['plan_id'] = $p->plan_id;
             $out['plan'] = $p->plan_snapshot;
-            $refund = Refund::where('purchase_id', $p->id)->latest()->first(['id', 'status', 'created_at']);
+            $refund = Refund::latestForPurchase($p->id)->first(['id', 'status', 'request_kind', 'created_at']);
             $out['refund'] = $refund ? $this->refundStatus($refund) : null;
+            $out['refund_eligibility'] = app(RefundEligibility::class)->forPurchase($p);
         }
 
         return $out;

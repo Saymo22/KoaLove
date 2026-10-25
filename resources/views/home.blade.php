@@ -332,7 +332,7 @@
                         <li>Suporte humano por WhatsApp</li>
                     </ul>
                     <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
-                    <div class="preco-garantia">Garantia de 7 dias — devolvemos seu dinheiro se não amar.</div>
+                    <a href="reembolso.html" class="preco-garantia">Garantia comercial de 3 dias · antes de abrir o link</a>
                 </div>
             </div>
         </div>

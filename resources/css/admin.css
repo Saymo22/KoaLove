@@ -99,6 +99,7 @@ body.admin-body,body.admin-login-body { margin:0; color:var(--admin-text); font-
 .admin-table .btn-action { margin:3px 3px 3px 0; }
 .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:5px; font-size:9px; font-weight:500; white-space:nowrap; }
 .badge::before { content:''; width:4px; height:4px; border-radius:50%; background:currentColor; }
+.refund-kind { display:block; font-size:10px; color:#78643d; font-weight:500; margin-bottom:7px; }
 .badge-pendente { color:#946b25; background:#faf2de; }
 .badge-aprovado { color:#367453; background:#eaf3e9; }
 .badge-recusado { color:#a4414e; background:#faebed; }

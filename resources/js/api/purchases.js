@@ -46,7 +46,7 @@
     list:    () => get("/purchases"),
     getOne:  (id) => get(`/purchases/${encodeURIComponent(id)}`),
     quote:   (id, cupom = null) => post(`/purchases/${encodeURIComponent(id)}/quote`, { cupom }),
-    requestRefund: (id, reason) => post(`/purchases/${encodeURIComponent(id)}/refund`, { reason }),
+    requestRefund: (id, reason, request_kind = 'commercial') => post(`/purchases/${encodeURIComponent(id)}/refund`, { reason, request_kind }),
     pay:     (id, metodo, cupom, expected_amount_cents) => post(`/purchases/${encodeURIComponent(id)}/pay`, { metodo, cupom, ...(Number.isInteger(expected_amount_cents)?{expected_amount_cents}:{}) }),
   };
 })();

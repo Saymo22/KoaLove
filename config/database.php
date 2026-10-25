@@ -96,6 +96,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => env('DB_SCHEMA', 'public'),
+            'timezone' => 'UTC',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
             // Supavisor transaction pooling does not support named prepared statements.
             'options' => [PDO::ATTR_EMULATE_PREPARES => (bool) env('DB_EMULATE_PREPARES', false)],

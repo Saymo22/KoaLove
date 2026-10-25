@@ -14,6 +14,7 @@
 ## Banco (resumo)
 
 - plans, promotions, coupons: catálogo privado gerenciado pelo admin, valores em centavos, limites de mídia e descontos percentuais com validade. purchases guarda plan_id/plan_snapshot; payment_checkouts guarda pricing_details. Ver docs/PRICING.md.
+- purchases registra first_shared_opened_at e share_tracking_started_at; refunds guarda request_kind e eligibility_snapshot. Garantia comercial de 72h sem abertura pública, com análise de direitos legais independente. Ver docs/REFUNDS.md. Não inventar histórico de acessos anteriores à ativação do registro.
 - users: nome, email único normalizado, senha hash, role user/admin, deletion_requested_at.
 - purchases: ID textual, user FK, chave idempotente única por usuário, share_token único, status, content/manifest JSON, versão, valores em centavos, timestamps, soft delete.
 - media_assets: purchase FK, asset_id único por compra, tipo, MIME, bytes, disk e caminho privado.

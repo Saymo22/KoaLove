@@ -36,7 +36,7 @@
           <td><strong>${r.purchase ? "#" + escapeHtml(String(r.purchase.id).slice(0, 8)) : "—"}</strong></td>
           <td>${escapeHtml(r.cliente?.name ?? "—")}</td>
           <td>${new Date(r.created_at).toLocaleDateString("pt-BR")}</td>
-          <td>${escapeHtml(r.reason)}</td>
+          <td><span class="refund-kind">${r.request_kind==='legal_review'?'Análise de direitos legais':r.request_kind==='commercial'?'Garantia comercial · 3 dias':'Solicitação anterior'}</span>${escapeHtml(r.reason)}</td>
           <td>${badge(r.status)}</td>
           <td>
             ${r.status === "pending" ? `
