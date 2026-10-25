@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-
-
-
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -46,7 +42,7 @@
             <div class="rs-preview">
                 <div class="rs-preview-browser">
                     <div class="rs-preview-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <div class="rs-preview-url">nossoamor.com/sua-historia</div>
+                    <div class="rs-preview-url">KoaLove / sua história</div>
                     <a class="rs-preview-full" id="btnFullPreview" target="_blank" rel="noopener">↗ Tela cheia</a>
                 </div>
                 <div class="rs-preview-body">

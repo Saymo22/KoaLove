@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   @include('partials.seo')
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
 
     <meta name="csrf-token" content="{{ csrf_token() }}">

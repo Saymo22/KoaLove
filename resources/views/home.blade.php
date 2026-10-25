@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-
-
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -70,7 +67,7 @@
                         <div class="pol-mini p1"><div></div></div>
                         <div class="pol-mini p2"><div></div></div>
                         <div class="fone-tela">
-                            <video class="fone-video" autoplay muted loop playsinline preload="metadata" aria-label="Demonstração de um presente digital Nosso Amor">
+                            <video class="fone-video" autoplay muted loop playsinline preload="metadata" aria-label="Demonstração de um presente digital KoaLove">
                                 <source src="{{ asset('media/home-preview.mp4') }}" type="video/mp4">
                                 Seu navegador não suporta vídeos. <a href="{{ asset('media/home-preview.mp4') }}">Abra a demonstração em vídeo</a>.
                             </video>
@@ -187,7 +184,7 @@
             <div class="preview-stage reveal reveal-zoom" id="previewStage">
                 <div class="preview-browser">
                     <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <div class="url">nossoamor.com/sua-historia</div>
+                    <div class="url">KoaLove / sua história</div>
                     <div class="live">Ao vivo</div>
                 </div>
 
@@ -418,7 +415,7 @@
     <footer class="rodape">
         <div class="rodape-grid">
             <div class="rodape-col">
-                <div class="rodape-brand">Nosso Amor</div>
+                <div class="rodape-brand"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></div>
                 <p class="rodape-brand-desc">Presentes digitais que emocionam. Transformamos histórias em páginas especiais que ficam para sempre.</p>
                 <div class="rodape-social">
                     <a href="#" title="Instagram">📷</a>
@@ -461,7 +458,7 @@
         </div>
 
         <div class="rodape-base">
-            <div>© <span id="anoAtual"></span> <b>Nosso Amor</b> — feito com carinho para quem quer eternizar momentos.</div>
+            <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho para quem quer eternizar momentos.</div>
             <div class="rodape-base-links">
                 <a href="termos.html">Termos</a> <!-- ✅ Atualizado -->
                 <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->

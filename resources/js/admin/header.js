@@ -19,7 +19,7 @@ function renderAdminHeader(activeTab) {
     header.innerHTML=`
       <button class="admin-nav-backdrop" type="button" aria-label="Fechar menu"></button>
       <aside class="admin-sidebar" id="adminSidebar" aria-label="Menu administrativo">
-        <a href="dashboard.html" class="admin-logo"><span class="admin-monogram">na.</span><span><span class="admin-brand-name">Nosso Amor</span><span class="admin-brand-caption">Administração</span></span></a>
+        <a href="dashboard.html" class="admin-logo"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"><span class="admin-brand-caption">Administração</span></a>
         <p class="admin-nav-label">Administração</p>
         <nav class="admin-tabs" aria-label="Navegação do painel">${tabs.map(([id,label])=>`<a href="${id}.html" class="admin-tab ${id===activeTab?'active':''}"${id===activeTab?' aria-current="page"':''}>${adminIcon(id)}<span>${label}</span></a>`).join('')}</nav>
         <div class="admin-sidebar-footer">
@@ -30,7 +30,7 @@ function renderAdminHeader(activeTab) {
       <div class="admin-topbar">
         <button class="admin-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar">${adminIcon('menu')}</button>
         <div class="admin-breadcrumb"><span>Painel</span><span aria-hidden="true">/</span><b>${title}</b></div>
-        <div class="admin-topbar-end"><time class="admin-date">${new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</time><span class="admin-private">${adminIcon('lock')}Área restrita</span><span class="admin-avatar" aria-hidden="true">NA</span></div>
+        <div class="admin-topbar-end"><time class="admin-date">${new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</time><span class="admin-private">${adminIcon('lock')}Área restrita</span><span class="admin-avatar" aria-hidden="true">KL</span></div>
       </div>`;
     document.querySelectorAll('[data-admin-icon]').forEach(el=>{el.innerHTML=adminIcon(el.dataset.adminIcon);});
     const toggle=header.querySelector('.admin-menu-toggle'),sidebar=header.querySelector('.admin-sidebar');

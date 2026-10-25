@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -39,7 +38,7 @@
         </aside>
 
         <article class="legal-content">
-            <p>Esta política distingue a garantia comercial do <strong>Nosso Amor</strong> dos direitos legais do consumidor. Enviar uma solicitação inicia a análise; não confirma nem executa automaticamente um estorno.</p>
+            <p>Esta política distingue a garantia comercial do <strong>KoaLove</strong> dos direitos legais do consumidor. Enviar uma solicitação inicia a análise; não confirma nem executa automaticamente um estorno.</p>
 
             <h2 id="garantia">1. Garantia Comercial de 3 Dias</h2>
             <p>A garantia comercial permite solicitar reembolso por até <strong>3 dias (72 horas) após a confirmação do pagamento</strong>, desde que o <strong>link compartilhado ainda não tenha sido aberto</strong>. Ao completar 72 horas ou ocorrer o primeiro acesso ao conteúdo compartilhado, o botão dessa garantia fica indisponível.</p>
@@ -70,7 +69,7 @@
     <footer class="rodape">
         <div class="rodape-grid">
             <div class="rodape-col">
-                <div class="rodape-brand">Nosso Amor</div>
+                <div class="rodape-brand"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></div>
                 <p class="rodape-brand-desc">Presentes digitais que emocionam. Transformamos histórias em páginas especiais que ficam para sempre.</p>
                 <div class="rodape-social">
                     <a href="#" title="Instagram">📷</a>
@@ -111,7 +110,7 @@
         </div>
 
         <div class="rodape-base">
-            <div>© <span id="anoAtual"></span> <b>Nosso Amor</b> — feito com carinho.</div>
+            <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho.</div>
             <div class="rodape-base-links">
                 <a href="termos.html">Termos</a>
                 <a href="privacidade.html">Privacidade</a>

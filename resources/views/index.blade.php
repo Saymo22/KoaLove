@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     @include('partials.seo')
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta http-equiv="refresh" content="0; url=home.html">
 
 

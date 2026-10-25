@@ -1,4 +1,4 @@
-# Nosso Amor
+# KoaLove
 
 Pix e cartão usam o [Mercado Pago Checkout Pro](docs/PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
 
