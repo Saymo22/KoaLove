@@ -22,7 +22,7 @@
 - refunds: compra/usuário FK, motivo, status, decisão e datas.
 - payment_checkouts: UUID e compra única/FK, provider, snapshot de valor/cupom/método e live_mode, preferência/URL, expiração, estado e ID do pagamento aprovado. Pix manual guarda payload/recebedor, referência bancária única e admin/data da conferência. Conteúdo e preço ficam congelados após iniciar checkout.
 - payment_receipts: ID Mercado Pago único, checkout FK indexada, estado, valor bruto e estornado em centavos, datas; sem cartão ou payload bruto.
-- tickets: usuário FK, assunto, status, mensagens JSON.
+- tickets: usuário FK, assunto, status, mensagens JSON. Chat autenticado e triagem em docs/CHATBOT.md; mensagens com UUID, role/text/at, dono selecionado no servidor, respostas na central admin e polling privado sem cache.
 - audit_events: usuário FK anulável, rota sem parâmetros, IP HMAC, status e data; retenção 30 dias.
 - sessions, password_reset_tokens, cache/cache_locks, jobs/job_batches/failed_jobs: infraestrutura Laravel.
 

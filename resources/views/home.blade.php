@@ -445,8 +445,8 @@
             </div>
             <div class="rodape-col">
                 <h4>Suporte</h4>
-                <a href="#">Central de ajuda</a>
-                <a href="#">Fale conosco</a>
+                <a href="#" data-support-chat="help">Central de ajuda</a>
+                <a href="#" data-support-chat="human">Fale conosco</a>
                 <a href="termos.html">Termos de uso</a> <!-- ✅ Atualizado -->
                 <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->
                 <a href="reembolso.html">Reembolso</a> <!-- ✅ Atualizado -->
