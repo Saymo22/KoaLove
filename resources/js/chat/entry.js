@@ -39,7 +39,7 @@ if(window.self===window.top&&!location.pathname.startsWith('/admin/')){
     async function loadCatalog(){
         try{catalog=await request('/config');}catch{catalog=null;}
     }
-    const humanIntent=text=>/falar com (o )?suporte|atendente|atendimento humano|pessoa|nao resolveu|nao ajudou/.test(normalize(text));
+    const humanIntent=text=>/falar com (o )?suporte|atendente|atendimento humano|falar com (uma )?pessoa|nao resolveu|nao ajudou/.test(normalize(text));
     async function respond(text,history){
         if(normalize(text)==='voltar ao assistente'){
             mode='bot';awaitingIssue=false;pending=null;

@@ -6,6 +6,7 @@ test('Chat distingue assuntos, usa catálogo atual e preserva análise legal',as
     assert.equal(identify('Quero meu reembolso'),'refund');
     assert.equal(identify('Esqueci minha senha'),'account');
     assert.equal(identify('Pix pago mas continua pendente'),'payment');
+    assert.equal(identify('Quanto custa?'),'payment');
     const catalog={plans:[{name:'Plano de teste',price_cents:4790}],themes:{namoro:{nome:'Namoro'},vinil:{nome:'Vinil'}}};
     const pricing=answer('Quais os preços?',catalog,'https://example.test');
     assert.match(pricing.text,/47,90/);assert.doesNotMatch(pricing.text,/19,90/);

@@ -4,7 +4,7 @@ export function identify(text){
     const t=normalize(text);
     if(/reembol|estorn|arrepend|devolu/.test(t))return 'refund';
     if(/senha|login|entrar|conta|acesso/.test(t))return 'account';
-    if(/pix|cartao|paga|cobranc|preco|plano|cupom|desconto|valor/.test(t))return 'payment';
+    if(/pix|cartao|paga|cobranc|preco|plano|cupom|desconto|valor|custa|custo/.test(t))return 'payment';
     if(/foto|video|musica|audio|upload|arquivo|enviar/.test(t))return 'media';
     if(/qr|link|compartilh|destinat/.test(t))return 'sharing';
     if(/tema|namoro|casamento|aniversario|netflix|spotify|vinil|scrapbook/.test(t))return 'themes';
