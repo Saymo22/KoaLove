@@ -17,7 +17,7 @@ class IntegrationSecurityTest extends TestCase
     public function test_support_cannot_read_other_clients_gifts_through_alternate_routes(): void
     {
         $client = User::factory()->create();
-        $purchase = Purchase::create(['id' => 'p_private_fixture', 'user_id' => $client->id, 'share_token' => str_repeat('e', 64), 'content' => ['titulo' => 'Private fixture'], 'manifest' => [], 'price_cents' => 1990]);
+        $purchase = Purchase::create(['id' => 'p_private_fixture', 'user_id' => $client->id, 'share_token' => str_repeat('e', 64), 'content' => ['tema' => 'namoro', 'para' => 'Fixture', 'titulo' => 'Private fixture'], 'manifest' => ['photos' => [], 'videos' => [], 'music' => null], 'price_cents' => 1990]);
         $support = User::factory()->create();
         $support->forceFill(['role' => 'admin', 'admin_level' => 'support'])->save();
         $this->actingAs($support)->getJson('/api/purchases/'.$purchase->id)->assertForbidden();
@@ -53,7 +53,7 @@ class IntegrationSecurityTest extends TestCase
                 throw new \RuntimeException('private-sql-binding');
             }
         });
-        $this->postJson('/api/audit-failure-fixture')->assertOk()->assertJsonPath('data.saved', true);
+        $this->postJson('/api/audit-failure-fixture', ['fixture' => true])->assertOk()->assertJsonPath('data.saved', true);
         Log::shouldHaveReceived('warning')->once()->with('Registro de auditoria indisponível.');
     }
 
