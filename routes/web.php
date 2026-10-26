@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminWorkspaceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupportController;
+use App\Http\Middleware\AdminRuntime;
+use App\Services\AdminConfiguration;
 use App\Services\MediaStorage;
 use App\Services\PaymentSettings;
 use App\Services\Pricing;
@@ -25,12 +28,13 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
     Route::view($page['url'], $page['view'])->middleware('throttle:pages');
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
-Route::prefix('api')->middleware('throttle:api')->group(function () {
-    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'themes' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {
+    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);
         abort_unless(Artisan::call('privacy:prune') === 0, 503);
+        abort_unless(Artisan::call('admin:alerts') === 0, 503);
 
         return response()->json(['ok' => true]);
     });
@@ -64,6 +68,17 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
             Route::post('privacy/delete', [PrivacyController::class, 'destroy'])->middleware('throttle:sensitive');
         });
         Route::prefix('admin')->middleware(['admin', 'throttle:admin'])->group(function () {
+            Route::get('workspace', [AdminWorkspaceController::class, 'workspace']);
+            Route::post('settings', [AdminWorkspaceController::class, 'settings']);
+            Route::post('clients/{user}/{operation}', [AdminWorkspaceController::class, 'client'])->where('operation', 'note|delete');
+            Route::post('tickets/{ticket}/manage', [AdminWorkspaceController::class, 'ticket']);
+            Route::post('themes/{theme}', [AdminWorkspaceController::class, 'theme']);
+            Route::post('purchases/{purchase}/reject-pix', [AdminWorkspaceController::class, 'rejectPix']);
+            Route::post('catalog/{kind}/{id}/delete', [AdminWorkspaceController::class, 'removeOffer'])->where('kind', 'plans|promotions|coupons')->whereUuid('id');
+            Route::post('activities/clear', [AdminWorkspaceController::class, 'clearActivities']);
+            Route::post('administrators/invitations/{invitation}/revoke', [AdminWorkspaceController::class, 'revokeInvitation']);
+            Route::post('administrators/invite', [AdminWorkspaceController::class, 'invite']);
+            Route::post('administrators/{user}/remove', [AdminWorkspaceController::class, 'removeAdmin']);
             Route::get('pricing', [PricingController::class, 'index']);
             Route::post('plans', [PricingController::class, 'plan']);
             Route::post('plans/{plan}', [PricingController::class, 'plan'])->whereUuid('plan');
@@ -80,3 +95,7 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
         });
     });
 });
+
+Route::get('/admin/invitations/{invitation}', [AdminWorkspaceController::class, 'acceptInvitation'])->name('admin.invitation')->middleware('throttle:pages');
+
+Route::post('/admin/invitations/{invitation}/accept', [AdminWorkspaceController::class, 'accept'])->middleware(['api.auth', 'throttle:admin']);

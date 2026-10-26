@@ -50,3 +50,15 @@ Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recupera�
 Além do IP, login permite 5 tentativas/minuto por e-mail normalizado; solicitação de recuperação, 3/hora por e-mail; redefinição, 5/minuto por e-mail. As chaves do cache usam HMAC, sem o e-mail em texto aberto. Exclusão de conta exige a senha atual e permite 5 tentativas/minuto por usuário e IP. Não há bloqueio permanente de conta. Recuperação usa sempre APP_URL para o link; validação, troca de senha, revogação de sessões e consumo do token são atômicos.
 
 Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. URLs .html foram preservadas; são views Laravel, não arquivos públicos.
+
+## Dashboard completo
+
+Consulte [ADMIN-UI.md](ADMIN-UI.md) para o mapa de ações. `GET /admin/workspace` entrega os dados autorizados e a função atual; requer sessão admin. Suporte não recebe catálogo, chave Pix nem razão financeira.
+
+Novas mutações JSON autenticadas/CSRF: `POST /admin/settings` (campos validados e preferências por conta), `/admin/clients/{user}/note` (`note` até 2000), `/admin/clients/{user}/delete` (`confirmed:true`), `/admin/tickets/{ticket}/manage` (`priority:low|normal|high`, `status:open|answered|closed`), `/admin/themes/{key}` (`active`), `/admin/purchases/{purchase}/reject-pix` (`reason` 5–300), `/admin/catalog/{plans|promotions|coupons}/{uuid}/delete`, `/admin/activities/clear` (`confirmed:true`), `/admin/administrators/invite` (`email`, `level:owner|manager|support`) e `/admin/administrators/{user}/remove`.
+
+Convites: GET `/admin/invitations/{uuid}` exige assinatura temporária e conta com o mesmo e-mail. O aceite é um formulário web POST `/admin/invitations/{uuid}/accept`, com CSRF, autenticação e `confirmed=1`. Não aceita role/email no corpo.
+
+Ofertas aceitam `discount_cents` inteiro positivo como alternativa a `discount_percent` inteiro de 1–95. Cupons aceitam `usage_limit` positivo ou null (ilimitado). A cotação inclui desconto monetário e identifica o cupom no snapshot privado para preservar contagem após edição. O checkout reserva usos e mantém o preço congelado. Códigos com checkouts legados sem identificador de cupom não podem ser renomeados; desative e crie outro código.
+
+`GET /config` inclui `site:{storeName,supportEmail,whatsapp}` e `theme_metadata` com os 13 temas, enquanto `themes` lista somente os ativos para novas criações. Não inclui a chave Pix, e-mails de clientes, códigos de cupons nem configurações privadas. Manutenção devolve 503 com `MAINTENANCE` e `Retry-After:300` para APIs de clientes; webhook, cron e autenticação permanecem operacionais.

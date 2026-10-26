@@ -276,7 +276,9 @@ NA_CONFIG_READY.then(() => {
 });
 
 function aplicarTemaPreview(chave) {
-  const t = (THEMES[chave] || THEMES.namoro).cores, s = $("previewScreen");
+  const chosen=THEMES[chave] || window.NA_THEME_METADATA?.[chave] || Object.values(THEMES)[0];
+  if(!chosen)return;
+  const t=chosen.cores,s=$("previewScreen");
   s.style.setProperty("--rosa", t.rosa);
   s.style.setProperty("--rosa-claro", t.rosaClaro);
   s.style.setProperty("--rosa-pastel", t.pastel);
@@ -294,8 +296,9 @@ function pulsarPreview() {
 }
 
 function atualizarPreview() {
-  const temaChave = tema || "namoro";
-  const t = THEMES[temaChave] || THEMES.namoro;
+  const temaChave = tema || Object.keys(THEMES)[0];
+  const t = THEMES[temaChave] || window.NA_THEME_METADATA?.[temaChave];
+  if(!t)return;
   const ini = $("inicio").value;
   const sufixo = $("frase").value.trim();
   const tempo = ini ? tempoJuntos(ini) : null;

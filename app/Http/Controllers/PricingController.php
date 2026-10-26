@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use App\Models\PaymentCheckout;
 use App\Models\Plan;
 use App\Models\Promotion;
 use App\Models\Purchase;
@@ -52,7 +53,7 @@ class PricingController extends ApiController
         if ($kind === 'coupons' && is_string($request->input('code'))) {
             $request->merge(['code' => strtoupper(trim($request->input('code')))]);
         }
-        $rules = ['plan_id' => 'nullable|uuid|exists:plans,id', 'discount_percent' => 'required|integer|min:1|max:95', 'active' => 'required|boolean',
+        $rules = ['plan_id' => 'nullable|uuid|exists:plans,id', 'discount_percent' => 'required_without:discount_cents|nullable|integer|min:1|max:95', 'discount_cents' => 'nullable|integer|min:1|max:10000000', 'active' => 'required|boolean',
             'starts_at' => ($kind === 'promotions' ? 'required' : 'nullable').'|date', 'ends_at' => ($kind === 'promotions' ? 'required' : 'nullable').'|date|after:starts_at'];
         $field = $kind === 'coupons' ? 'code' : 'name';
         if (! $request->filled('starts_at')) {
@@ -62,7 +63,21 @@ class PricingController extends ApiController
         if ($kind === 'coupons') {
             $rules[$field][] = 'regex:/\A[A-Z0-9][A-Z0-9_-]{2,19}\z/';
         }
-        $record->fill($request->validate($rules))->save();
+        if ($kind === 'coupons') {
+            $rules['usage_limit'] = 'nullable|integer|min:1|max:1000000';
+        }
+        $data = $request->validate($rules);
+        if ($kind === 'coupons' && $record->exists && $record->code !== $data['code']) {
+            abort_if(PaymentCheckout::where('coupon', $record->code)->whereNull('pricing_details->coupon_id')->exists(), 409, 'Este código tem checkouts legados; desative-o e crie um novo cupom para preservar o histórico.');
+        }
+        $data['discount_cents'] = $data['discount_cents'] ?? null;
+        $data['discount_percent'] = $data['discount_cents'] !== null ? 0 : $data['discount_percent'];
+        DB::transaction(function () use ($record, $data) {
+            if ($record->exists) {
+                $record->newQuery()->whereKey($record->id)->lockForUpdate()->firstOrFail();
+            }
+            $record->fill($data)->save();
+        });
 
         return $this->ok(['offer' => $record]);
     }

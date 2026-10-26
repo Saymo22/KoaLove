@@ -41,6 +41,8 @@ class PrunePrivateData extends Command
                     $p->forceDelete();
                 });
             });
+        DB::table('admin_activities')->where('created_at', '<=', now()->subDays(30))->delete();
+        DB::table('admin_invitations')->where('expires_at', '<=', now()->subDays(30))->delete();
         DB::table('audit_events')->where('created_at', '<=', now()->subDays(config('gift.audit_days')))->delete();
         DB::table('password_reset_tokens')->where('created_at', '<=', now()->subHour())->delete();
         DB::table('sessions')->where('last_activity', '<', now()->subMinutes(config('session.lifetime'))->timestamp)->delete();

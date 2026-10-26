@@ -13,16 +13,17 @@
 
 ## Banco (resumo)
 
-- plans, promotions, coupons: catálogo privado gerenciado pelo admin, valores em centavos, limites de mídia e descontos percentuais com validade. purchases guarda plan_id/plan_snapshot; payment_checkouts guarda pricing_details. Ver docs/PRICING.md.
+- plans, promotions, coupons: catálogo privado gerenciado pelo admin, valores em centavos, limites de mídia e descontos percentuais ou fixos em centavos com validade e exclusão lógica. coupons inclui usage_limit; usos são reservados no checkout, com trava do cupom. purchases guarda plan_id/plan_snapshot; payment_checkouts guarda pricing_details. Ver docs/PRICING.md.
 - purchases registra first_shared_opened_at e share_tracking_started_at; refunds guarda request_kind e eligibility_snapshot. Garantia comercial de 72h sem abertura pública, com análise de direitos legais independente. Ver docs/REFUNDS.md. Não inventar histórico de acessos anteriores à ativação do registro.
-- users: nome, email único normalizado, senha hash, role user/admin, deletion_requested_at.
+- users: nome, email único normalizado, senha hash, role user/admin, deletion_requested_at, admin_level (owner/manager/support, null legado equivale ao acesso integral existente), admin_note e admin_preferences JSON.
 - purchases: ID textual, user FK, chave idempotente única por usuário, share_token único, status, content/manifest JSON, versão, valores em centavos, timestamps, soft delete.
 - media_assets: purchase FK, asset_id único por compra, tipo, MIME, bytes, disk e caminho privado.
 - media_uploads: UUID, compra/asset, MIME, bytes reservados, disk/caminho privado e expiração; controla uploads diretos em quarentena.
 - refunds: compra/usuário FK, motivo, status, decisão e datas.
-- payment_checkouts: UUID e compra única/FK, provider, snapshot de valor/cupom/método e live_mode, preferência/URL, expiração, estado e ID do pagamento aprovado. Pix manual guarda payload/recebedor, referência bancária única e admin/data da conferência. Conteúdo e preço ficam congelados após iniciar checkout.
+- payment_checkouts: UUID e compra única/FK, provider, snapshot de valor/cupom/método e live_mode, preferência/URL, expiração, estado e ID do pagamento aprovado. Pix manual guarda payload/recebedor, referência bancária única e admin/data da conferência, rejection_reason para recusa manual. pricing_details inclui coupon_id para contagem estável de usos. Conteúdo e preço ficam congelados após iniciar checkout.
 - payment_receipts: ID Mercado Pago único, checkout FK indexada, estado, valor bruto e estornado em centavos, datas; sem cartão ou payload bruto.
-- tickets: usuário FK, assunto, status, mensagens JSON. Chat autenticado e triagem em docs/CHATBOT.md; mensagens com UUID, role/text/at, dono selecionado no servidor, respostas na central admin e polling privado sem cache.
+- tickets: usuário FK, assunto, status open/answered/closed, priority low/normal/high, mensagens JSON. Chat autenticado e triagem em docs/CHATBOT.md; mensagens com UUID, role/text/at, dono selecionado no servidor, respostas na central admin e polling privado sem cache.
+- admin_settings: chave/JSON privado, configurações globais e temas desativados. admin_activities: autor FK anulável, categoria, ação, referência sem conteúdo pessoal, data e exclusão lógica; retenção 30 dias, separado de audit_events. admin_invitations: UUID, e-mail, função, autor FK, expiração/aceite/revogação; aceite autenticado pela mesma conta. Ver docs/ADMIN-UI.md.
 - audit_events: usuário FK anulável, rota sem parâmetros, IP HMAC, status e data; retenção 30 dias.
 - sessions, password_reset_tokens, cache/cache_locks, jobs/job_batches/failed_jobs: infraestrutura Laravel.
 

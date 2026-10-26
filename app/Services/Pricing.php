@@ -28,23 +28,55 @@ class Pricing
 
     public function calculate(int $base, ?string $planId, ?string $code = null): array
     {
-        $promotion = $this->active(Promotion::query())->where(fn ($q) => $q->whereNull('plan_id')->orWhere('plan_id', $planId))
-            ->orderByDesc('discount_percent')->orderBy('ends_at')->first();
-        $discount = (int) ($promotion?->discount_percent ?? 0);
+        $promotion = null;
+        $saving = 0;
+        foreach ($this->active(Promotion::query())->where(fn ($q) => $q->whereNull('plan_id')->orWhere('plan_id', $planId))->get() as $offer) {
+            $candidate = $offer->discount_cents !== null ? (int) $offer->discount_cents : $base - (int) round($base * (100 - $offer->discount_percent) / 100);
+            if ($candidate > $saving) {
+                $saving = $candidate;
+                $promotion = $offer;
+            }
+        }
         $source = $promotion ? 'promotion' : null;
+        $couponId = null;
         $code = strtoupper(trim($code ?? ''));
         if ($code !== '') {
             $coupon = $this->active(Coupon::where('code', $code))->where(fn ($q) => $q->whereNull('plan_id')->orWhere('plan_id', $planId))->first();
-            abort_unless($coupon, 422, 'Cupom inválido, expirado ou indisponível para este plano.');
-            if ($coupon->discount_percent >= $discount) {
-                $discount = (int) $coupon->discount_percent;
+            abort_unless($coupon && (! $coupon->usage_limit || $this->couponUses($coupon->code) < $coupon->usage_limit), 422, 'Cupom inválido, expirado ou esgotado.');
+            $candidate = $coupon->discount_cents !== null ? (int) $coupon->discount_cents : $base - (int) round($base * (100 - $coupon->discount_percent) / 100);
+            if ($candidate >= $saving) {
+                $saving = $candidate;
                 $source = 'coupon';
+                $couponId = $coupon->id;
             }
         }
+        $saving = min($base - 1, $saving);
+        $discount = $base ? min(100, (int) round($saving * 100 / $base)) : 0;
 
-        return ['base_price_cents' => $base, 'amount_cents' => max(1, (int) round($base * (100 - $discount) / 100)),
-            'discount_percent' => $discount, 'coupon' => $code ?: null, 'discount_source' => $source,
-            'promotion' => $promotion ? ['id' => $promotion->id, 'name' => $promotion->name, 'discount_percent' => $promotion->discount_percent, 'ends_at' => $promotion->ends_at?->toIso8601String()] : null];
+        return ['base_price_cents' => $base, 'amount_cents' => max(1, $base - $saving), 'discount_percent' => $discount, 'discount_cents' => $saving,
+            'coupon' => $code ?: null, 'coupon_id' => $couponId, 'discount_source' => $source,
+            'promotion' => $promotion ? ['id' => $promotion->id, 'name' => $promotion->name, 'discount_percent' => $promotion->discount_percent, 'discount_cents' => $promotion->discount_cents, 'ends_at' => $promotion->ends_at?->toIso8601String()] : null];
+    }
+
+    public function couponUses(string $code): int
+    {
+        $coupon = Coupon::withTrashed()->where('code', $code)->first();
+
+        return PaymentCheckout::where(function ($q) use ($coupon, $code) {
+            if ($coupon) {
+                $q->where('pricing_details->coupon_id', $coupon->id);
+            }$q->orWhere(fn ($q) => $q->whereNull('pricing_details->coupon_id')->where('coupon', $code));
+        })
+            ->where('pricing_details->discount_source', 'coupon')->whereNotIn('status', ['rejected', 'cancelled', 'expired'])->count();
+    }
+
+    public function reserveCoupon(array $pricing): void
+    {
+        if (($pricing['discount_source'] ?? null) !== 'coupon') {
+            return;
+        }
+        $coupon = Coupon::where('code', $pricing['coupon'])->lockForUpdate()->firstOrFail();
+        abort_if($coupon->usage_limit && $this->couponUses($coupon->code) >= $coupon->usage_limit, 409, 'O limite deste cupom foi atingido. Recalcule o pagamento.');
     }
 
     public function quote(Purchase $purchase, ?string $code = null): array

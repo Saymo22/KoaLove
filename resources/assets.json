@@ -45,19 +45,15 @@
     "url": "/admin/dashboard.html",
     "view": "admin.dashboard",
     "styles": [
-      "resources/css/base.css",
-      "resources/css/admin.css",
-      "resources/css/admin-premium.css",
+      "resources/css/admin-workspace.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
       "resources/js/api/client.js",
       "resources/js/api/auth.js",
-      "resources/js/api/admin.js",
       "resources/js/admin/auth.js",
-      "resources/js/admin/header.js",
-      "resources/js/admin/dashboard.js"
+      "resources/js/admin/workspace.js"
     ],
     "entry": "resources/js/entries/admin-dashboard.js"
   },
