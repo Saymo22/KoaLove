@@ -2490,3 +2490,21 @@
     90% { opacity: 0.8; }
     100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
 }
+
+/* Mantém a composição do hero inteira nas janelas de desktop mais baixas. */
+@media (min-width: 961px) {
+    .hero-home { padding: calc(var(--nav-altura) + 24px) 0 24px; }
+    .hero-home .fone-wrap { padding-block: 0; }
+}
+@media (min-width: 961px) and (max-height: 800px) {
+    .hero-home .wrap { zoom: .9; }
+}
+@media (min-width: 961px) and (max-height: 700px) {
+    .hero-home .wrap { zoom: .8; }
+}
+@media (min-width: 961px) and (max-height: 600px) {
+    .hero-home .wrap { zoom: .65; }
+}
+@media (min-width: 961px) and (max-height: 500px) {
+    .hero-home .wrap { zoom: .55; }
+}
