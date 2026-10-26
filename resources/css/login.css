@@ -518,3 +518,6 @@ body {
     .experience > .portal { zoom: .55; }
     .experience > .editorial { zoom: .6; }
 }
+
+/* Recuperação utiliza os campos e o card existentes. */
+.glass-card [hidden]{display:none!important}.glass-error.is-success{color:var(--gold-2)}

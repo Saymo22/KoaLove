@@ -198,7 +198,7 @@
     <div class="center-text" data-reveal>
       <span class="eyebrow center">As flores</span>
       <h2 class="title">Cada uma é <em>um momento</em></h2>
-      <p class="sub">Passe o mouse sobre cada flor — e veja a memória desabrochar.</p>
+      <p class="sub">Toque em uma flor para ampliar essa memória.</p>
     </div>
 
     <div class="garden" id="garden" data-reveal data-d="1"></div>

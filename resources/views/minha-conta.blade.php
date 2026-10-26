@@ -182,13 +182,13 @@
     </div>
 
     <section class="privacy-settings" aria-labelledby="privacyTitle">
-      <h2 id="privacyTitle">Seus dados</h2>
+      <div class="history-header"><span class="history-icon" aria-hidden="true">🔒</span><h2 id="privacyTitle">Seus dados</h2></div>
       <p>Exporte seus dados ou solicite a exclusão da conta. A exclusão desativa os links de presentes imediatamente e elimina os dados em até 30 dias.</p>
       <button type="button" id="exportData" class="btn-sec">Exportar meus dados</button>
       <form id="deleteAccountForm">
         <label for="deletePassword">Confirme sua senha para excluir a conta</label>
         <input id="deletePassword" type="password" autocomplete="current-password" maxlength="128" required>
-        <button type="submit" class="btn-sec">Excluir minha conta</button>
+        <button type="submit" class="btn-sec privacy-delete">Excluir minha conta</button>
       </form>
       <p id="privacyMessage" role="status"></p>
     </section>

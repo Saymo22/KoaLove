@@ -1,9 +1,10 @@
 import './widget.js';
+import {chatAllowed} from './page-policy.js';
 import stylesheet from '../../css/chatbot.css?url';
 import {answer,identify,normalize,quickHelp} from './knowledge.js';
 
 // A página do presente contém um iframe de tema; apenas a página externa cria o chat.
-if(window.self===window.top&&!location.pathname.startsWith('/admin/')){
+if(chatAllowed(location.pathname,window.self!==window.top)){
     let mode='bot',awaitingIssue=false,thread=null,identity=null,catalog=null,polling=false,lastPoll=0,disposed=false;
     let seen=new Set(),pending=null;
     const widget=window.ChatWidget;
