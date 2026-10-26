@@ -16,11 +16,12 @@ Suas fotos ficam privadas no servidor. Quem possui o link de um presente liberad
 
 - [Desenvolvimento e testes](docs/DEVELOPMENT.md)
 - [Implantação na Vercel](docs/VERCEL.md)
+- [Banco e mídias no Supabase](docs/SUPABASE.md)
 - [Contrato da API](docs/API.md)
 - [Segurança](docs/SECURITY.md)
 - [SEO, indexação e noscript](docs/SEO.md)
-- [Armazenamento local de fotos, vídeos e músicas](docs/MEDIA_STORAGE.md)
+- [Armazenamento de fotos, vídeos e músicas](docs/MEDIA_STORAGE.md)
 - [Migração dos dados antigos](docs/MIGRATION.md)
 - [Instruções para agentes](AGENTS.md)
 
-As regras de retenção, armazenamento local e terceiros estão na página Política de Privacidade do site e em docs/SECURITY.md.
+As regras de retenção, armazenamento privado e terceiros estão na página Política de Privacidade do site e em docs/SECURITY.md.

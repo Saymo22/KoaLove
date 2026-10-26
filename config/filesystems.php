@@ -65,6 +65,24 @@ return [
             'report' => false,
         ],
 
+        'supabase' => [
+            'driver' => 'supabase',
+            'key' => env('SUPABASE_S3_ACCESS_KEY_ID'),
+            'secret' => env('SUPABASE_S3_SECRET_ACCESS_KEY'),
+            'region' => env('SUPABASE_REGION', 'us-east-1'),
+            'bucket' => env('SUPABASE_STORAGE_BUCKET', 'gift-media'),
+            // Copy the S3 endpoint from Storage settings; do not use the REST endpoint.
+            'endpoint' => env('SUPABASE_S3_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'http' => ['connect_timeout' => 5, 'timeout' => 45],
+            'visibility' => 'private',
+            'max_file_size' => (int) env('SUPABASE_STORAGE_MAX_FILE_BYTES', 50000000),
+            'throw' => true,
+            'report' => false,
+        ],
+
     ],
 
     /*

@@ -22,6 +22,15 @@ test('Uploads em nuvem usam a URL temporária sem enviar cookies ou CSRF ao stor
 });
 test('Referências estáveis, coleções exclusivas e reprodução de áudio',require('./exclusive-helpers.cjs'));
 
+test('O limite do provedor impede envio excessivo antes de reservar ou transmitir',async()=>{
+  let contacted=false;
+  class ApiError extends Error{constructor(v){super(v.message);Object.assign(this,v);}}
+  const scope=vm.createContext({window:{APP_CONFIG:{DIRECT_UPLOADS:true,MEDIA_LIMITS:{video:50000000}},ApiClient:{get(){},post(){contacted=true;},ApiError}},fetch:async()=>{contacted=true;}});
+  vm.runInContext(fs.readFileSync('resources/js/api/purchases.js','utf8'),scope);
+  await assert.rejects(scope.window.ApiPurchases.upload('purchase','asset',{type:'video/mp4',size:50000001}),e=>e.code==='FILE_TOO_LARGE'&&e.message.includes('50 MB'));
+  assert.equal(contacted,false);
+});
+
 test('Armazenamento indisponível preserva o rascunho e não inicia upload',async()=>{
   let contacted=false;
   class ApiError extends Error{constructor(v){super(v.message);Object.assign(this,v);}}

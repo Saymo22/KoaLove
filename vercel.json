@@ -20,6 +20,7 @@
           "resources/css/**",
           "public/build/assets/**",
           "docs/**"
+          ,"supabase/**"
         ]
       }
     },

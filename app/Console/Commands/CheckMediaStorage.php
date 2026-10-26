@@ -29,7 +29,7 @@ class CheckMediaStorage extends Command
         $path = 'healthchecks/'.Str::uuid();
         $content = bin2hex(random_bytes(16));
         try {
-            if (! $disk->put($path, $content, ['visibility' => 'private']) || $disk->get($path) !== $content || ! $disk->delete($path)) {
+            if (! $disk->put($path, $content, ['visibility' => 'private', 'ContentType' => 'application/octet-stream']) || $disk->get($path) !== $content || ! $disk->delete($path)) {
                 throw new \RuntimeException('Teste de armazenamento falhou.');
             }
             $this->info('Gravação, leitura e remoção confirmadas. Nenhuma mídia de usuário foi alterada.');

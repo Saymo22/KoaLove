@@ -9,6 +9,7 @@ server/node_modules/
 server/.env
 .tools/
 .vercel/
+/supabase/.temp/
 /dist/
 /bin/
 /vendor/
