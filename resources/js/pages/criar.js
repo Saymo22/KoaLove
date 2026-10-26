@@ -686,15 +686,18 @@ document.querySelectorAll("[data-ir], [data-step]").forEach((b) =>
 
 $("fotos").addEventListener("change", (e) => {
   const plan=creatorPlan();
-  const files=additionalFiles(fotoFiles,[...e.target.files]);e.target.value='';
-  if(!files.length)return;
-  if(!plan||fotoFiles.length+files.length>plan.photos){$('erroMedia').textContent=plan?`Este plano permite ${window.NAPlanLimits.summary(plan)}. Você já selecionou ${fotoFiles.length} fotos; adicione no máximo ${Math.max(0,plan.photos-fotoFiles.length)} novas fotos.`:PLAN_RELOAD_MESSAGE;return;}
+  const selected=additionalFiles(fotoFiles,Array.from(e.target.files));e.target.value='';
+  if(!selected.length)return;
+  if(!plan){$('erroMedia').textContent=PLAN_RELOAD_MESSAGE;return;}
+  const files=selected.slice(0,Math.max(0,plan.photos-fotoFiles.length));
+  const notice=batchSelectionNotice(selected.length,files.length,'fotos',plan.photos);
+  if(!files.length){$('erroMedia').textContent=notice;return;}
   preservePhotoRefs();
   fotoFiles.push(...files);
   photoIds.push(...files.map(()=>NAGift.id()));
   fotoURLs.push(...files.map((f)=>mediaURL(f)));
   legendasValores.push(...files.map(()=>''));
-  $("erroMedia").textContent = "";
+  $("erroMedia").textContent = notice;
   $("erro3").textContent = "";
   clearPlanError();
   atualizarQtdMidia(plan);
@@ -706,12 +709,15 @@ $("fotos").addEventListener("change", (e) => {
 
 $("videos").addEventListener("change", (e) => {
   const plan=creatorPlan();
-  const files=additionalFiles(videoFiles,[...e.target.files]);e.target.value='';
-  if(!files.length)return;
-  if(!plan||videoFiles.length+files.length>plan.videos){$('erroMedia').textContent=plan?`Este plano permite ${window.NAPlanLimits.summary(plan)}. Você já selecionou ${videoFiles.length} vídeos; adicione no máximo ${Math.max(0,plan.videos-videoFiles.length)} novos vídeos.`:PLAN_RELOAD_MESSAGE;return;}
+  const selected=additionalFiles(videoFiles,Array.from(e.target.files));e.target.value='';
+  if(!selected.length)return;
+  if(!plan){$('erroMedia').textContent=PLAN_RELOAD_MESSAGE;return;}
+  const files=selected.slice(0,Math.max(0,plan.videos-videoFiles.length));
+  const notice=batchSelectionNotice(selected.length,files.length,'vídeos',plan.videos);
+  if(!files.length){$('erroMedia').textContent=notice;return;}
   videoFiles.push(...files);videoIds.push(...files.map(()=>NAGift.id()));
   videoURLs.push(...files.map(f=>mediaURL(f)));
-  $("erroMedia").textContent = "";
+  $("erroMedia").textContent = notice;
   $("erro3").textContent = "";
   clearPlanError();renderVideosGrid();
   atualizarQtdMidia(plan);
@@ -719,6 +725,10 @@ $("videos").addEventListener("change", (e) => {
   atualizarPreview();
 });
 
+function batchSelectionNotice(selected,added,kind,limit){
+  if(selected===added)return '';
+  return `Adicionados ${added} de ${selected} novos arquivos. O plano permite até ${limit} ${kind}; ${selected-added} não foram adicionados. Os arquivos anteriores foram mantidos.`;
+}
 function additionalFiles(existing,selected){
   const key=file=>typeof file==='string'?file:[file.name,file.size,file.lastModified,file.type].join(':');
   const seen=new Set(existing.map(key));

@@ -15,7 +15,7 @@ function creator(){
   vm.runInContext(source.slice(source.indexOf('function removerFoto(idx)'),source.indexOf('function atualizarPainelPersonalizacao()')),scope);
   vm.runInContext('renderCreatorPlan()',scope);
   const read=code=>vm.runInContext(code,scope);
-  const pick=(kind,files)=>{const input=get(kind);input.files=files;input.value='selected';input.handlers.change({target:input});};
+  const pick=(kind,files)=>{const input=get(kind);const list={length:files.length,item:index=>files[index]||null};files.forEach((file,index)=>{list[index]=file;});input.files=list;input.value='selected';input.handlers.change({target:input});};
   return {scope,get,pick,read,revoked,plans};
 }
 const photo=i=>({name:`photo-${i}.png`,size:100+i,lastModified:i,type:'image/png'});
@@ -59,9 +59,33 @@ test('Troca para plano menor é recusada até reduzir fotos e vídeos, sem apaga
   select.value='small';select.handlers.change({target:select});
   assert.equal(c.read('selectedPlanId'),'small');assert.equal(c.get('qtdFotos').textContent,'5 de 5 fotos');assert.equal(c.get('qtdVideos').textContent,'1 de 1 vídeo');
   c.pick('fotos',[photo(99)]);c.pick('videos',[video(99)]);
-  assert.equal(c.read('fotoFiles.length'),5);assert.equal(c.read('videoFiles.length'),1);assert.match(c.get('erroMedia').textContent,/no máximo 0/);
+  assert.equal(c.read('fotoFiles.length'),5);assert.equal(c.read('videoFiles.length'),1);assert.match(c.get('erroMedia').textContent,/1 não foram adicionados/);
   c.read('pedidoEditandoId="saved-purchase"');select.value='large';select.handlers.change({target:select});
   assert.equal(c.read('selectedPlanId'),'small');assert.match(c.get('creatorPlanError').textContent,/já foi salvo/);
+});
+
+test('Seleção múltipla aceita lotes completos de 5, 10 e 12 fotos e de 1, 2 e 4 vídeos',()=>{
+  for(const [photos,videos] of [[5,1],[10,2],[12,4]]){
+    const c=creator();c.plans[0].photos_limit=photos;c.plans[0].videos_limit=videos;
+    c.pick('fotos',Array.from({length:photos},(_,i)=>photo(i)));
+    c.pick('videos',Array.from({length:videos},(_,i)=>video(i)));
+    assert.equal(c.read('fotoFiles.length'),photos);assert.equal(c.read('fotoURLs.length'),photos);
+    assert.equal(c.read('videoFiles.length'),videos);assert.equal(c.get('videosGrid').children.length,videos);
+    assert.equal(c.get('erroMedia').textContent,'');
+    assert.equal(c.get('qtdFotos').textContent,`${photos} de ${photos} fotos`);
+  }
+});
+
+test('Lotes acima da cota preenchem vagas restantes e avisam sem descartar arquivos anteriores',()=>{
+  for(const [kind,make,limit,collection] of [['fotos',photo,12,'fotoFiles'],['videos',video,4,'videoFiles']]){
+    const c=creator();c.pick(kind,[make(0)]);
+    const first=c.read(`${collection}[0]`);
+    c.pick(kind,Array.from({length:limit+1},(_,i)=>make(i+1)));
+    assert.equal(c.read(`${collection}.length`),limit);assert.equal(c.read(`${collection}[0]`),first);
+    assert.match(c.get('erroMedia').textContent,/2 não foram adicionados/);
+    assert.match(c.get('erroMedia').textContent,/anteriores foram mantidos/);
+    assert.equal(c.get(kind).value,'');
+  }
 });
 
 test('Plano destacado ocupa a posição central sem alterar a ordem do catálogo original',()=>{

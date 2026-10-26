@@ -229,7 +229,7 @@
             <div id="videosGrid" class="videos-grid"></div>
             <p class="nota" id="mediaHint">
             </p>
-            <div class="erro" id="erroMedia">
+            <div class="erro" id="erroMedia" role="status" aria-live="polite">
             </div>
             <div class="acoes">
               <button type="button" class="btn sec" data-ir="2">← Voltar</button>
