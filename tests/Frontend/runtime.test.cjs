@@ -21,6 +21,15 @@ test('Uploads em nuvem usam a URL temporária sem enviar cookies ou CSRF ao stor
   assert.equal(calls[0].body.bytes,blob.size);assert.equal(calls[1].body.upload_id,'intent-1');assert(calls[1].path.endsWith('/complete-upload'));
 });
 test('Referências estáveis, coleções exclusivas e reprodução de áudio',require('./exclusive-helpers.cjs'));
+
+test('Armazenamento indisponível preserva o rascunho e não inicia upload',async()=>{
+  let contacted=false;
+  class ApiError extends Error{constructor(v){super(v.message);Object.assign(this,v);}}
+  const scope=vm.createContext({window:{APP_CONFIG:{MEDIA_STORAGE_CONFIGURED:false},ApiClient:{get(){},post(){contacted=true;},ApiError}},fetch:async()=>{contacted=true;}});
+  vm.runInContext(fs.readFileSync('resources/js/api/purchases.js','utf8'),scope);
+  await assert.rejects(scope.window.ApiPurchases.upload('purchase','asset',{type:'image/png'}),e=>e.code==='MEDIA_UNAVAILABLE'&&e.message.includes('rascunho'));
+  assert.equal(contacted,false);
+});
 test('Oito etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));
 test('Todas as páginas e os 13 temas carregam assets separados pelo Vite',()=>{

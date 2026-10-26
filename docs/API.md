@@ -6,7 +6,7 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 
 ## Endpoints
 
-- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação.
+- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
 - POST /auth/register (name,email,password), /auth/login (email,password), /auth/logout.
 - GET /auth/me: usuário sem hashes, tokens ou campos internos.
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.

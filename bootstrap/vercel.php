@@ -39,7 +39,7 @@ if (preg_match('/^(ep-[a-z0-9-]+?)(?:-pooler)?\.[a-z0-9.-]+\.neon\.tech$/', $dbH
 $default('SESSION_DRIVER', 'database');
 $default('SESSION_SECURE_COOKIE', 'true');
 $default('CACHE_STORE', 'database');
-$default('FILESYSTEM_DISK', 's3');
+$default('FILESYSTEM_DISK', 'local');
 $default('LOG_CHANNEL', 'stderr');
 $default('FFPROBE_PATH', dirname(__DIR__).'/bin/ffprobe');
 $default('APP_URL', 'https://'.(getenv('VERCEL_URL') ?: 'localhost'));

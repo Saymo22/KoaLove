@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reembolsos — Admin</title>
+    @include('partials.seo')
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
@@ -12,6 +12,7 @@
     @vite(["resources/css/base.css","resources/css/admin.css","resources/js/entries/admin-reembolsos.js"])
 </head>
 <body class="admin-body">
+    @include('partials.noscript')
     <header id="adminHeader"></header>
     <main class="admin-main">
         <h1 class="page-title">Gestão de Reembolsos</h1>

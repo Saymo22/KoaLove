@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Criar presente ❤️ — Nosso Amor</title>
-    <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos." />
+    @include('partials.seo')
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
 
@@ -15,6 +14,7 @@
     @vite(["resources/css/base.css","resources/css/criar.css","resources/js/entries/criar.js"])
 </head>
   <body class="app creator-v2">
+    @include('partials.noscript')
     <div class="scroll-progress" id="scrollProgress">
     </div>
     <div id="navbar">

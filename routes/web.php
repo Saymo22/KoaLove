@@ -6,17 +6,21 @@ use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
+use App\Services\MediaStorage;
+use App\Services\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home.html');
+Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
+Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
 foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
     Route::view($page['url'], $page['view'])->middleware('throttle:pages');
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware('throttle:api')->group(function () {
-    Route::get('config', fn () => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => config('filesystems.default') === 's3' ? 'direct' : 'server', 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn (MediaStorage $storage) => response()->json(['ok' => true, 'data' => ['themes' => config('gift.themes'), 'price_cents' => config('gift.price_cents'), 'currency' => 'BRL', 'coupons' => config('gift.coupons'), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);

@@ -32,7 +32,7 @@ class VercelBootstrapTest extends TestCase
         $values = json_decode($process->getOutput(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertStringStartsWith(sys_get_temp_dir(), $values[0]);
         $this->assertStringStartsWith(sys_get_temp_dir(), $values[1]);
-        $this->assertSame(['database', 'database', 's3', 'false', 'https://preview.example.test'], array_slice($values, 2));
+        $this->assertSame(['database', 'database', 'local', 'false', 'https://preview.example.test'], array_slice($values, 2));
     }
 
     public function test_unconfigured_serverless_entry_fails_without_disclosing_secrets(): void

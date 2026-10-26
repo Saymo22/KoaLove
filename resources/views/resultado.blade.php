@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu presente está pronto ❤️</title>
+    @include('partials.seo')
 
 
 
@@ -15,6 +15,7 @@
     @vite(["resources/css/base.css","resources/css/resultado.css","resources/js/entries/resultado.js"])
 </head>
 <body class="app">
+    @include('partials.noscript')
 
     <div class="scroll-progress" id="scrollProgress"></div>
 

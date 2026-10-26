@@ -37,7 +37,7 @@ class CloudMediaTest extends TestCase
         [, $p] = $this->setupCloud();
         config(['filesystems.disks.s3.bucket' => null]);
         $this->postJson('/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890/upload-url', ['mime' => 'image/png', 'bytes' => 100])
-            ->assertStatus(503)->assertJsonPath('error.message', 'Armazenamento de mídia ainda não configurado.');
+            ->assertStatus(503)->assertJsonPath('error.code', 'MEDIA_UNAVAILABLE');
         $this->assertDatabaseCount('media_uploads', 0);
     }
 

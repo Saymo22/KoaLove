@@ -18,6 +18,8 @@ Suas fotos ficam privadas no servidor. Quem possui o link de um presente liberad
 - [Implantação na Vercel](docs/VERCEL.md)
 - [Contrato da API](docs/API.md)
 - [Segurança](docs/SECURITY.md)
+- [SEO, indexação e noscript](docs/SEO.md)
+- [Armazenamento local de fotos, vídeos e músicas](docs/MEDIA_STORAGE.md)
 - [Migração dos dados antigos](docs/MIGRATION.md)
 - [Instruções para agentes](AGENTS.md)
 

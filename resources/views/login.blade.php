@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Amor — Uma Experiência</title>
+    @include('partials.seo')
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
     @vite(["resources/css/base.css","resources/css/login.css","resources/js/entries/login.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <!-- Cursor customizado -->
     <div class="cursor" id="cursor"></div>
