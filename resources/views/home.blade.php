@@ -70,18 +70,10 @@
                         <div class="pol-mini p1"><div></div></div>
                         <div class="pol-mini p2"><div></div></div>
                         <div class="fone-tela">
-                            <div class="fone-status" aria-hidden="true"><span>9:41</span><em>●●● ▮</em></div>
-                            <div class="fone-hero">
-                                <small>Uma história que continua...</small>
-                                <b>Nós dois</b>
-                                <i>2 anos e 10 meses de amor</i>
-                            </div>
-                            <div class="fone-cont">
-                                <div><strong data-count="2">0</strong><span>Anos</span></div>
-                                <div><strong data-count="34">0</strong><span>Meses</span></div>
-                                <div><strong data-count="952">0</strong><span>Dias</span></div>
-                                <div><strong data-count="22848" data-format="br">0</strong><span>Horas</span></div>
-                            </div>
+                            <video class="fone-video" autoplay muted loop playsinline preload="metadata" aria-label="Demonstração de um presente digital Nosso Amor">
+                                <source src="{{ asset('media/home-preview.mp4') }}" type="video/mp4">
+                                Seu navegador não suporta vídeos. <a href="{{ asset('media/home-preview.mp4') }}">Abra a demonstração em vídeo</a>.
+                            </video>
                         </div>
                     </div>
                 </div>

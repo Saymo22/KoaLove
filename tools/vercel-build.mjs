@@ -33,4 +33,5 @@ if(process.argv.includes('--function')){
 }else{
   // Somente assets estáticos são publicados. Nunca copie public/index.php ou a raiz do projeto.
   await fs.mkdir('dist/build',{recursive:true});await fs.cp('public/build','dist/build',{recursive:true});await fs.copyFile('public/favicon.svg','dist/favicon.svg');
+  await fs.cp('public/media','dist/media',{recursive:true});
 }
