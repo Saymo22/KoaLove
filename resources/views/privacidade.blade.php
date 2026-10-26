@@ -41,6 +41,7 @@
 
         <article class="legal-content">
 <h2 id="dados">1. Dados coletados</h2>
+<p>O assistente automático do chat responde dúvidas gerais sem enviar a conversa a um serviço de inteligência artificial. Ao optar pelo suporte e enviar sua descrição, guardamos na sua conta as mensagens do atendimento, a categoria do assunto, o caminho da página e até três perguntas anteriores para contextualizar a solicitação. A equipe responde pelo mesmo chat. Não envie senhas, códigos de verificação ou dados de cartão. O histórico do suporte faz parte da exportação e do processo de exclusão da conta.</p>
 <p>Para validar a garantia comercial e analisar solicitações de reembolso, registramos a data do primeiro acesso ao conteúdo pelo link compartilhado, o início desse registro e as condições da compra no envio da solicitação. Esses campos não identificam o destinatário e não são expostos no presente público.</p>
 <p>Guardamos nome, e-mail, senha protegida por hash e o conteúdo fornecido para os presentes: fotos, vídeos, áudios, textos e datas. As sessões registram IP e navegador para segurança; a auditoria usa IP pseudonimizado, rota sem parâmetros, usuário interno, resultado e data.</p>
 <h2 id="uso">2. Finalidades</h2>

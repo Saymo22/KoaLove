@@ -33,7 +33,15 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - Admin: GET /admin/pricing; POST /admin/plans e /admin/plans/{uuid}; POST /admin/pricing/promotions/{uuid?} e /admin/pricing/coupons/{uuid?}. Sem ID cria; com ID edita. Campos e regras em [PRICING.md](PRICING.md). Preço em centavos e desconto inteiro de 1–95%; ofertas aceitam `plan_id:null` para todos os planos. Desative para encerrar sem apagar histórico.
 - POST /purchases/{purchase}/pay também aceita `expected_amount_cents`: divergência com a cotação do servidor retorna 409 antes de iniciar cobrança. O checkout guarda `pricing_details` e congela o total. Promoção e cupom não acumulam; aplica-se o maior desconto válido.
 
-## Limites
+## Chat e suporte
+
+- GET `/support`: somente autenticado, retorna `user_id` e `ticket:{id,subject,status,messages}|null` da própria conta. Resposta privada sem cache.
+- POST `/support/start`: `text` (3–2000 caracteres), `message_id` UUID, `category` (`payment`, `media`, `account`, `refund`, `themes`, `creation`, `sharing`, `other`), `page` caminho `.html` sem query e `context` opcional (até 3 textos de 500 caracteres). Reutiliza atendimento ativo ou cria um; não aceita dono/status fornecidos pelo cliente.
+- POST `/support/messages`: `text` (1–2000) e `message_id` UUID, sempre no atendimento da própria conta. Repetição do mesmo UUID é idempotente. Reabre o estado para `open`.
+- A rota admin `/admin/tickets/{ticket}/reply` devolve a conversa atualizada. Respostas têm `role=admin`, UUID e data do servidor. A leitura do cliente recupera essas respostas no mesmo chat.
+- Escritas: 10/min por conta, 30/min por IP; CSRF e sessão obrigatórios. Ver [CHATBOT.md](CHATBOT.md) para triagem, polling, histórico e limites.
+
+## Limites gerais
 
 Com `FILESYSTEM_DISK=supabase`, o teto configurado do provedor também se aplica: no plano Free são 50.000.000 bytes por arquivo. `media_storage.limits` publica os limites efetivos; o cliente verifica antes do envio e o servidor verifica a reserva e o arquivo normalizado. O disco é registrado em cada asset/reserva; referências dos temas permanecem estáveis.
 

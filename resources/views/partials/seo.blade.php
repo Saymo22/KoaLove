@@ -1,4 +1,5 @@
 @php($seo = app(\App\Services\Seo::class)->metadata(request()))
+@vite('resources/js/chat/entry.js')
 <title>{{ $seo['title'] }}</title>
 <meta name="description" content="{{ $seo['description'] }}">
 <meta name="robots" content="{{ $seo['robots'] }}">

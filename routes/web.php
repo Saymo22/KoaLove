@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SupportController;
 use App\Services\MediaStorage;
 use App\Services\PaymentSettings;
 use App\Services\Pricing;
@@ -41,6 +42,9 @@ Route::prefix('api')->middleware('throttle:api')->group(function () {
     Route::get('shared/{token}/media/{asset}', [MediaController::class, 'shared'])->where('token', '[a-f0-9]{64}');
     Route::middleware('api.auth')->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
+        Route::get('support', [SupportController::class, 'show']);
+        Route::post('support/start', [SupportController::class, 'start'])->middleware('throttle:support');
+        Route::post('support/messages', [SupportController::class, 'message'])->middleware('throttle:support');
         Route::post('auth/logout', [AuthController::class, 'logout']);
         Route::get('purchases', [PurchaseController::class, 'index']);
         Route::get('purchases/{purchase}', [PurchaseController::class, 'show'])->withTrashed();

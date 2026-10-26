@@ -97,7 +97,7 @@
       "resources/js/api/admin.js",
       "resources/js/admin/auth.js",
       "resources/js/admin/header.js",
-      "resources/js/admin/suporte.js"
+      "resources/js/admin/support-conversation.js"
     ],
     "entry": "resources/js/entries/admin-suporte.js"
   },

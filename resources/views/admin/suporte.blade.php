@@ -34,6 +34,15 @@
         </div></section>
     </main>
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+    <dialog id="supportDialog" class="admin-dialog support-dialog" aria-labelledby="supportSubject">
+        <p class="admin-eyebrow">Atendimento ao cliente</p><h2 id="supportSubject">Conversa</h2><p id="supportCustomer"></p>
+        <div id="supportMessages" class="support-messages" role="log" aria-label="Histórico da conversa" aria-live="polite"></div>
+        <form id="supportReplyForm">
+            <label for="supportReplyText">Resposta para o cliente<textarea id="supportReplyText" maxlength="2000" required placeholder="Escreva uma resposta com cuidado…"></textarea></label>
+            <p id="supportReplyError" role="alert"></p>
+            <div class="admin-dialog-actions"><button class="btn-action" id="closeSupportDialog" type="button">Fechar</button><button class="btn-action" type="submit">Enviar resposta</button></div>
+        </form>
+    </dialog>
 
 
 

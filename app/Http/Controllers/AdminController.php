@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AdminController extends ApiController
 {
@@ -119,8 +120,10 @@ class AdminController extends ApiController
         $data = $request->validate(['text' => 'required|string|max:2000']);
         $t = DB::transaction(function () use ($ticket, $data) {
             $t = Ticket::whereKey($ticket->id)->lockForUpdate()->firstOrFail();
-            $messages = $t->messages;
-            $messages[] = ['role' => 'admin', 'text' => $data['text'], 'at' => now()->getTimestampMs()];
+            abort_if(User::findOrFail($t->user_id)->deletion_requested_at, 409, 'Conta desativada.');
+            $messages = $t->messages ?? [];
+            abort_if(count($messages) >= 500, 409, 'Limite de mensagens deste atendimento atingido.');
+            $messages[] = ['id' => (string) Str::uuid(), 'role' => 'admin', 'text' => $data['text'], 'at' => now()->getTimestampMs()];
             $t->update(['messages' => $messages, 'status' => 'answered']);
 
             return $t;
