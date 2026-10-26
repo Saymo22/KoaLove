@@ -11,7 +11,7 @@ class ManualPix
 {
     private function key(): string
     {
-        $key = trim((string) config('payments.pix.key'));
+        $key = trim((string) (app(AdminConfiguration::class)->all()['pixKey'] ?: config('payments.pix.key')));
         if (filter_var($key, FILTER_VALIDATE_EMAIL) || Str::isUuid($key) || preg_match('/\A\+[1-9][0-9]{9,14}\z/', $key)) {
             return $key;
         }
@@ -66,6 +66,7 @@ class ManualPix
             $id = (string) Str::uuid();
             $pricing = app(Pricing::class)->quote($p, $coupon);
             abort_unless($pricing['amount_cents'] === $amount, 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
+            app(Pricing::class)->reserveCoupon($pricing);
             $p->update(['price_cents' => $pricing['base_price_cents']]);
             $key = $this->key();
             $name = $this->label((string) config('payments.pix.name'), 25);

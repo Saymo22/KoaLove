@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseRequest;
 use App\Models\PaymentCheckout;
 use App\Models\Purchase;
 use App\Models\Refund;
+use App\Services\AdminConfiguration;
 use App\Services\ManualPix;
 use App\Services\MercadoPagoCheckout;
 use App\Services\Pricing;
@@ -55,6 +56,7 @@ class PurchaseController extends ApiController
 
     public function store(PurchaseRequest $request)
     {
+        abort_unless(array_key_exists($request->validated('tema'), app(AdminConfiguration::class)->themes()), 422, 'Tema indisponível.');
         $key = $request->validated('client_request_id');
         $purchase = DB::transaction(function () use ($request, $key) {
             // A trava do usuário serializa criações repetidas e a constraint garante unicidade.

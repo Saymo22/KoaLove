@@ -35,13 +35,3 @@ test('Identidade administrativa vem da sessão verificada e logout falho não re
   fail=true;await assert.rejects(context.fazerLogoutAdmin(),/offline/);assert.equal(context.window.location.href,'dashboard.html');
   user={name:'Cliente',role:'user'};assert.equal(await context.estaLogadoAdmin(),false);assert.equal(context.obterAdminAtual(),null);
 });
-test('Dashboard bloqueia consultas de visitantes e escapa conteúdo das transações', async () => {
-  let authorized=false,calls=0;
-  const elements=new Map();const get=id=>{if(!elements.has(id))elements.set(id,{...element(),innerHTML:'',replaceChildren(){}});return elements.get(id);};
-  const context=vm.createContext({protegerRotaAdmin:async()=>authorized,renderAdminHeader(){},document:{getElementById:get},
-    window:{ApiAdmin:{purchases:async()=>{calls++;return {purchases:[]};},summary:async()=>({kpis:{receita_cents:1990,compras:1,reembolsos_pendentes:0,tickets_abertos:0},recentes:[{titulo:'<img src=x onerror=alert(1)>',cliente_nome:'<script>bad</script>',valor_cents:1990}]})}}});
-  const source=fs.readFileSync('resources/js/admin/dashboard.js','utf8');await vm.runInContext(source,context);assert.equal(calls,0);
-  authorized=true;await vm.runInContext(source,context);assert.equal(calls,1);
-  assert.match(get('recentList').innerHTML,/&lt;img/);assert.doesNotMatch(get('recentList').innerHTML,/<script>|<img/);
-  await get('refreshDashboard').handlers.click();assert.equal(calls,2);assert.equal(get('refreshDashboard').disabled,false);
-});

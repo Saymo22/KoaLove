@@ -31,6 +31,7 @@ class MercadoPagoCheckout
             }
             $pricing = app(Pricing::class)->quote($p, $coupon);
             abort_unless($pricing['amount_cents'] === $amount, 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
+            app(Pricing::class)->reserveCoupon($pricing);
             $p->update(['price_cents' => $pricing['base_price_cents']]);
 
             return PaymentCheckout::create(['id' => (string) Str::uuid(), 'purchase_id' => $p->id, 'method' => $method, 'amount_cents' => $amount, 'coupon' => $coupon ?: null, 'discount_percent' => $pricing['discount_percent'], 'pricing_details' => $pricing, 'live' => config('payments.mercadopago.live')]);

@@ -457,8 +457,9 @@
             <div class="selo-conf" data-icon="♾️">Acesso para sempre</div>
         </div>
 
+        <p id="siteSupportContact" hidden></p>
         <div class="rodape-base">
-            <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho para quem quer eternizar momentos.</div>
+            <div>© <span id="anoAtual"></span> <b id="siteStoreName">KoaLove</b> — feito com carinho para quem quer eternizar momentos.</div>
             <div class="rodape-base-links">
                 <a href="termos.html">Termos</a> <!-- ✅ Atualizado -->
                 <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->
