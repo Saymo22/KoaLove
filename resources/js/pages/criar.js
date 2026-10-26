@@ -5,6 +5,7 @@ let tema = null,
   fotoFiles = [],
   legendasValores = [];
 let draggedIdx = null,
+  videoFiles = [],
   videoURLs = [],
   previewReturnFocus = null;
 
@@ -54,6 +55,7 @@ function renderMediaLimits(plan){
     const el=$(id);if(el)el.textContent=hints?hints[key]:PLAN_RELOAD_MESSAGE;
   }
   const musica=$('musica');if(musica)musica.disabled=!plan||!plan.music;
+  const videos=$('videos');if(videos)videos.disabled=!plan||!plan.videos;
   atualizarQtdMidia(plan);
   renderMediaWarning(plan);
 }
@@ -70,7 +72,18 @@ function renderCreatorPlan(){
  $('creatorPlanDetails').textContent=summary?`Até ${summary}. O preço final é conferido antes do pagamento.`:PLAN_RELOAD_MESSAGE;
  renderMediaLimits(plan);
 }
-$('creatorPlan')?.addEventListener('change',event=>{selectedPlanId=event.target.value;$('erroMedia').textContent='';$('erro3').textContent='';renderCreatorPlan();});
+function clearPlanError(){const error=$('creatorPlanError');if(error){error.hidden=true;error.textContent='';}}
+function changeCreatorPlan(event){
+  const next=window.NA_PRICING?.plans?.find(plan=>plan.id===event.target.value);
+  const error=$('creatorPlanError');
+  if(pedidoEditandoId||!next||window.NAPlanLimits?.overLimit?.(next,currentMediaCounts())){
+    event.target.value=selectedPlanId||'';
+    if(error){error.hidden=false;error.textContent=pedidoEditandoId?'O plano deste presente já foi salvo e não pode ser alterado.':!next?PLAN_RELOAD_MESSAGE:`Para escolher ${next.name}, reduza a seleção para ${window.NAPlanLimits.summary(next)} antes de trocar o plano. Seus arquivos foram mantidos.`;}
+    return;
+  }
+  clearPlanError();selectedPlanId=next.id;$('erroMedia').textContent='';$('erro3').textContent='';renderCreatorPlan();
+}
+$('creatorPlan')?.addEventListener('change',changeCreatorPlan);
 let musicaPreviewURL = null;
 let photoIds=[],videoIds=[],musicId=null;
 let requestId;
@@ -82,7 +95,7 @@ const mediaURL=NAGift.url;
 function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
 function captureDraft(){
  const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
- fotos:[...fotoFiles],videos:$('videos').files.length?[...$('videos').files]:(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
+ fotos:[...fotoFiles],videos:[...videoFiles],musica:$('musica').files[0]||pedidoAntigo?.musica||null,
  themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
  usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
  eventos:[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(e=>e.titulo||e.texto),
@@ -589,6 +602,7 @@ function removerFoto(idx) {
   else if (capa > idx) $("fotoCapa").value = capa - 1;
 
   URL.revokeObjectURL(removedURL);
+  atualizarQtdMidia(creatorPlan());renderMediaWarning(creatorPlan());clearPlanError();
   renderFotosGrid();
   atualizarPreview();
 }
@@ -655,6 +669,10 @@ function validar(destino) {
   const fail=(step,field)=>{ir(step);marcarErro(field);return false;};
   if((destino>current||destino===9)&&destino>=3){if(!$('de').value.trim())return fail(2,'de');if(!$('para').value.trim())return fail(2,'para');}
   if((destino>current||destino===9)&&destino>=4&&!fotoFiles.length)return fail(3,'fotos');
+  if((destino>current||destino===9)&&destino>=4){
+    const plan=creatorPlan();
+    if(!plan||window.NAPlanLimits?.overLimit?.(plan,currentMediaCounts())){ir(3);$('erroMedia').textContent=plan?window.NAPlanLimits.failureMessage(plan):PLAN_RELOAD_MESSAGE;return false;}
+  }
   if((destino>current||destino===9)&&destino>=7&&!$('carta').value.trim())return fail(6,'carta');
   return true;
 }
@@ -668,19 +686,17 @@ document.querySelectorAll("[data-ir], [data-step]").forEach((b) =>
 
 $("fotos").addEventListener("change", (e) => {
   const plan=creatorPlan();
-  const selected=[...e.target.files];
-  const files=plan?selected.slice(0,plan.photos):selected;
-  fotoURLs.forEach((u) => URL.revokeObjectURL(u));
+  const files=additionalFiles(fotoFiles,[...e.target.files]);e.target.value='';
+  if(!files.length)return;
+  if(!plan||fotoFiles.length+files.length>plan.photos){$('erroMedia').textContent=plan?`Este plano permite ${window.NAPlanLimits.summary(plan)}. Você já selecionou ${fotoFiles.length} fotos; adicione no máximo ${Math.max(0,plan.photos-fotoFiles.length)} novas fotos.`:PLAN_RELOAD_MESSAGE;return;}
   preservePhotoRefs();
-  fotoFiles = files;
-  photoIds=files.map(()=>NAGift.id());
-  fotoURLs = files.map((f) => mediaURL(f));
-  legendasValores = new Array(files.length).fill("");
-  $("fotoCapa").value = 0;
+  fotoFiles.push(...files);
+  photoIds.push(...files.map(()=>NAGift.id()));
+  fotoURLs.push(...files.map((f)=>mediaURL(f)));
+  legendasValores.push(...files.map(()=>''));
   $("erroMedia").textContent = "";
   $("erro3").textContent = "";
-  if(!plan)$("erroMedia").textContent=PLAN_RELOAD_MESSAGE;
-  else if(selected.length>plan.photos)$("erroMedia").textContent=window.NAPlanLimits?.limitMessage?.(plan,"photos")||"Selecione menos fotos para este plano.";
+  clearPlanError();
   atualizarQtdMidia(plan);
   renderMediaWarning(plan);
   atualizarPainelPersonalizacao();
@@ -690,20 +706,39 @@ $("fotos").addEventListener("change", (e) => {
 
 $("videos").addEventListener("change", (e) => {
   const plan=creatorPlan();
-  const selected=[...e.target.files];
-  const files=plan?selected.slice(0,plan.videos):selected;
-  videoURLs.forEach((u) => URL.revokeObjectURL(u));
-  videoIds=files.map(()=>NAGift.id());
-  if(pedidoAntigo)pedidoAntigo.videos=files;
-  videoURLs = files.map((f) => URL.createObjectURL(f));
+  const files=additionalFiles(videoFiles,[...e.target.files]);e.target.value='';
+  if(!files.length)return;
+  if(!plan||videoFiles.length+files.length>plan.videos){$('erroMedia').textContent=plan?`Este plano permite ${window.NAPlanLimits.summary(plan)}. Você já selecionou ${videoFiles.length} vídeos; adicione no máximo ${Math.max(0,plan.videos-videoFiles.length)} novos vídeos.`:PLAN_RELOAD_MESSAGE;return;}
+  videoFiles.push(...files);videoIds.push(...files.map(()=>NAGift.id()));
+  videoURLs.push(...files.map(f=>mediaURL(f)));
   $("erroMedia").textContent = "";
   $("erro3").textContent = "";
-  if(!plan)$("erroMedia").textContent=PLAN_RELOAD_MESSAGE;
-  else if(selected.length>plan.videos)$("erroMedia").textContent=window.NAPlanLimits?.limitMessage?.(plan,"videos")||"Selecione menos vídeos para este plano.";
+  clearPlanError();renderVideosGrid();
   atualizarQtdMidia(plan);
   renderMediaWarning(plan);
   atualizarPreview();
 });
+
+function additionalFiles(existing,selected){
+  const key=file=>typeof file==='string'?file:[file.name,file.size,file.lastModified,file.type].join(':');
+  const seen=new Set(existing.map(key));
+  return selected.filter(file=>{const id=key(file);if(seen.has(id))return false;seen.add(id);return true;});
+}
+function removerVideo(index){
+  const url=videoURLs.splice(index,1)[0];if(url?.startsWith('blob:'))URL.revokeObjectURL(url);
+  videoFiles.splice(index,1);videoIds.splice(index,1);
+  clearPlanError();renderVideosGrid();atualizarQtdMidia(creatorPlan());renderMediaWarning(creatorPlan());atualizarPreview();
+}
+function renderVideosGrid(){
+  const grid=$('videosGrid');if(!grid)return;grid.replaceChildren();
+  videoURLs.forEach((url,index)=>{
+    const card=document.createElement('div');card.className='video-card';
+    const video=document.createElement('video');video.src=url;video.controls=true;video.preload='metadata';video.playsInline=true;
+    const label=document.createElement('span');label.textContent=videoFiles[index]?.name||`Vídeo ${index+1}`;
+    const remove=document.createElement('button');remove.type='button';remove.className='video-remove';remove.textContent='Remover vídeo';remove.setAttribute('aria-label',`Remover vídeo ${index+1}`);remove.addEventListener('click',()=>removerVideo(index));
+    card.append(video,label,remove);grid.append(card);
+  });
+}
 
 $("musica").addEventListener("change", (e) => {
   const plan=creatorPlan();
@@ -794,6 +829,7 @@ $("form").addEventListener("submit", async (e) => {
     if(!pedidoEditandoId){
       ({purchase}=await ApiPurchases.create(draft));
       pedidoEditandoId=purchase.id;draft.serverId=purchase.id;
+      pedidoAntigo={...pedidoAntigo,...purchase,musica:draft.musica};renderCreatorPlan();
       await salvarPedido(draft).catch(()=>{});
     }
     draft.preview_data_url=await gerarPreviewThumb();
@@ -913,7 +949,7 @@ async function carregarPedidoParaEdicao() {
   }
 
   if (pedido.videos && pedido.videos.length > 0) {
-    videoURLs = pedido.videos.map(f => mediaURL(f));
+    videoFiles=[...pedido.videos];videoURLs=videoFiles.map(f=>mediaURL(f));renderVideosGrid();
   }
 
   if (pedido.musica) {

@@ -11,8 +11,8 @@ module.exports=async()=>{
  const draft={id:'__draft_stable',client_request_id:'stable-request',videos:[],fotos:[{name:'test.png'}],photoIds:['stable-photo'],videoIds:[],musicId:null,tema:'namoro'};
  const context=vm.createContext({
   $:id=>id==='form'?{addEventListener:(_name,fn)=>saveHandler=fn}:controls[id],
-  window:{NACreatorWorkflow:{current:8}},validar:()=>true,ir:()=>{},creatorPlan:()=>({photos_limit:12,videos_limit:4,music_limit:1}),captureDraft:()=>({...draft}),photoIds:[],videoIds:[],musicId:null,
-  pedidoEditandoId:null,requestId:'stable-request',draftKey:'__draft_stable',location:{href:''},
+  window:{NACreatorWorkflow:{current:8}},validar:()=>true,ir:()=>{},renderCreatorPlan(){},creatorPlan:()=>({photos_limit:12,videos_limit:4,music_limit:1}),captureDraft:()=>({...draft}),photoIds:[],videoIds:[],musicId:null,
+  pedidoEditandoId:null,pedidoAntigo:null,requestId:'stable-request',draftKey:'__draft_stable',location:{href:''},
   salvarPedido:async()=>{throw new Error('QuotaExceeded');},excluirPedidoDB:async()=>{},gerarPreviewThumb:async()=>null,sessionStorage:{removeItem(){}},
   ApiPurchases:{create:async()=>{creates++;return {purchase:{id:'same-purchase'}};}},
   NAGift:{sync:async()=>{syncs++;if(syncs===1)throw new Error('Conexão interrompida no envio');return{purchase:{id:'same-purchase'}};}}

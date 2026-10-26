@@ -289,6 +289,49 @@ class PlanMediaLimitsTest extends TestCase
         $this->assertDatabaseCount('media_assets', 1);
     }
 
+    public function test_cheaper_plan_rejects_premium_media_even_with_forged_snapshot(): void
+    {
+        Storage::fake('local');
+        $cheap = $this->plan('Essencial', ['photos_limit' => 5, 'videos_limit' => 1, 'music_limit' => 1], ['price_cents' => 990]);
+        $owner = User::factory()->create();
+        $this->actingAs($owner);
+        $draft = $this->postJson('/api/purchases', ['tema' => 'namoro', 'para' => 'Bia', 'plan_id' => $cheap->id, 'price_cents' => 1, 'plan_snapshot' => ['photos_limit' => 12, 'videos_limit' => 4, 'music_limit' => 1]])->assertCreated()->assertJsonPath('data.purchase.plan.photos_limit', 5)->assertJsonPath('data.purchase.price_cents', 990)->json('data.purchase');
+        for ($i = 1; $i <= 5; $i++) {
+            $this->upload($draft, 'essential-photo-'.str_pad((string) $i, 8, '0', STR_PAD_LEFT))->assertOk();
+        }
+        $this->upload($draft, 'essential-photo-99999999')->assertUnprocessable();
+        $this->upload($draft, 'essential-video-11111111', 'video/webm', 'synthetic-video.webm')->assertOk();
+        $this->upload($draft, 'essential-video-22222222', 'video/webm', 'synthetic-video.webm')->assertUnprocessable();
+        $media = $this->media(array_map(fn ($i) => 'premium-photo-'.str_pad((string) $i, 8, '0', STR_PAD_LEFT), range(1, 12)), array_map(fn ($i) => 'premium-video-'.str_pad((string) $i, 8, '0', STR_PAD_LEFT), range(1, 4)));
+        $this->postJson('/api/purchases/'.$draft['id'].'/media/selection', $media)->assertUnprocessable();
+        $this->postJson('/api/purchases/'.$draft['id'].'/update', ['tema' => 'namoro', 'para' => 'Bia', 'media' => $media])->assertUnprocessable()->assertJsonPath('error.message', 'As mídias ultrapassam os limites do plano Essencial: até 5 fotos, 1 vídeo e 1 música.');
+        $this->assertSame(0, Purchase::findOrFail($draft['id'])->content_version);
+    }
+
+    public function test_existing_purchase_cannot_switch_to_a_cheaper_plan_in_update(): void
+    {
+        $premium = $this->plan('Infinity', ['photos_limit' => 12, 'videos_limit' => 4, 'music_limit' => 1]);
+        $cheap = $this->plan('Essencial', ['photos_limit' => 5, 'videos_limit' => 1, 'music_limit' => 1], ['price_cents' => 990]);
+        $draft = $this->draft(User::factory()->create(), $premium);
+        $this->postJson('/api/purchases/'.$draft['id'].'/update', ['tema' => 'namoro', 'para' => 'Bia', 'plan_id' => $cheap->id, 'media' => $this->media(['premium-photo-11111111'])])->assertConflict();
+        $this->assertSame($premium->id, Purchase::findOrFail($draft['id'])->plan_id);
+        $this->assertSame(12, Purchase::findOrFail($draft['id'])->plan_snapshot['photos_limit']);
+        $this->postJson('/api/purchases/'.$draft['id'].'/quote', ['cupom' => null])->assertOk()->assertJsonPath('data.quote.amount_cents', 1990);
+    }
+
+    public function test_checkout_rejects_an_existing_manifest_above_the_stored_plan(): void
+    {
+        $draft = $this->draft(User::factory()->create(), $this->plan('Uma foto', ['photos_limit' => 1]));
+        // Represents inconsistent historic data; no provider may start charging it.
+        Purchase::findOrFail($draft['id'])->update(['content_version' => 1, 'manifest' => $this->media(['historic-photo-11111111', 'historic-photo-22222222'])]);
+        foreach (['none', 'pix_manual', 'mercadopago'] as $driver) {
+            config(['payments.driver' => $driver]);
+            $this->postJson('/api/purchases/'.$draft['id'].'/pay', ['metodo' => 'pix'])->assertUnprocessable();
+        }
+        $this->assertDatabaseCount('payment_checkouts', 0);
+        $this->assertDatabaseHas('purchases', ['id' => $draft['id'], 'status' => 'pending']);
+    }
+
     public function test_direct_upload_reservations_count_against_the_plan_quota(): void
     {
         config(['filesystems.default' => 's3', 'filesystems.disks.s3.bucket' => 'test-bucket', 'filesystems.disks.s3.region' => 'us-east-1']);

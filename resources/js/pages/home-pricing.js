@@ -8,7 +8,10 @@
     function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
     function render(){
         if(!catalog?.plans?.length){$('pricingCards').replaceChildren(node('p','','Os planos estão temporariamente indisponíveis.'));return;}
-        const cards=catalog.plans.map(plan=>{
+        const displayPlans=[...catalog.plans];
+        const featured=displayPlans.findIndex(plan=>plan.featured);
+        if(featured>=0){const [plan]=displayPlans.splice(featured,1);displayPlans.splice(Math.floor(catalog.plans.length/2),0,plan);}
+        const cards=displayPlans.map(plan=>{
             const card=node('article','preco-box');
             if(plan.featured)card.append(node('div','preco-badge','Mais escolhido'));
             const head=node('div','preco-valor-wrap');head.append(node('h3','preco-tag',plan.name));

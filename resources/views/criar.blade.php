@@ -39,6 +39,7 @@
           <label for="creatorPlan">Plano do presente</label>
           <select id="creatorPlan"></select>
           <p id="creatorPlanDetails"></p>
+          <p id="creatorPlanError" class="erro" role="alert" hidden></p>
         </section>
         <nav class="wizard-nav" aria-label="Etapas do presente">
           <div class="wizard-progress">
@@ -225,6 +226,7 @@
               </label>
               <div class="erro-campo-msg" data-msg="videos">Adicione pelo menos uma foto.</div>
             </div>
+            <div id="videosGrid" class="videos-grid"></div>
             <p class="nota" id="mediaHint">
             </p>
             <div class="erro" id="erroMedia">
