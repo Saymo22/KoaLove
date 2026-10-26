@@ -25,9 +25,9 @@
                 <label>Preço (R$)<input name="price" required inputmode="decimal" placeholder="19,90"></label>
                 <label class="wide">Descrição<input name="description" maxlength="240"></label>
                 <label class="wide">Benefícios — um por linha<textarea name="features" rows="5" required maxlength="2000"></textarea></label>
-                <label>Fotos (1 a 12)<input name="photos_limit" type="number" min="1" max="12" value="12" required></label>
-                <label>Vídeos (0 a 4)<input name="videos_limit" type="number" min="0" max="4" value="4" required></label>
-                <label>Músicas (0 ou 1)<input name="music_limit" type="number" min="0" max="1" value="1" required></label>
+                <label>Fotos<input name="photos_limit" type="number" required></label>
+                <label>Vídeos<input name="videos_limit" type="number" required></label>
+                <label>Músicas<input name="music_limit" type="number" required></label>
                 <label>Ordem na vitrine<input name="sort_order" type="number" min="0" max="999" value="0" required></label>
                 <label class="check"><input name="active" type="checkbox" checked> Disponível para venda</label>
                 <label class="check"><input name="featured" type="checkbox"> Destacar como mais escolhido e padrão</label>

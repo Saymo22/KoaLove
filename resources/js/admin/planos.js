@@ -22,8 +22,21 @@
         if(record.starts_at&&new Date(record.starts_at)>new Date())return 'Agendado';
         return 'Ativo';
     }
+    const limitFields=[['photos_limit','photos'],['videos_limit','videos'],['music_limit','music']];
+    function applyLimits(limits) {
+        const form=$('planForm');
+        if(!limits||!form||!form.elements)return;
+        for(const [name,key] of limitFields){
+            const input=form.elements[name];if(!input)continue;
+            const min=limits.min?.[key],max=limits.max?.[key],fallback=limits.defaults?.[name]??limits.defaults?.[key];
+            if(Number.isFinite(min)){input.min=String(min);input.setAttribute?.('min',String(min));}
+            if(Number.isFinite(max)){input.max=String(max);input.setAttribute?.('max',String(max));}
+            if(Number.isFinite(fallback)){input.value=String(fallback);if('defaultValue' in input)input.defaultValue=String(fallback);}
+        }
+    }
     async function load() {
         records=await ApiClient.get('/admin/pricing');
+        applyLimits(records.limits);
         for(const select of document.querySelectorAll('.pricing-plan-options')){
             const chosen=select.value;select.replaceChildren(new Option('Todos os planos',''));
             for(const plan of records.plans)select.add(new Option(plan.name,plan.id));

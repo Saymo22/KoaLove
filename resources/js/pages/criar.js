@@ -11,7 +11,52 @@ let draggedIdx = null,
 let pedidoEditandoId = null;
 let pedidoAntigo = null;
 let selectedPlanId = new URLSearchParams(location.search).get('plano');
-function creatorPlan(){return pedidoAntigo?.plan || window.NA_PRICING?.plans?.find(p=>p.id===selectedPlanId) || {photos_limit:12,videos_limit:4,music_limit:1};}
+const PLAN_RELOAD_MESSAGE = 'Não foi possível carregar os limites do plano. Recarregue a página.';
+
+/* Cotas normalizadas {photos, videos, music}. O snapshot do rascunho salvo
+   sempre vence o plano ativo; sem plano/config, retorna null (sem fallback fixo). */
+function creatorPlan(){
+  const snapshot=window.NAPlanLimits?.fromPlan?.(pedidoAntigo?.plan);
+  if(snapshot)return snapshot;
+  // Compra antiga sem snapshot/plan_id usa o mesmo padrão legado 12/4/1 do backend.
+  const legacy=pedidoAntigo&&!pedidoAntigo.plan_id?window.NAPlanLimits?.fromConfig?.():null;
+  if(legacy)return {...legacy.defaults};
+  const plans=window.NA_PRICING?.plans||[];
+  const chosen=plans.find(p=>p.id===selectedPlanId)||plans.find(p=>p.id===window.NA_PRICING?.default_plan_id);
+  const limits=window.NAPlanLimits?.fromPlan?.(chosen);
+  if(limits)return limits;
+  const config=window.NAPlanLimits?.fromConfig?.();
+  return config?{...config.defaults}:null;
+}
+function currentMediaCounts(){
+  return {photos:fotoFiles.length,videos:videoURLs.length,music:!!(musicId||musicaPreviewURL)};
+}
+function midiaLabel(count,limit,one,many){
+  if(!count)return '';
+  return limit?count+' de '+limit+' '+(limit===1?one:many):count+' '+(count===1?one:many);
+}
+function atualizarQtdMidia(plan){
+  $('qtdFotos').textContent=midiaLabel(fotoFiles.length,plan?.photos,'foto','fotos');
+  $('qtdVideos').textContent=midiaLabel(videoURLs.length,plan?.videos,'vídeo','vídeos');
+}
+function renderMediaWarning(plan){
+  const hint=$('mediaHint');if(!hint)return;
+  const exceeded=plan?window.NAPlanLimits?.overLimit?.(plan,currentMediaCounts()):null;
+  if(!exceeded){hint.textContent='';return;}
+  const kinds=[exceeded.photos?'fotos':'',exceeded.videos?'vídeos':'',exceeded.music?'a música':''].filter(Boolean);
+  const list=kinds.length<2?kinds[0]:kinds.slice(0,-1).join(', ')+' e '+kinds.at(-1);
+  const summary=window.NAPlanLimits?.summary?.(plan);
+  hint.textContent='Sua seleção atual ultrapassa este plano'+(summary?' ('+summary+')':'')+'. Remova ou ajuste '+list+' para continuar; nada será apagado automaticamente.';
+}
+function renderMediaLimits(plan){
+  const hints=plan?window.NAPlanLimits?.hint?.(plan):null;
+  for(const [id,key] of [['fotosHint','fotos'],['videosHint','videos'],['musicaHint','musica']]){
+    const el=$(id);if(el)el.textContent=hints?hints[key]:PLAN_RELOAD_MESSAGE;
+  }
+  const musica=$('musica');if(musica)musica.disabled=!plan||!plan.music;
+  atualizarQtdMidia(plan);
+  renderMediaWarning(plan);
+}
 function renderCreatorPlan(){
  const select=$('creatorPlan');if(!select)return;
  const plans=window.NA_PRICING?.plans||[];
@@ -20,10 +65,12 @@ function renderCreatorPlan(){
  select.replaceChildren(...plans.map(p=>new Option(p.name+' — '+formatarPreco(p.amount_cents/100),p.id)));
  if(pedidoAntigo?.plan_id&&!plans.some(p=>p.id===pedidoAntigo.plan_id))select.add(new Option(pedidoAntigo.plan?.name||'Plano do pedido',pedidoAntigo.plan_id));
  select.value=selectedPlanId||'';select.disabled=!!pedidoEditandoId;
- const plan=creatorPlan();$('creatorPlanDetails').textContent=`Até ${plan.photos_limit} fotos, ${plan.videos_limit} vídeos e ${plan.music_limit} música. O preço final é conferido antes do pagamento.`;
- $('musica').disabled=!plan.music_limit;
+ const plan=creatorPlan();
+ const summary=plan?window.NAPlanLimits?.summary?.(plan):null;
+ $('creatorPlanDetails').textContent=summary?`Até ${summary}. O preço final é conferido antes do pagamento.`:PLAN_RELOAD_MESSAGE;
+ renderMediaLimits(plan);
 }
-$('creatorPlan')?.addEventListener('change',event=>{selectedPlanId=event.target.value;renderCreatorPlan();});
+$('creatorPlan')?.addEventListener('change',event=>{selectedPlanId=event.target.value;$('erroMedia').textContent='';$('erro3').textContent='';renderCreatorPlan();});
 let musicaPreviewURL = null;
 let photoIds=[],videoIds=[],musicId=null;
 let requestId;
@@ -34,8 +81,10 @@ let draftKey='__draft_'+requestId;
 const mediaURL=NAGift.url;
 function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
 function captureDraft(){
+ const plan=creatorPlan();
+ const photoLimit=plan?plan.photos:undefined,videoLimit=plan?plan.videos:undefined;
  const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
- fotos:[...fotoFiles],videos:$('videos').files.length?[...$('videos').files].slice(0,4):(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
+ fotos:[...fotoFiles].slice(0,photoLimit),videos:$('videos').files.length?[...$('videos').files].slice(0,videoLimit):(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
  themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
  usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
  eventos:[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(e=>e.titulo||e.texto),
@@ -620,37 +669,52 @@ document.querySelectorAll("[data-ir], [data-step]").forEach((b) =>
 );
 
 $("fotos").addEventListener("change", (e) => {
+  const plan=creatorPlan();
+  const selected=[...e.target.files];
+  const files=plan?selected.slice(0,plan.photos):selected;
   fotoURLs.forEach((u) => URL.revokeObjectURL(u));
-  const files = [...e.target.files].slice(0, 12);
   preservePhotoRefs();
   fotoFiles = files;
   photoIds=files.map(()=>NAGift.id());
   fotoURLs = files.map((f) => mediaURL(f));
   legendasValores = new Array(files.length).fill("");
   $("fotoCapa").value = 0;
-  if (e.target.files.length > 12) $("erroMedia").textContent = "Máximo de 12 fotos.";
-  $("qtdFotos").textContent = files.length ? files.length + " foto(s) selecionada(s)" : "";
+  $("erroMedia").textContent = "";
+  $("erro3").textContent = "";
+  if(!plan)$("erroMedia").textContent=PLAN_RELOAD_MESSAGE;
+  else if(selected.length>plan.photos)$("erroMedia").textContent=window.NAPlanLimits?.limitMessage?.(plan,"photos")||"Selecione menos fotos para este plano.";
+  atualizarQtdMidia(plan);
+  renderMediaWarning(plan);
   atualizarPainelPersonalizacao();
   atualizarPreview();
   if (files.length) limparErro("fotos");
 });
 
 $("videos").addEventListener("change", (e) => {
+  const plan=creatorPlan();
+  const selected=[...e.target.files];
+  const files=plan?selected.slice(0,plan.videos):selected;
   videoURLs.forEach((u) => URL.revokeObjectURL(u));
-  const files = [...e.target.files].slice(0, 4);
   videoIds=files.map(()=>NAGift.id());
   if(pedidoAntigo)pedidoAntigo.videos=files;
   videoURLs = files.map((f) => URL.createObjectURL(f));
-  if (e.target.files.length > 4) $("erro3").textContent = "Máximo de 4 vídeos.";
-  $("qtdVideos").textContent = files.length ? files.length + " vídeo(s) selecionado(s)" : "";
+  $("erroMedia").textContent = "";
+  $("erro3").textContent = "";
+  if(!plan)$("erroMedia").textContent=PLAN_RELOAD_MESSAGE;
+  else if(selected.length>plan.videos)$("erroMedia").textContent=window.NAPlanLimits?.limitMessage?.(plan,"videos")||"Selecione menos vídeos para este plano.";
+  atualizarQtdMidia(plan);
+  renderMediaWarning(plan);
   atualizarPreview();
 });
 
 $("musica").addEventListener("change", (e) => {
+  const plan=creatorPlan();
   const file = e.target.files[0];
   musicId=file?NAGift.id():null;
   if(pedidoAntigo)pedidoAntigo.musica=file||null;
   $("qtdMusica").textContent = file ? file.name : "";
+  $("erroMedia").textContent = "";
+  $("erro3").textContent = "";
 
   const wrap = $("musicaPreviewWrap");
   const preview = $("musicaPreview");
@@ -663,6 +727,8 @@ $("musica").addEventListener("change", (e) => {
     preview.removeAttribute("src");
     wrap.hidden = true;
   }
+  atualizarQtdMidia(plan);
+  renderMediaWarning(plan);
   atualizarPreview();
 });
 
@@ -672,7 +738,10 @@ $('removerMusica')?.addEventListener('click',()=>{
   $('qtdMusica').textContent='';
   const preview=$('musicaPreview');preview.pause();preview.removeAttribute('src');preview.load();
   if(musicaPreviewURL){URL.revokeObjectURL(musicaPreviewURL);musicaPreviewURL=null;}
-  $('musicaPreviewWrap').hidden=true;atualizarPreview();
+  $('musicaPreviewWrap').hidden=true;
+  atualizarQtdMidia(creatorPlan());
+  renderMediaWarning(creatorPlan());
+  atualizarPreview();
 });
 
 async function gerarPreviewThumb() {
@@ -704,10 +773,20 @@ $("form").addEventListener("submit", async (e) => {
   if (!validar(9)) return;
 
   const btn=$('btnFinal');btn.disabled=true;btn.textContent='Enviando presente…';
-  const draft=captureDraft();
   const plan=creatorPlan();
-  if(draft.fotos.length>plan.photos_limit||draft.videos.length>plan.videos_limit||(draft.musica&&!plan.music_limit)){
-    $('erro3').textContent='As mídias ultrapassam os limites do plano escolhido.';btn.disabled=false;btn.textContent='Continuar para pagamento';ir(3);return;
+  if(!plan){
+    $('erroMedia').textContent=PLAN_RELOAD_MESSAGE;$('erro3').textContent='';btn.disabled=false;btn.textContent='Continuar para pagamento';ir(3);return;
+  }
+  const draft=captureDraft();
+  // Contagens reais (não o rascunho, que é limitado): o envio bloqueia sem apagar mídia.
+  const used={
+    photos:typeof fotoFiles!=='undefined'&&Array.isArray(fotoFiles)?fotoFiles.length:draft.fotos.length,
+    videos:window.NACreatorMedia?.videos?.()?.length??draft.videos.length,
+    music:(typeof musicId!=='undefined'&&!!musicId)||!!draft.musica,
+  };
+  if(window.NAPlanLimits?.overLimit?.(plan,used)){
+    $('erroMedia').textContent=window.NAPlanLimits.failureMessage(plan)||'As mídias ultrapassam os limites do plano escolhido.';
+    $('erro3').textContent='';btn.disabled=false;btn.textContent='Continuar para pagamento';ir(3);return;
   }
   photoIds=draft.photoIds;videoIds=draft.videoIds;musicId=draft.musicId;
   let recoverable=false;
@@ -833,12 +912,10 @@ async function carregarPedidoParaEdicao() {
     legendasValores = pedido.legendas || new Array(fotoFiles.length).fill("");
     $("fotoCapa").value = pedido.fotoCapa || 0;
     atualizarPainelPersonalizacao();
-    $("qtdFotos").textContent = fotoFiles.length + " foto(s) carregada(s)";
   }
 
   if (pedido.videos && pedido.videos.length > 0) {
     videoURLs = pedido.videos.map(f => mediaURL(f));
-    $("qtdVideos").textContent = videoURLs.length + " vídeo(s) carregado(s)";
   }
 
   if (pedido.musica) {
@@ -851,6 +928,9 @@ async function carregarPedidoParaEdicao() {
     wrap.hidden = false;
   }
 
+  const planLoaded=creatorPlan();
+  atualizarQtdMidia(planLoaded);
+  renderMediaLimits(planLoaded);
   fraseEditada = true;
   setTimeout(()=>{atualizarPreview();if(recovered)ir(Math.max(1,Math.min(8,recovered.step||1)));},150);
 }
