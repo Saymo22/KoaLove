@@ -94,6 +94,12 @@ class AuthController extends ApiController
     private function passwordRules(): array
     {
         return ['bail', 'required', 'string', PasswordRule::min(8), 'max:128', function ($attribute, $value, $fail) {
+            $normalized = mb_strtolower(trim($value));
+            if (in_array($normalized, ['password', 'password123', '12345678', '123456789', '1234567890', 'qwerty123', 'senha123', 'senha1234'], true)
+                || $normalized === mb_strtolower(trim((string) request('email')))
+                || $normalized === mb_strtolower(trim((string) request('name')))) {
+                $fail('Escolha uma senha menos previsível, diferente do seu nome e e-mail.');
+            }
             if (str_contains($value, "\0")) {
                 $fail('A senha contém um caractere inválido.');
             }

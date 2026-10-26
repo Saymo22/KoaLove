@@ -12,6 +12,7 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - POST /auth/register (name,email,password), /auth/login (email,password), /auth/logout.
 - Novas senhas no cadastro e na redefinição exigem 8 caracteres, no máximo 128 caracteres e, com o bcrypt padrão, no máximo 72 bytes; acentos e emojis podem usar vários bytes. Bytes nulos são rejeitados com 422. A validação de login preserva compatibilidade com senhas existentes.
 - GET /auth/me: usuário sem hashes, tokens ou campos internos.
+- O cadastro devolve `role=user`; novas senhas recusam combinações comuns e igualdade com nome/e-mail. O perfil administrativo de suporte não recebe os presentes e reembolsos no detalhe legado de clientes e não lê compras alheias pela rota de compras. Administradores owner/manager mantêm leitura autorizada.
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.
 - GET/POST /purchases, GET /purchases/{purchase}.
 - POST /purchases aceita `plan_id` UUID opcional; sem ele, usa o plano ativo principal. Benefícios e limites ficam registrados em `plan_snapshot`. O dono recebe `plan_id` e `plan` na projeção da compra; a projeção compartilhada não recebe cobrança.

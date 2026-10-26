@@ -46,7 +46,14 @@ return Application::configure(basePath: dirname(__DIR__))
             $code = match ($status) {
                 401 => 'NOT_AUTHENTICATED',403 => 'FORBIDDEN',404 => 'NOT_FOUND',409 => 'CONFLICT',419 => 'SESSION_EXPIRED',422 => 'VALIDATION_ERROR',429 => 'RATE_LIMITED',default => $status >= 500 ? 'INTERNAL_ERROR' : 'INVALID_REQUEST'
             };
-            $message = $status >= 500 ? 'Não foi possível concluir a operação.' : ($error->getMessage() ?: 'Revise sua solicitação.');
+            $message = match ($status) {
+                403 => 'Acesso restrito.',
+                404 => 'Recurso não encontrado.',
+                405 => 'Método não permitido.',
+                419 => 'Sua sessão expirou. Recarregue a página.',
+                429 => 'Muitas tentativas. Aguarde e tente novamente.',
+                default => $status >= 500 ? 'Não foi possível concluir a operação.' : ($error->getMessage() ?: 'Revise sua solicitação.'),
+            };
             $meta = $error instanceof ValidationException ? ['fields' => $error->errors()] : null;
 
             return response()->json(['ok' => false, 'error' => array_filter(['code' => $code, 'message' => $message, 'meta' => $meta])], $status, $error instanceof HttpExceptionInterface ? $error->getHeaders() : []);

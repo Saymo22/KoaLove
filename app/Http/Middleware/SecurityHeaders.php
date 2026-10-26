@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SecurityHeaders
 {
@@ -31,7 +32,15 @@ class SecurityHeaders
         if ($request->is('api/*')) {
             $response->headers->set('Cache-Control', 'no-store');
         }
-        DB::table('audit_events')->insert(['user_id' => $request->user()?->id, 'action' => $request->method().' '.($request->route()?->uri() ?? 'unmatched'), 'ip_hash' => hash_hmac('sha256', (string) $request->ip(), config('app.key')), 'status' => $response->getStatusCode(), 'created_at' => now()]);
+        $response->headers->remove('X-Powered-By');
+        if (! $request->isMethodSafe() || $request->is('api/admin/*', 'api/privacy/*', 'api/purchases/*') || in_array($response->getStatusCode(), [401, 403, 419, 429], true)) {
+            try {
+                DB::table('audit_events')->insert(['user_id' => $request->user()?->id, 'action' => $request->method().' '.($request->route()?->uri() ?? 'unmatched'), 'ip_hash' => hash_hmac('sha256', (string) $request->ip(), config('app.key')), 'status' => $response->getStatusCode(), 'created_at' => now()]);
+            } catch (\Throwable) {
+                // Never undo an operation already committed, or log private SQL bindings.
+                Log::warning('Registro de auditoria indisponível.');
+            }
+        }
 
         return $response;
     }

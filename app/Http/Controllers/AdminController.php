@@ -36,11 +36,13 @@ class AdminController extends ApiController
         return $this->ok(['clients' => User::where('role', 'user')->get()->map(fn ($u) => $this->client($u))]);
     }
 
-    public function detail(User $user, PurchaseController $gifts)
+    public function detail(Request $request, User $user, PurchaseController $gifts)
     {
         abort_unless($user->role === 'user', 404);
 
-        return $this->ok(['client' => $this->client($user), 'purchases' => Purchase::withTrashed()->where('user_id', $user->id)->get()->map(fn ($p) => $gifts->project($p)), 'tickets' => Ticket::where('user_id', $user->id)->get(), 'refunds' => Refund::where('user_id', $user->id)->get()]);
+        $support = $request->user()->admin_level === 'support';
+
+        return $this->ok(['client' => $this->client($user), 'purchases' => $support ? [] : Purchase::withTrashed()->where('user_id', $user->id)->get()->map(fn ($p) => $gifts->project($p)), 'tickets' => Ticket::where('user_id', $user->id)->get(), 'refunds' => $support ? [] : Refund::where('user_id', $user->id)->get()]);
     }
 
     public function purchases(PurchaseController $gifts)

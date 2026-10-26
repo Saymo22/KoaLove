@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use League\Flysystem\UnableToCheckFileExistence;
+use League\Flysystem\UnableToReadFile;
+use League\Flysystem\UnableToRetrieveMetadata;
 
 class CloudUploadController extends ApiController
 {
@@ -77,7 +80,13 @@ class CloudUploadController extends ApiController
             return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
         }
         $disk = Storage::disk($upload->disk);
-        abort_unless($disk->size($upload->path) === $upload->bytes, 422, 'O tamanho enviado não corresponde à reserva.');
+        try {
+            abort_unless($disk->exists($upload->path), 409, 'Envie o arquivo antes de confirmar o upload.');
+            $size = $disk->size($upload->path);
+        } catch (UnableToCheckFileExistence|UnableToRetrieveMetadata) {
+            abort(409, 'O arquivo ainda não está disponível. Tente novamente.');
+        }
+        abort_unless($size === $upload->bytes, 422, 'O tamanho enviado não corresponde à reserva.');
         $tmp = tempnam(sys_get_temp_dir(), 'na_cloud_');
         try {
             $input = $disk->readStream($upload->path);
@@ -97,6 +106,8 @@ class CloudUploadController extends ApiController
             $upload->update(['bytes' => 0]);
 
             return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
+        } catch (UnableToReadFile) {
+            abort(409, 'O arquivo ainda não está disponível. Tente novamente.');
         } finally {
             if (is_file($tmp)) {
                 unlink($tmp);

@@ -224,7 +224,7 @@ O teste ao vivo com 80 bytes UTF-8 retornou a mensagem exata da guarda (`422`), 
 | 10 | (conta `ADEMIN` vista no painel) | verificar se é seed/admin legítimo |
 | — | `qa.idor.a…` | tentativa bloqueada por rate limit (não criada) |
 
-> O painel admin também exibiu `ademin@ademin.com`; confirmar se é conta de seed e removê-la se não for necessária.
+> Uma conta administrativa adicional foi observada; identidade omitida. Sua legitimidade deve ser conferida pelo proprietário, sem exclusão automática.
 
 ### C. Evidência bruta
 

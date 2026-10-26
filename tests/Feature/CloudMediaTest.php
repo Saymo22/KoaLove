@@ -32,6 +32,19 @@ class CloudMediaTest extends TestCase
         return $this->postJson('/api/purchases/'.$p['id'].'/media/'.$asset.'/upload-url', compact('bytes', 'mime'))->assertOk()->json('data');
     }
 
+    public function test_completing_an_upload_before_put_is_a_recoverable_conflict(): void
+    {
+        [$disk, $p] = $this->setupCloud();
+        $bytes = file_get_contents(base_path('tests/Fixtures/pixel.png'));
+        $ticket = $this->reserve($p, strlen($bytes));
+        $url = '/api/purchases/'.$p['id'].'/media/cloud-asset-1234567890/complete-upload';
+        $this->postJson($url, ['upload_id' => $ticket['upload_id']])->assertConflict();
+        $intent = MediaUpload::findOrFail($ticket['upload_id']);
+        $this->assertDatabaseCount('media_assets', 0);
+        $disk->put($intent->path, $bytes);
+        $this->postJson($url, ['upload_id' => $ticket['upload_id']])->assertOk();
+    }
+
     public function test_unconfigured_cloud_storage_returns_actionable_unavailable_error(): void
     {
         [, $p] = $this->setupCloud();
