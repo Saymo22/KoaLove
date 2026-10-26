@@ -19,7 +19,7 @@ O formulário, o acesso à conta e a exibição interativa dos presentes ainda p
 ## Configuração
 
 - `config/seo.php`: títulos/descrições específicos, páginas utilitárias e caminhos restritos. Os 13 temas são obtidos do catálogo; para sobrescrever os metadados de um tema, adicione sua URL em `pages`.
-- `APP_URL`: origem canônica e dos links do sitemap. Deve ser `https://projetona.vercel.app` em produção, ou o domínio definitivo. O header Host do visitante não altera esses links.
+- `APP_URL`: origem canônica e dos links do sitemap. Em produção, use o domínio público definitivo (`https://www.koalove.site`); aliases `*.vercel.app` são apenas endereços alternativos. O header Host do visitante não altera esses links. Ao trocar o domínio, reimplante e confira canonical/sitemap no endereço novo; os bundles do Vite já são relativos à origem e continuam válidos em qualquer alias.
 - `SEO_INDEXING_ENABLED`: padrão ligado em `APP_ENV=production`; use `false` para desativar. Prévias com `VERCEL_ENV=preview` continuam bloqueadas mesmo que a variável seja `true`.
 - `SEO_ALLOW_GPTBOT_TRAINING=false`: mantém GPTBot bloqueado por padrão. Use `true` somente se desejar permitir também seu uso de treinamento nas páginas públicas. Essa opção é independente de pesquisa.
 

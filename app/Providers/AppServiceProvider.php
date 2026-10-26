@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -49,6 +50,12 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
             URL::forceRootUrl(config('app.url'));
         }
+        // Os bundles do Vite são servidos pelo próprio deployment. URLs relativas
+        // à origem mantêm a CSP `script-src 'self'` válida no domínio canônico, em
+        // aliases (`*.vercel.app`) e em domínios personalizados, mesmo quando
+        // APP_URL aponta para outro endereço da mesma aplicação. A aplicação é
+        // publicada na raiz do domínio (public/), não em subpasta.
+        Vite::createAssetPathsUsing(fn (string $path): string => '/'.ltrim($path, '/'));
         Gate::policy(Purchase::class, PurchasePolicy::class);
         foreach (['pages' => 1200, 'register' => 3, 'api' => 240, 'write' => 90, 'create' => 10, 'admin' => 120] as $name => $limit) {
             RateLimiter::for($name, fn ($request) => Limit::perMinute($limit)->by($name.':'.$request->ip()));
