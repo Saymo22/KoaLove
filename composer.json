@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "saymo22/projeto-na",
+    "name": "saymo22/koalove",
     "type": "project",
-    "description": "Presentes digitais com Laravel, Blade e Vite",
+    "description": "KoaLove — presentes digitais com Laravel, Blade e Vite",
     "keywords": [
         "laravel",
         "framework"

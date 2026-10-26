@@ -192,7 +192,7 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
@@ -212,7 +212,7 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
@@ -231,7 +231,7 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="minha-conta.html" class="active">Minha Conta</a>

@@ -11,7 +11,7 @@ class Seo
         $pages = config('seo.pages');
         foreach (config('gift.themes') as $key => $theme) {
             $name = $theme['nome'] ?? $theme['name'] ?? ucfirst($key);
-            $pages['/teste/'.$key.'.html'] ??= ['title' => 'Tema '.$name.' — Nosso Amor', 'description' => 'Conheça a demonstração do tema '.$name.' para presentes digitais do Nosso Amor. Personalize sua história com fotos, vídeos, música e mensagens.'];
+            $pages['/teste/'.$key.'.html'] ??= ['title' => 'Tema '.$name.' — KoaLove', 'description' => 'Conheça a demonstração do tema '.$name.' para presentes digitais do KoaLove. Personalize sua história com fotos, vídeos, música e mensagens.'];
         }
 
         return $pages;
@@ -22,7 +22,7 @@ class Seo
         $path = '/'.$request->path();
         $public = $this->publicPages();
         $utilities = config('seo.utility_pages');
-        $data = $public[$path] ?? $utilities[$path] ?? config('seo.restricted_pages')[$path] ?? ['title' => 'Área reservada — Nosso Amor', 'description' => 'Área reservada do Nosso Amor para acessar sua conta e gerenciar presentes digitais.'];
+        $data = $public[$path] ?? $utilities[$path] ?? config('seo.restricted_pages')[$path] ?? ['title' => 'Área reservada — KoaLove', 'description' => 'Área reservada do KoaLove para acessar sua conta e gerenciar presentes digitais.'];
         $discoverable = config('seo.indexing_enabled') && isset($public[$path]) && ! $request->getQueryString();
         $follow = config('seo.indexing_enabled') && ! $request->getQueryString() && (isset($public[$path]) || isset($utilities[$path]));
         $data['robots'] = ($discoverable ? 'index' : 'noindex').', '.($follow ? 'follow' : 'nofollow');

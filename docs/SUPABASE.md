@@ -6,7 +6,7 @@ A API continua Laravel/PHP na Vercel. O Supabase fornece PostgreSQL persistente 
 
 ## Criar a infraestrutura
 
-1. Crie um projeto no plano escolhido e confira os limites no painel. O projeto desta implantação se chama **ProjetoNA**, organização **Nosso Amor**, região `us-east-1`. O projeto anterior da organização não é alterado.
+1. Crie um projeto no plano escolhido e confira os limites no painel. O projeto desta implantação se chama **ProjetoNA**, organização **KoaLove**, região `us-east-1`. O projeto anterior da organização não é alterado.
 2. Inspecione as tabelas antes de qualquer DDL. Em um projeto novo, aplique [bootstrap.sql](../supabase/bootstrap.sql) pelo administrador: cria o schema `app_private` e o role limitado `projetona_app`, sem senha padrão, superusuário ou permissão de administrar outros roles.
 3. Configure uma senha aleatória para esse role em um canal administrativo seguro. Copie o host real do pooler pelo diálogo **Connect**; não deduza o índice do host pela região. Use usuário `projetona_app.<project-ref>`, banco `postgres`, TLS obrigatório. Porta `5432` (Session pooler) para migrations e cópia; `6543` (Transaction pooler) para a aplicação serverless, com prepared statements emulados.
 4. Execute `php artisan migrate --force` com `DB_SCHEMA=app_private`, como `projetona_app`. As migrations Laravel são a fonte das tabelas e índices. Nunca use `migrate:fresh`, `db reset` ou seeds em banco com dados reais.

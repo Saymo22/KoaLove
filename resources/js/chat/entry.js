@@ -49,9 +49,9 @@ if(window.self===window.top&&!location.pathname.startsWith('/admin/')){
             // Verifica a sessão no servidor, sem confiar em cache local de identidade.
             try{const data=await request('/support');identity=data.user_id;adopt(data.ticket);}
             catch(error){if(error.status!==401)throw error;return {text:`Para conversar com a equipe e receber a resposta neste chat, entre na sua conta: [Entrar](${location.origin}/login.html). Suas dúvidas gerais podem continuar por aqui. Não envie senhas ou códigos.`,suggestions:quickHelp.filter(s=>s!=='Falar com suporte')};}
-            if(thread&&thread.messages.length<498){mode='human';return {text:'Você está no atendimento com a equipe Nosso Amor. Conte o que precisa e envie sua mensagem por aqui. A resposta aparecerá neste chat quando estiver disponível; você também pode voltar depois pela mesma conta.',suggestions:['Voltar ao assistente']};}
+            if(thread&&thread.messages.length<498){mode='human';return {text:'Você está no atendimento com a equipe KoaLove. Conte o que precisa e envie sua mensagem por aqui. A resposta aparecerá neste chat quando estiver disponível; você também pode voltar depois pela mesma conta.',suggestions:['Voltar ao assistente']};}
             awaitingIssue=true;
-            return {text:'Vou encaminhar você ao suporte Nosso Amor. 💛 Para preparar o atendimento, descreva o que aconteceu e em qual etapa. Ao enviar, sua descrição, até três perguntas anteriores e o nome desta página serão compartilhados com a equipe. A resposta chegará neste chat; não é preciso ficar com a página aberta. Não envie senhas, códigos ou dados de cartão.',suggestions:[]};
+            return {text:'Vou encaminhar você ao suporte KoaLove. 💛 Para preparar o atendimento, descreva o que aconteceu e em qual etapa. Ao enviar, sua descrição, até três perguntas anteriores e o nome desta página serão compartilhados com a equipe. A resposta chegará neste chat; não é preciso ficar com a página aberta. Não envie senhas, códigos ou dados de cartão.',suggestions:[]};
         }
         if(awaitingIssue||mode==='human'){
             const starting=awaitingIssue;
@@ -67,7 +67,7 @@ if(window.self===window.top&&!location.pathname.startsWith('/admin/')){
                 const own=data.ticket.messages.findIndex(m=>m.id===pending.id);
                 if(own>=0)seen.add(messageKey(data.ticket.messages[own],own));
                 adopt(data.ticket);pending=null;awaitingIssue=false;mode='human';
-                return {text:starting?'Seu atendimento foi encaminhado à equipe Nosso Amor. A resposta aparecerá neste chat assim que estiver disponível. Você pode continuar descrevendo o problema por aqui.':'',suggestions:['Voltar ao assistente']};
+                return {text:starting?'Seu atendimento foi encaminhado à equipe KoaLove. A resposta aparecerá neste chat assim que estiver disponível. Você pode continuar descrevendo o problema por aqui.':'',suggestions:['Voltar ao assistente']};
             }catch(error){
                 if(error.status===401){mode='bot';awaitingIssue=false;thread=null;seen=new Set();identity=null;widget.clear();widget.receive([{role:'system',text:'Sua sessão expirou. Entre novamente para continuar o atendimento. Sua última mensagem não foi confirmada; envie-a após entrar.'}]);return {text:'',suggestions:quickHelp};}
                 throw error;
@@ -76,8 +76,8 @@ if(window.self===window.top&&!location.pathname.startsWith('/admin/')){
         await loadCatalog();
         return answer(text,catalog,location.origin);
     }
-    widget.init({stylesheet,name:'Nosso Amor',subtitle:'Assistente automático · suporte pelo chat',theme:'dark',persist:false,effects:false,
-        greeting:'Olá! 💛 Sou o assistente automático do Nosso Amor. Posso explicar o site, ajudar com dúvidas e encaminhar você à equipe de suporte.',
+    widget.init({stylesheet,name:'KoaLove',avatar:'/branding/koalove-simbolo-principal.svg',subtitle:'Assistente automático · suporte pelo chat',theme:'dark',persist:false,effects:false,
+        greeting:'Olá! 💛 Sou o assistente automático do KoaLove. Posso explicar o site, ajudar com dúvidas e encaminhar você à equipe de suporte.',
         suggestions:quickHelp,brandLine:'Não envie senhas, códigos ou dados de cartão.',typingDelay:200,
         errorMessage:'Não foi possível confirmar o envio. Sua mensagem continua aqui; tente novamente em instantes.',
         onMessage:respond,onReset:()=>{mode='bot';awaitingIssue=false;pending=null;},onOpen:()=>refresh(true)});

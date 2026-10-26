@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 
@@ -13,8 +12,8 @@
 </head>
 <body class="admin-login-body">
     @include('partials.noscript')
-    <section class="admin-login-story" aria-label="Nosso Amor Administração">
-        <a href="../home.html" class="admin-logo"><span class="admin-monogram">na.</span><span><span class="admin-brand-name">Nosso Amor</span><span class="admin-brand-caption">Administração</span></span></a>
+    <section class="admin-login-story" aria-label="KoaLove Administração">
+        <a href="../home.html" class="admin-logo"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"><span class="admin-brand-caption">Administração</span></a>
         <div class="admin-login-copy"><p class="admin-eyebrow">Por trás de cada presente</p><h1>Cada história<br>merece <em>cuidado.</em></h1><p>Seu espaço para acompanhar o negócio, cuidar dos clientes e criar novas possibilidades.</p></div>
         <span class="admin-login-footer">Histórias reais. Experiências especiais.</span>
     </section>

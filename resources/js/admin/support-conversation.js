@@ -12,7 +12,7 @@
     const bottom=log.scrollHeight-log.scrollTop-log.clientHeight<60;
     log.replaceChildren(...(ticket.messages||[]).map(m=>{
       const item=document.createElement('div');item.className='support-message '+(m.role==='admin'?'support-message-admin':'');
-      const label=document.createElement('strong');label.textContent=({admin:'Equipe Nosso Amor',user:'Cliente',system:'Triagem',context:'Contexto enviado'})[m.role]||'Registro';
+      const label=document.createElement('strong');label.textContent=({admin:'Equipe KoaLove',user:'Cliente',system:'Triagem',context:'Contexto enviado'})[m.role]||'Registro';
       const time=document.createElement('time');const date=new Date(m.at);time.textContent=Number.isNaN(date.getTime())?'':date.toLocaleString('pt-BR');
       const text=document.createElement('p');text.textContent=m.text;item.append(label,time,text);return item;
     }));

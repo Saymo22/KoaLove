@@ -1,5 +1,5 @@
 /*!
- * ChatWidget — Nosso Amor
+ * ChatWidget — KoaLove
  * Chatbot embutível com visual premium (dourado + rosé), sem dependências.
  * CSS isolado via Shadow DOM: não interfere nas suas páginas.
  *
@@ -20,7 +20,7 @@
   'use strict';
 
   var DEFAULTS = {
-    name: 'Nosso Amor',
+    name: 'KoaLove',
     subtitle: 'Aqui para ajudar, com carinho',
     avatar: '♥', // emoji, letra ou URL de imagem
     accent: '#e2b369', // dourado
@@ -30,7 +30,7 @@
     position: 'right', // 'right' | 'left'
     offsetX: 24,
     offsetY: 24,
-    greeting: 'Olá! 💛 Eu sou o **Nosso Amor**. Como posso te ajudar hoje?',
+    greeting: 'Olá! 💛 Eu sou o **KoaLove**. Como posso te ajudar hoje?',
     teaser: '',
     teaserDelay: 3500,
     placeholder: 'Escreva sua mensagem…',
@@ -119,7 +119,7 @@
   /* ---------- estilos ---------- */
   /* ---------- ícones ---------- */
   var ICON = {
-    chat: '<svg class="i-chat" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 2.7 4.5 6.3 4.5c2.1 0 3.7 1.1 4.7 2.7h2c1-1.6 2.6-2.7 4.7-2.7 3.6 0 5.4 3.8 3.9 7.2C19.5 16.4 12 21 12 21Z" transform="translate(0 -.3)"/></svg>',
+    chat: '<img class="i-chat" src="/branding/koalove-simbolo-principal.svg" alt="">',
     close: '<svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
     reset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
@@ -209,7 +209,7 @@
     resizeViewport();window.visualViewport?.addEventListener('resize',resizeViewport);
     panelHidden(true);
     function panelHidden(value){$('.panel').inert=value;$('.panel').setAttribute('aria-hidden',String(value));}
-    function receive(items){items.forEach(function(m){var text=m.role==='admin'?'**Equipe Nosso Amor**\n'+m.text:m.role==='system'?'**Atendimento**\n'+m.text:m.role==='context'?'**Contexto enviado**\n'+m.text:m.text;addMsg(m.role==='user'?'user':'bot',text);history.push({role:m.role==='user'?'user':'assistant',content:text});if(m.role==='admin'&&!isOpen)setBadge(unread+1);});}
+    function receive(items){items.forEach(function(m){var text=m.role==='admin'?'**Equipe KoaLove**\n'+m.text:m.role==='system'?'**Atendimento**\n'+m.text:m.role==='context'?'**Contexto enviado**\n'+m.text:m.text;addMsg(m.role==='user'?'user':'bot',text);history.push({role:m.role==='user'?'user':'assistant',content:text});if(m.role==='admin'&&!isOpen)setBadge(unread+1);});}
 
 
     /* tema */

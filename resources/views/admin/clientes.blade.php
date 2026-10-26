@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 
@@ -17,7 +16,7 @@
     <main class="admin-main">
         <p class="admin-eyebrow">Relacionamentos</p><h1 class="page-title">Cada cliente, uma história.</h1><p class="page-desc">Encontre as contas e acompanhe cada pedido, atendimento e solicitação.</p>
 
-        <section class="table-container" aria-label="Diretório de clientes"><div class="admin-table-heading"><div><h2>Diretório de clientes</h2><p>O histórico completo de quem escolheu o Nosso Amor.</p></div><span data-admin-icon="clientes" aria-hidden="true"></span></div><div class="admin-table-scroll" role="region" aria-label="Diretório de clientes" tabindex="0">
+        <section class="table-container" aria-label="Diretório de clientes"><div class="admin-table-heading"><div><h2>Diretório de clientes</h2><p>O histórico completo de quem escolheu o KoaLove.</p></div><span data-admin-icon="clientes" aria-hidden="true"></span></div><div class="admin-table-scroll" role="region" aria-label="Diretório de clientes" tabindex="0">
             <table class="admin-table">
                 <thead>
                     <tr>

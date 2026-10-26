@@ -3,6 +3,7 @@ import {createReadStream} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {downloadRelease} from './download-release.mjs';
+import {publishStaticAssets} from './publish-static-assets.mjs';
 import {setDefaultResultOrder} from 'node:dns';
 import os from 'node:os';
 import path from 'node:path';
@@ -32,6 +33,5 @@ if(process.argv.includes('--function')){
   }finally{await fs.rm(work,{recursive:true,force:true});}
 }else{
   // Somente assets estáticos são publicados. Nunca copie public/index.php ou a raiz do projeto.
-  await fs.mkdir('dist/build',{recursive:true});await fs.cp('public/build','dist/build',{recursive:true});await fs.copyFile('public/favicon.svg','dist/favicon.svg');
-  await fs.cp('public/media','dist/media',{recursive:true});
+  await publishStaticAssets();
 }

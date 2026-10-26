@@ -50,7 +50,7 @@ class MercadoPagoGateway implements CheckoutGateway
         $preferred = $checkout->method === 'pix' ? ['default_payment_method_id' => 'pix'] : ['default_payment_type_id' => 'credit_card'];
 
         return $this->request('post', '/checkout/preferences', [...$expiration,
-            'items' => [['id' => $checkout->purchase_id, 'title' => 'Presente digital Nosso Amor', 'quantity' => 1, 'currency_id' => 'BRL', 'unit_price' => $checkout->amount_cents / 100]],
+            'items' => [['id' => $checkout->purchase_id, 'title' => 'Presente digital KoaLove', 'quantity' => 1, 'currency_id' => 'BRL', 'unit_price' => $checkout->amount_cents / 100]],
             'external_reference' => $checkout->id,
             'back_urls' => ['success' => $return, 'pending' => $return, 'failure' => $return],
             'notification_url' => $base.'/api/webhooks/mercadopago',
