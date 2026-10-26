@@ -517,7 +517,7 @@ function petalBurst(anchor, count = 20){
 
   for (let i = 0; i < count; i++){
     const s = document.createElement('div');
-    s.className = 'petal';
+    s.className = 'floating-petal';
     s.textContent = ['✿','❀','✦','✧','❋'][Math.floor(Math.random()*5)];
     s.style.left = cx + 'px';
     s.style.top = cy + 'px';

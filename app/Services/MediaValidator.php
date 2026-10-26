@@ -10,12 +10,19 @@ class MediaValidator
 
     public const LIMITS = ['photo' => 15728640, 'music' => 26214400, 'video' => 104857600];
 
+    public static function limits(): array
+    {
+        $cap = config('filesystems.disks.'.config('filesystems.default').'.max_file_size');
+
+        return array_map(fn ($limit) => $cap ? min($limit, (int) $cap) : $limit, self::LIMITS);
+    }
+
     public function validate(string $path, string $mime): array
     {
         abort_unless(isset(self::TYPES[$mime]), 415, 'Formato não suportado.');
         $kind = self::TYPES[$mime];
         clearstatcache(true, $path);
-        abort_unless(is_file($path) && filesize($path) > 0 && filesize($path) <= self::LIMITS[$kind], 413, 'Arquivo vazio ou maior que o limite.');
+        abort_unless(is_file($path) && filesize($path) > 0 && filesize($path) <= self::limits()[$kind], 413, 'Arquivo vazio ou maior que o limite.');
         $actual = (new \finfo(FILEINFO_MIME_TYPE))->file($path);
         $canonical = fn ($v) => match ($v) {
             'audio/x-wav' => 'audio/wav',default => $v
@@ -49,7 +56,7 @@ class MediaValidator
         }
         clearstatcache(true, $path);
         $bytes = filesize($path);
-        abort_unless($bytes <= self::LIMITS[$kind], 413, 'Arquivo normalizado excede o limite.');
+        abort_unless($bytes <= self::limits()[$kind], 413, 'Arquivo normalizado excede o limite.');
 
         return compact('kind', 'mime', 'bytes');
     }

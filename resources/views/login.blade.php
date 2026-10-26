@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Amor — Uma Experiência</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -14,6 +13,7 @@
     @vite(["resources/css/base.css","resources/css/login.css","resources/js/entries/login.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <!-- Cursor customizado -->
     <div class="cursor" id="cursor"></div>
@@ -93,13 +93,13 @@
                         <span class="gfield__border"></span>
                     </div>
 
-                    <div class="gfield">
+                    <div class="gfield" id="fieldEmail">
                         <input type="email" id="inputEmail" placeholder=" " autocomplete="email" required>
                         <label for="inputEmail">Seu e-mail</label>
                         <span class="gfield__border"></span>
                     </div>
 
-                    <div class="gfield">
+                    <div class="gfield" id="fieldPass">
                         <input type="password" id="inputPass" placeholder=" " autocomplete="current-password" required minlength="8">
                         <label for="inputPass">Sua senha</label>
                         <span class="gfield__border"></span>
@@ -108,9 +108,13 @@
                         </button>
 
                         <!-- Novo: Esqueceu a senha -->
-                        <a href="recuperar-senha.html" class="gfield__forgot">Esqueceu a senha?</a>
+                        <a href="#recuperar" id="forgotPassword" class="gfield__forgot">Esqueceu a senha?</a>
                     </div>
 
+                    <div class="gfield" id="fieldConfirm" hidden>
+                        <input type="password" id="confirmPass" placeholder=" " autocomplete="new-password" disabled>
+                        <label for="confirmPass">Confirme a nova senha</label><span class="gfield__border"></span>
+                    </div>
                     <p class="glass-error" id="erro" role="alert" aria-live="polite"></p>
 
                     <button type="submit" class="btn-magnetic" id="seal">
@@ -118,8 +122,10 @@
                         <span class="btn-magnetic__text" id="sealText">Entrar</span>
                         <span class="btn-magnetic__spinner"></span>
                     </button>
+                    <a href="#entrar" class="gfield__forgot" id="recoveryBack" hidden>← Voltar para entrar</a>
                 </form>
 
+                <div id="alternateLogin">
                 <div class="glass-divider">
                     <span>Outras formas de acesso</span>
                 </div>
@@ -135,6 +141,7 @@
 
                 <p class="social-status" id="socialStatus">Google e Apple ainda não estão disponíveis. Use seu e-mail e senha.</p>
 
+                </div>
                 <footer class="glass-footer">
                     <p class="glass-footer__quote">"O amor é a única loucura digna de ser vivida."</p>
                     <p>Ao continuar, você concorda com nossos <a href="termos.html">Termos</a> e <a href="privacidade.html">Privacidade</a>.</p>

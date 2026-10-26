@@ -10,6 +10,20 @@ let draggedIdx = null,
 
 let pedidoEditandoId = null;
 let pedidoAntigo = null;
+let selectedPlanId = new URLSearchParams(location.search).get('plano');
+function creatorPlan(){return pedidoAntigo?.plan || window.NA_PRICING?.plans?.find(p=>p.id===selectedPlanId) || {photos_limit:12,videos_limit:4,music_limit:1};}
+function renderCreatorPlan(){
+ const select=$('creatorPlan');if(!select)return;
+ const plans=window.NA_PRICING?.plans||[];
+ selectedPlanId=pedidoAntigo?.plan_id||selectedPlanId||window.NA_PRICING?.default_plan_id;
+ if(!pedidoAntigo?.plan_id&&!plans.some(p=>p.id===selectedPlanId))selectedPlanId=window.NA_PRICING?.default_plan_id||plans[0]?.id;
+ select.replaceChildren(...plans.map(p=>new Option(p.name+' — '+formatarPreco(p.amount_cents/100),p.id)));
+ if(pedidoAntigo?.plan_id&&!plans.some(p=>p.id===pedidoAntigo.plan_id))select.add(new Option(pedidoAntigo.plan?.name||'Plano do pedido',pedidoAntigo.plan_id));
+ select.value=selectedPlanId||'';select.disabled=!!pedidoEditandoId;
+ const plan=creatorPlan();$('creatorPlanDetails').textContent=`Até ${plan.photos_limit} fotos, ${plan.videos_limit} vídeos e ${plan.music_limit} música. O preço final é conferido antes do pagamento.`;
+ $('musica').disabled=!plan.music_limit;
+}
+$('creatorPlan')?.addEventListener('change',event=>{selectedPlanId=event.target.value;renderCreatorPlan();});
 let musicaPreviewURL = null;
 let photoIds=[],videoIds=[],musicId=null;
 let requestId;
@@ -20,7 +34,7 @@ let draftKey='__draft_'+requestId;
 const mediaURL=NAGift.url;
 function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
 function captureDraft(){
- const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
+ const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
  fotos:[...fotoFiles],videos:$('videos').files.length?[...$('videos').files].slice(0,4):(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
  themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
  usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
@@ -262,7 +276,9 @@ NA_CONFIG_READY.then(() => {
 });
 
 function aplicarTemaPreview(chave) {
-  const t = (THEMES[chave] || THEMES.namoro).cores, s = $("previewScreen");
+  const chosen=THEMES[chave] || window.NA_THEME_METADATA?.[chave] || Object.values(THEMES)[0];
+  if(!chosen)return;
+  const t=chosen.cores,s=$("previewScreen");
   s.style.setProperty("--rosa", t.rosa);
   s.style.setProperty("--rosa-claro", t.rosaClaro);
   s.style.setProperty("--rosa-pastel", t.pastel);
@@ -280,8 +296,9 @@ function pulsarPreview() {
 }
 
 function atualizarPreview() {
-  const temaChave = tema || "namoro";
-  const t = THEMES[temaChave] || THEMES.namoro;
+  const temaChave = tema || Object.keys(THEMES)[0];
+  const t = THEMES[temaChave] || window.NA_THEME_METADATA?.[temaChave];
+  if(!t)return;
   const ini = $("inicio").value;
   const sufixo = $("frase").value.trim();
   const tempo = ini ? tempoJuntos(ini) : null;
@@ -649,6 +666,15 @@ $("musica").addEventListener("change", (e) => {
   atualizarPreview();
 });
 
+$('removerMusica')?.addEventListener('click',()=>{
+  $('musica').value='';musicId=null;
+  if(pedidoAntigo)pedidoAntigo.musica=null;
+  $('qtdMusica').textContent='';
+  const preview=$('musicaPreview');preview.pause();preview.removeAttribute('src');preview.load();
+  if(musicaPreviewURL){URL.revokeObjectURL(musicaPreviewURL);musicaPreviewURL=null;}
+  $('musicaPreviewWrap').hidden=true;atualizarPreview();
+});
+
 async function gerarPreviewThumb() {
   const url = fotoURLs[Number($("fotoCapa").value) || 0] || fotoURLs[0];
   if (!url) return null;
@@ -679,6 +705,10 @@ $("form").addEventListener("submit", async (e) => {
 
   const btn=$('btnFinal');btn.disabled=true;btn.textContent='Enviando presente…';
   const draft=captureDraft();
+  const plan=creatorPlan();
+  if(draft.fotos.length>plan.photos_limit||draft.videos.length>plan.videos_limit||(draft.musica&&!plan.music_limit)){
+    $('erro3').textContent='As mídias ultrapassam os limites do plano escolhido.';btn.disabled=false;btn.textContent='Continuar para pagamento';ir(3);return;
+  }
   photoIds=draft.photoIds;videoIds=draft.videoIds;musicId=draft.musicId;
   let recoverable=false;
   try {
@@ -756,6 +786,7 @@ async function carregarPedidoParaEdicao() {
   videoIds=pedido.videoIds||pedido.media?.videos||[];musicId=pedido.musicId||pedido.media?.music||null;
   pedido.themeData=NAGift.refs(pedido.themeData,photoIds);
   pedidoAntigo = pedido;
+  renderCreatorPlan();
 
   document.querySelector(".criar-eyebrow").innerHTML = '<span class="dot"></span> Editando presente';
   document.querySelector(".criar-titulo").innerHTML = 'Editando a <em>história</em>';
@@ -845,6 +876,7 @@ function escolherRascunho(candidate) {
 
 /* Boot aguarda o GET /api/config (temas e cores) */
 NA_CONFIG_READY.then(() => {
+  renderCreatorPlan();
   addEvento();
   addEvento();
   atualizarPreview();

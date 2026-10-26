@@ -93,8 +93,8 @@ class ImportLegacy extends Command
                             $data = $mediaValidator->validate($tmp, $asset['mime']);
                             $path = 'gifts/'.$p->id.'/'.Str::uuid();
                             $paths[] = $path;
-                            throw_unless(Storage::disk('local')->put($path, fopen($tmp, 'rb')), \RuntimeException::class, 'Falha ao copiar mídia.');
-                            $p->assets()->create([...$data, 'asset_id' => $asset['id'], 'path' => $path]);
+                            throw_unless(Storage::disk(config('filesystems.default'))->put($path, fopen($tmp, 'rb')), \RuntimeException::class, 'Falha ao copiar mídia.');
+                            $p->assets()->create([...$data, 'asset_id' => $asset['id'], 'disk' => config('filesystems.default'), 'path' => $path]);
                             $assets[$asset['id']] = $data['kind'];
                         } finally {
                             if (is_file($tmp)) {
@@ -128,7 +128,7 @@ class ImportLegacy extends Command
             return self::SUCCESS;
         } catch (\Throwable $error) {
             foreach ($paths as $path) {
-                Storage::disk('local')->delete($path);
+                Storage::disk(config('filesystems.default'))->delete($path);
             }$this->error('Importação cancelada; banco revertido e origem preservada. Revise formato, referências e arquivos.');
 
             return self::FAILURE;

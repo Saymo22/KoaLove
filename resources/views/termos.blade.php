@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termos de Uso — Nosso Amor</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -14,13 +13,14 @@
     @vite(["resources/css/base.css","resources/css/legal.css","resources/js/entries/termos.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <div id="navbar"></div>
 
     <header class="legal-hero">
         <div class="legal-eyebrow">Institucional</div>
         <h1 class="legal-title">Termos de Uso</h1>
-        <p class="legal-date">Última atualização: 24 de Maio de 2024</p>
+        <p class="legal-date">Última atualização: 24 de outubro de 2026</p>
     </header>
 
     <main class="legal-container">
@@ -41,16 +41,16 @@
 
         <!-- Texto -->
         <article class="legal-content">
-            <p>Bem-vindo ao <strong>Nosso Amor</strong>. Estes Termos de Uso estabelecem as regras para a utilização da nossa plataforma de criação de presentes digitais. Ao acessar ou usar nossos serviços, você concorda com as condições descritas abaixo.</p>
+            <p>Bem-vindo ao <strong>KoaLove</strong>. Estes Termos de Uso estabelecem as regras para a utilização da nossa plataforma de criação de presentes digitais. Ao acessar ou usar nossos serviços, você concorda com as condições descritas abaixo.</p>
 
             <h2 id="sobre">1. Sobre o Serviço</h2>
-            <p>O Nosso Amor é uma plataforma que permite aos usuários criar páginas web personalizadas com fotos, vídeos, músicas e mensagens para presentear alguém. O serviço é prestado mediante pagamento único, sem a necessidade de assinaturas mensais.</p>
+            <p>O KoaLove é uma plataforma que permite aos usuários criar páginas web personalizadas com fotos, vídeos, músicas e mensagens para presentear alguém. O serviço é prestado mediante pagamento único, sem a necessidade de assinaturas mensais.</p>
 
             <h2 id="cadastro">2. Cadastro e Conta</h2>
             <p>É necessário criar uma conta ou fazer login para salvar, finalizar e gerenciar os presentes. A exploração dos temas e o preenchimento inicial do formulário podem ser feitos antes do login. O destinatário pode visualizar um presente liberado pelo link recebido sem criar conta. O usuário é responsável por manter a confidencialidade de suas credenciais de acesso.</p>
 
             <h2 id="direitos">3. Direitos Autorais e Conteúdo</h2>
-            <p>Ao fazer upload de fotos, vídeos e músicas, você declara que possui os direitos autorais ou as permissões necessárias para usar esse conteúdo. O Nosso Amor não se responsabiliza por violações de direitos autorais cometidas pelos usuários.</p>
+            <p>Ao fazer upload de fotos, vídeos e músicas, você declara que possui os direitos autorais ou as permissões necessárias para usar esse conteúdo. O KoaLove não se responsabiliza por violações de direitos autorais cometidas pelos usuários.</p>
             <ul>
                 <li>É proibido enviar conteúdo ofensivo, ilegal ou que viole a privacidade de terceiros.</li>
                 <li>O conteúdo enviado fica armazenado em nosso servidor exclusivamente para a exibição do presente criado.</li>
@@ -58,12 +58,13 @@
 
             <h2 id="pagamentos">4. Pagamentos e Entrega</h2>
             <p>O pagamento é feito em ambiente seguro e libera o acesso imediato ao link do presente. Após a confirmação do pagamento, você receberá um link exclusivo e um QR Code para compartilhar com quem desejar.</p>
+            <p>A garantia comercial vale por 3 dias (72 horas) após a confirmação do pagamento e antes da primeira abertura do link compartilhado. Os direitos legais obrigatórios permanecem preservados, com canal próprio de análise em Minha Conta. Consulte as condições na <a href="reembolso.html">Política de Reembolso</a>.</p>
 
             <h2 id="privacidade">5. Privacidade e Dados</h2>
             <p>O tratamento de seus dados pessoais e do conteúdo enviado é regido pela nossa <a href="privacidade.html">Política de Privacidade</a>.</p>
 
             <h2 id="responsabilidade">6. Isenção de Responsabilidade</h2>
-            <p>O Nosso Amor se esforça para manter a plataforma no ar 24/7, mas não garante que o serviço será ininterrupto ou livre de erros. Não nos responsabilizamos por problemas de conexão à internet do usuário ou de quem recebe o presente.</p>
+            <p>O KoaLove se esforça para manter a plataforma no ar 24/7, mas não garante que o serviço será ininterrupto ou livre de erros. Não nos responsabilizamos por problemas de conexão à internet do usuário ou de quem recebe o presente.</p>
         </article>
     </main>
 
@@ -71,7 +72,7 @@
     <footer class="rodape">
         <div class="rodape-grid">
             <div class="rodape-col">
-                <div class="rodape-brand">Nosso Amor</div>
+                <div class="rodape-brand"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></div>
                 <p class="rodape-brand-desc">Presentes digitais que emocionam. Transformamos histórias em páginas especiais que ficam para sempre.</p>
                 <div class="rodape-social">
                     <a href="#" title="Instagram">📷</a>
@@ -112,7 +113,7 @@
         </div>
 
         <div class="rodape-base">
-            <div>© <span id="anoAtual"></span> <b>Nosso Amor</b> — feito com carinho.</div>
+            <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho.</div>
             <div class="rodape-base-links">
                 <a href="termos.html">Termos</a>
                 <a href="privacidade.html">Privacidade</a>

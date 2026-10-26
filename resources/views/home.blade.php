@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Amor ❤️ — Presentes digitais que emocionam</title>
-    <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Envie por link ou QR Code.">
-
-
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +11,7 @@
     @vite(["resources/css/base.css","resources/css/home.css","resources/css/pages/home-extracted.css","resources/js/entries/home.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -48,7 +45,7 @@
                     <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
                     <a href="#temas" class="b sec magnetic">Ver os temas</a>
                 </div>
-                <div class="hero-nota stagger">Crie sua conta para salvar o presente. O pagamento está em modo de demonstração.</div>
+                <div class="hero-nota stagger">Crie sua conta para salvar o presente e acompanhar o pagamento.</div>
                 <div class="hero-pontos stagger">
                     <span>Link e QR Code</span>
                     <span>Fotos, vídeos e música</span>
@@ -70,18 +67,10 @@
                         <div class="pol-mini p1"><div></div></div>
                         <div class="pol-mini p2"><div></div></div>
                         <div class="fone-tela">
-                            <div class="fone-status" aria-hidden="true"><span>9:41</span><em>●●● ▮</em></div>
-                            <div class="fone-hero">
-                                <small>Uma história que continua...</small>
-                                <b>Nós dois</b>
-                                <i>2 anos e 10 meses de amor</i>
-                            </div>
-                            <div class="fone-cont">
-                                <div><strong data-count="2">0</strong><span>Anos</span></div>
-                                <div><strong data-count="34">0</strong><span>Meses</span></div>
-                                <div><strong data-count="952">0</strong><span>Dias</span></div>
-                                <div><strong data-count="22848" data-format="br">0</strong><span>Horas</span></div>
-                            </div>
+                            <video class="fone-video" autoplay muted loop playsinline preload="metadata" aria-label="Demonstração de um presente digital KoaLove">
+                                <source src="{{ asset('media/home-preview.mp4') }}" type="video/mp4">
+                                Seu navegador não suporta vídeos. <a href="{{ asset('media/home-preview.mp4') }}">Abra a demonstração em vídeo</a>.
+                            </video>
                         </div>
                     </div>
                 </div>
@@ -195,7 +184,7 @@
             <div class="preview-stage reveal reveal-zoom" id="previewStage">
                 <div class="preview-browser">
                     <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <div class="url">nossoamor.com/sua-historia</div>
+                    <div class="url">KoaLove / sua história</div>
                     <div class="live">Ao vivo</div>
                 </div>
 
@@ -300,10 +289,14 @@
                 </div>
                 <div class="promo-side">
                     <div class="promo-preco">
-                        <span>Preço do presente</span>
+                        <span id="promoLabel">Preço do presente</span>
+                        <span class="de" id="promoDe" hidden></span>
                         <span class="por" id="promoPor">Carregando…</span>
                     </div>
-                    <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
+                    <div class="promo-countdown" id="promoCountdown" hidden>
+                        <span>Oferta termina em</span><strong id="promoClock" aria-label="Tempo restante da promoção"></strong>
+                    </div>
+                    <a href="criar.html" id="promoLink" class="b ouro magnetic">Criar meu presente</a>
                 </div>
             </div>
         </div>
@@ -314,11 +307,11 @@
         <div class="wrap">
             <div class="tit reveal">
                 <div class="divisor">Sem assinatura</div>
-                <h2 class="mask-reveal"><span>Um <em class="shimmer-gold">preço só</em></span></h2>
+                <h2 class="mask-reveal"><span><em class="shimmer-gold">Preços</em></span></h2>
                 <p>Pagamento único. Sem mensalidade, sem letras miúdas, sem surpresas.</p>
             </div>
 
-            <div class="preco-wrap reveal reveal-zoom">
+            <div class="preco-wrap reveal reveal-zoom" id="pricingCards">
                 <div class="preco-box">
                     <div class="preco-badge">Mais escolhido</div>
                     <div class="preco-valor-wrap">
@@ -336,7 +329,7 @@
                         <li>Suporte humano por WhatsApp</li>
                     </ul>
                     <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
-                    <div class="preco-garantia">Garantia de 7 dias — devolvemos seu dinheiro se não amar.</div>
+                    <a href="reembolso.html" class="preco-garantia">Garantia comercial de 3 dias · antes de abrir o link</a>
                 </div>
             </div>
         </div>
@@ -348,7 +341,7 @@
             <div class="tit reveal">
                 <div class="divisor">Sem pegadinha</div>
                 <h2 class="mask-reveal"><span>Tudo <em class="shimmer-gold">incluso</em></span></h2>
-                <p>Você não paga nada a mais. É tudo que está aqui dentro, para sempre.</p>
+                <p>Confira os recursos disponíveis e escolha os limites de fotos, vídeos e música no seu plano.</p>
             </div>
 
             <div class="incluso-grid">
@@ -422,7 +415,7 @@
     <footer class="rodape">
         <div class="rodape-grid">
             <div class="rodape-col">
-                <div class="rodape-brand">Nosso Amor</div>
+                <div class="rodape-brand"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></div>
                 <p class="rodape-brand-desc">Presentes digitais que emocionam. Transformamos histórias em páginas especiais que ficam para sempre.</p>
                 <div class="rodape-social">
                     <a href="#" title="Instagram">📷</a>
@@ -449,8 +442,8 @@
             </div>
             <div class="rodape-col">
                 <h4>Suporte</h4>
-                <a href="#">Central de ajuda</a>
-                <a href="#">Fale conosco</a>
+                <a href="#" data-support-chat="help">Central de ajuda</a>
+                <a href="#" data-support-chat="human">Fale conosco</a>
                 <a href="termos.html">Termos de uso</a> <!-- ✅ Atualizado -->
                 <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->
                 <a href="reembolso.html">Reembolso</a> <!-- ✅ Atualizado -->
@@ -464,8 +457,9 @@
             <div class="selo-conf" data-icon="♾️">Acesso para sempre</div>
         </div>
 
+        <p id="siteSupportContact" hidden></p>
         <div class="rodape-base">
-            <div>© <span id="anoAtual"></span> <b>Nosso Amor</b> — feito com carinho para quem quer eternizar momentos.</div>
+            <div>© <span id="anoAtual"></span> <b id="siteStoreName">KoaLove</b> — feito com carinho para quem quer eternizar momentos.</div>
             <div class="rodape-base-links">
                 <a href="termos.html">Termos</a> <!-- ✅ Atualizado -->
                 <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->

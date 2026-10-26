@@ -1,5 +1,5 @@
 /* =====================================================
-   NOSSO AMOR — THE GOLDEN THREAD EDITION (v13.1)
+   KOALOVE — THE GOLDEN THREAD EDITION (v13.1)
    ===================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -488,3 +488,36 @@ body {
     body, .glass-tab, .gfield input, .gfield__peek, .btn-magnetic, .g-social { cursor: auto; }
     .cursor { display: none; }
 }
+
+/* As seções e o rodapé do login não recebem o espaçamento global do site. */
+.experience > section { padding: 0; }
+.glass-footer { padding: 0; }
+
+@media (min-width: 1025px) {
+    html, body { height: 100%; overflow: hidden; }
+    .experience {
+        height: 100vh;
+        height: 100dvh;
+        min-height: 0;
+        padding-block: 90px 20px;
+    }
+}
+@media (min-width: 1025px) and (max-height: 850px) {
+    .experience > .portal { zoom: .9; }
+}
+@media (min-width: 1025px) and (max-height: 750px) {
+    .experience > .portal { zoom: .75; }
+    .experience > .editorial { zoom: .9; }
+}
+@media (min-width: 1025px) and (max-height: 600px) {
+    .experience { padding-block: 76px 12px; }
+    .experience > .portal { zoom: .65; }
+    .experience > .editorial { zoom: .7; }
+}
+@media (min-width: 1025px) and (max-height: 500px) {
+    .experience > .portal { zoom: .55; }
+    .experience > .editorial { zoom: .6; }
+}
+
+/* Recuperação utiliza os campos e o card existentes. */
+.glass-card [hidden]{display:none!important}.glass-error.is-success{color:var(--gold-2)}

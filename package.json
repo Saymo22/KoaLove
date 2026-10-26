@@ -1,5 +1,5 @@
 {
-  "name": "projeto-na",
+  "name": "koalove",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,12 +7,16 @@
     "build": "vite build",
     "test": "node --test tests/Frontend/*.test.cjs",
     "build:qr": "node tools/build-qr.cjs",
-    "test:http": "node tools/test-http.cjs"
+    "test:http": "node tools/test-http.cjs",
+    "vercel-build": "node tools/vercel-build.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
     "laravel-vite-plugin": "^2.0.0",
     "qrcode": "^1.5.4",
     "vite": "^7.0.0"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

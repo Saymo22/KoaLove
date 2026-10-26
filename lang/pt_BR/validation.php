@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'accepted' => 'Confirme o campo :attribute.',
+    'array' => 'O campo :attribute deve ser uma lista.',
+    'boolean' => 'O campo :attribute deve ser verdadeiro ou falso.',
+    'confirmed' => 'A confirmação de :attribute não corresponde.',
+    'date' => 'Informe uma data válida em :attribute.',
+    'email' => 'Informe um e-mail válido.',
+    'exists' => 'A opção de :attribute não está disponível.',
+    'in' => 'Escolha uma opção válida em :attribute.',
+    'integer' => 'O campo :attribute deve ser um número inteiro.',
+    'max' => [
+        'array' => 'O campo :attribute aceita até :max itens.',
+        'numeric' => 'O campo :attribute deve ser no máximo :max.',
+        'string' => 'O campo :attribute aceita até :max caracteres.',
+        'file' => 'O arquivo :attribute excede o limite permitido.',
+    ],
+    'min' => [
+        'array' => 'O campo :attribute precisa de pelo menos :min itens.',
+        'numeric' => 'O campo :attribute deve ser no mínimo :min.',
+        'string' => 'O campo :attribute precisa de pelo menos :min caracteres.',
+        'file' => 'O arquivo :attribute é menor que o permitido.',
+    ],
+    'numeric' => 'O campo :attribute deve ser um número.',
+    'regex' => 'O formato de :attribute é inválido.',
+    'required' => 'Preencha o campo :attribute.',
+    'required_if' => 'Preencha o campo :attribute.',
+    'required_without' => 'Preencha o campo :attribute.',
+    'string' => 'O campo :attribute deve ser um texto.',
+    'unique' => 'Não foi possível usar o valor informado em :attribute.',
+    'url' => 'Informe um endereço válido em :attribute.',
+    'uuid' => 'O identificador de :attribute é inválido.',
+    'attributes' => ['name' => 'nome', 'email' => 'e-mail', 'password' => 'senha', 'token' => 'código', 'reason' => 'motivo', 'text' => 'mensagem'],
+];

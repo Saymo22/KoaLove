@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta — Nosso Amor</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +13,7 @@
     @vite(["resources/css/base.css","resources/css/minha-conta.css","resources/css/pages/minha-conta-extracted.css","resources/js/entries/minha-conta.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
     <!-- Fundo Premium -->
     <div class="world" aria-hidden="true">
@@ -125,6 +125,21 @@
         </div>
     </main>
 
+    <dialog id="refundDialog" class="refund-dialog" aria-labelledby="refundDialogTitle" aria-describedby="refundIntro">
+        <form id="refundForm">
+            <span class="refund-kicker">Cuidado com a sua experiência</span>
+            <h2 id="refundDialogTitle">Solicitar reembolso</h2>
+            <p id="refundIntro">Garantia comercial: até 3 dias (72 horas) após o pagamento, enquanto o link compartilhado não tiver sido aberto.</p>
+            <div class="refund-summary"><strong id="refundGiftTitle"></strong><span id="refundAmount"></span></div>
+            <label for="refundReason">Motivo da solicitação</label>
+            <textarea id="refundReason" minlength="5" maxlength="1000" rows="4" required placeholder="Como podemos ajudar?"></textarea>
+            <p class="refund-note">O envio inicia a análise; o estorno depende da confirmação do reembolso.</p>
+            <a class="refund-policy" href="reembolso.html" target="_blank" rel="noopener">Consultar política de reembolso ↗</a>
+            <p id="refundError" role="alert"></p>
+            <div class="refund-dialog-actions"><button type="button" id="cancelRefund">Cancelar</button><button type="submit" id="submitRefund">Enviar solicitação</button></div>
+        </form>
+    </dialog>
+
     <!-- Modal de Exclusão -->
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-box">
@@ -167,13 +182,13 @@
     </div>
 
     <section class="privacy-settings" aria-labelledby="privacyTitle">
-      <h2 id="privacyTitle">Seus dados</h2>
+      <div class="history-header"><span class="history-icon" aria-hidden="true">🔒</span><h2 id="privacyTitle">Seus dados</h2></div>
       <p>Exporte seus dados ou solicite a exclusão da conta. A exclusão desativa os links de presentes imediatamente e elimina os dados em até 30 dias.</p>
       <button type="button" id="exportData" class="btn-sec">Exportar meus dados</button>
       <form id="deleteAccountForm">
         <label for="deletePassword">Confirme sua senha para excluir a conta</label>
         <input id="deletePassword" type="password" autocomplete="current-password" maxlength="128" required>
-        <button type="submit" class="btn-sec">Excluir minha conta</button>
+        <button type="submit" class="btn-sec privacy-delete">Excluir minha conta</button>
       </form>
       <p id="privacyMessage" role="status"></p>
     </section>

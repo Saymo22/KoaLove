@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Recuperar senha — Nosso Amor</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  @include('partials.seo')
 
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(["resources/css/base.css","resources/css/recuperar-senha.css","resources/js/entries/recuperar-senha.js"])
 </head>
 <body>
+    @include('partials.noscript')
   <main class="recovery-card">
     <a href="login.html">← Voltar ao login</a>
     <h1 id="recoveryTitle">Recuperar senha</h1>

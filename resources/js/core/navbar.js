@@ -192,8 +192,8 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
-                    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
                         <a href="${href("#temas")}">Temas</a>
@@ -212,8 +212,8 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
-                    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
                         <a href="${href("#temas")}">Temas</a>
@@ -231,8 +231,8 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo">Nosso Amor</a>
-                    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="minha-conta.html" class="active">Minha Conta</a>
                         <a href="criar.html" class="b ouro peq">Criar novo +</a>
@@ -268,7 +268,8 @@ NA.navbar = (function () {
             toggleBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
                 const isOpen = navLinks.classList.toggle("open");
-                toggleBtn.setAttribute("aria-expanded", isOpen);
+                toggleBtn.setAttribute("aria-expanded", String(isOpen));
+                toggleBtn.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
                 toggleBtn.innerHTML = isOpen ? "✕" : "☰";
             });
 
@@ -278,15 +279,18 @@ NA.navbar = (function () {
                     navLinks.classList.remove("open");
                     toggleBtn.innerHTML = "☰";
                     toggleBtn.setAttribute("aria-expanded", "false");
+                    toggleBtn.setAttribute("aria-label", "Abrir menu");
                 });
             });
 
+            container.addEventListener('keydown',event=>{if(event.key==='Escape'&&navLinks.classList.contains('open')){navLinks.classList.remove('open');toggleBtn.innerHTML='☰';toggleBtn.setAttribute('aria-expanded','false');toggleBtn.setAttribute('aria-label','Abrir menu');toggleBtn.focus();}});
             // Fecha o menu ao clicar fora dele
             document.addEventListener("click", (e) => {
                 if (!navLinks.contains(e.target) && !toggleBtn.contains(e.target)) {
                     navLinks.classList.remove("open");
                     toggleBtn.innerHTML = "☰";
                     toggleBtn.setAttribute("aria-expanded", "false");
+                    toggleBtn.setAttribute("aria-label", "Abrir menu");
                 }
             });
         }

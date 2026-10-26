@@ -7,14 +7,7 @@
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
     <meta name="theme-color" content="#151319" />
-    <meta
-      name="description"
-      content="Uma história única, feita para ser vivida."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Uma surpresa especial — Nosso Amor" />
-    <title>Uma surpresa especial — Nosso Amor</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    @include('partials.seo')
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,6 +19,7 @@
     @vite(["resources/css/ver.css","resources/js/entries/ver.js"])
 </head>
   <body>
+    @include('partials.noscript')
     <div class="loading" id="loading">
       <span class="loading-mark">✳</span>
       <p>Uma história especial está ganhando vida…</p>

@@ -16,7 +16,7 @@ jobs:
           POSTGRES_DB: projeto_na_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U nossoamor -d projeto_na_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 12
@@ -41,14 +41,25 @@ jobs:
           coverage: none
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24'
+          node-version: '22'
           cache: npm
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Ensure FFmpeg for integration fixtures
+        timeout-minutes: 5
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+            sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y ffmpeg
+          fi
+          ffprobe -version
       - run: composer install --no-interaction --prefer-dist
       - run: composer validate --strict && composer audit
       - run: cp .env.example .env && php artisan key:generate
       - run: npm ci && npm audit
       - run: npm test && npm run build
+      - name: Build serverless assets and minimal FFprobe
+        run: |
+          node tools/vercel-build.mjs --function > /tmp/projeto-na-build.log 2>&1 || { tail -100 /tmp/projeto-na-build.log; exit 1; }
+          echo "FFPROBE_PATH=$PWD/bin/ffprobe" >> "$GITHUB_ENV"
       - run: php vendor/bin/pint --test
       - run: php vendor/bin/phpunit
       - run: php vendor/bin/phpunit -c phpunit.pgsql.xml

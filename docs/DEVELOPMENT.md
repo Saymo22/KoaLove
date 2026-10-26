@@ -29,7 +29,7 @@ Nenhum usuário/admin com senha padrão é criado. Registre uma conta pela tela 
 ## Testes
 
 - npm test: runtime dos temas, referências estáveis, etapas, retomada/salvamento, CSRF no cliente e assets.
-- npm run build: compila todas as 30 páginas e seus assets pelo Vite.
+- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo admin/planos.html.
 - php vendor/bin/phpunit: suíte HTTP Laravel em SQLite :memory:.
 - php vendor/bin/phpunit -c phpunit.pgsql.xml: mesma suíte no banco projeto_na_test. DB_HOST, DB_PORT, DB_USERNAME e DB_PASSWORD vêm do ambiente. Nunca apontar para o banco de uso.
 - php vendor/bin/pint --test: convenções PHP Laravel.
@@ -42,10 +42,12 @@ Os testes recusam bancos sem sufixo _test (exceto SQLite em memória). A CI exec
 
 Sirva SOMENTE public/ pelo Nginx/Apache + PHP-FPM, com HTTPS. APP_ENV=production, APP_DEBUG=false, SESSION_SECURE_COOKIE=true e APP_URL definitivo. Configure SMTP MAIL_* e PRIVACY_EMAIL/controlador antes de publicar. A recuperação retorna indisponível quando o mailer ainda é log em produção. Não use artisan serve em produção.
 
-Instale FFprobe atualizado pelo sistema. Configure limite de corpo no proxy, timeout de upload, pool FPM limitado e PostgreSQL/cache compartilhado. Armazenamento local exige volume persistente privado: múltiplas instâncias precisam de disco compartilhado ou outro adapter. Não há configuração Vercel.
+Instale FFprobe atualizado pelo sistema. Configure limite de corpo no proxy, timeout de upload, pool FPM limitado e PostgreSQL/cache compartilhado. Na [Vercel](VERCEL.md), configure [PostgreSQL e Storage privado do Supabase](SUPABASE.md). O modo local continua disponível em servidores com volume persistente privado; múltiplas instâncias precisam do mesmo disco montado. Consulte [armazenamento](MEDIA_STORAGE.md). O upload local é recusado em funções Vercel, pois elas não oferecem esse volume persistente.
 
 Execute composer install --no-dev --optimize-autoloader, npm ci, npm run build, php artisan migrate --force e php artisan optimize no pipeline. Inicie php artisan schedule:run a cada minuto (cron/Task Scheduler) para privacy:prune diário; monitore falhas e espaço em disco. Faça backups criptografados com expiração máxima de 30 dias e restauração testada. Configure o servidor web para não registrar query strings dos links compartilhados.
 
 ## Organização e próximos módulos
+
+O admin usa `resources/css/admin.css` e o shell em `resources/js/admin/header.js`: menu lateral, breadcrumb, ícones SVG, notificações e diálogo acessível de atendimento. Em telas de até 760px, o menu vira uma gaveta com fechamento por Escape e navegação por teclado; tabelas rolam dentro do próprio painel. `admin-pricing.css` trata os formulários do catálogo. Preserve os IDs consumidos pelos scripts das seis páginas administrativas; o redesign não altera os contratos de autorização ou de pagamento. Para conferir visualmente, use dados sintéticos em um banco isolado, nunca contas/pedidos de produção.
 
 resources/assets.json é o catálogo de entradas; cada página possui um bundle que preserva o escopo legado. O plugin classic-page-boundaries em vite.config.js concatena fontes existentes sem duplicá-las. A separação futura em ES modules/componentes Blade exige testes dos consumidores e mantém os scripts fora das views. O QR é gerado localmente pelo adapter resources/js/adapters/qr-code.js; o gateway implementa App/Contracts/PaymentGateway.

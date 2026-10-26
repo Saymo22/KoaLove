@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "saymo22/projeto-na",
+    "name": "saymo22/koalove",
     "type": "project",
-    "description": "Presentes digitais com Laravel, Blade e Vite",
+    "description": "KoaLove — presentes digitais com Laravel, Blade e Vite",
     "keywords": [
         "laravel",
         "framework"
@@ -11,7 +11,8 @@
     "require": {
         "php": ">=8.5.12 <8.6",
         "laravel/framework": "^13.17",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -67,6 +68,11 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "vercel": [
+            "@php tools/vercel-prepare.php",
+            "npm ci --include=dev --ignore-scripts",
+            "node tools/vercel-build.mjs --function"
         ]
     },
     "extra": {

@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Criar presente ❤️ — Nosso Amor</title>
-    <meta name="description" content="Crie uma página especial com suas fotos, vídeos, música e uma carta. Em poucos minutos." />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    @include('partials.seo')
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,6 +13,7 @@
     @vite(["resources/css/base.css","resources/css/criar.css","resources/js/entries/criar.js"])
 </head>
   <body class="app creator-v2">
+    @include('partials.noscript')
     <div class="scroll-progress" id="scrollProgress">
     </div>
     <div id="navbar">
@@ -35,6 +34,11 @@
           <p id="draftRecoveryError" role="alert"></p>
           <button type="button" id="resumeDraft">Retomar rascunho</button>
           <button type="button" id="discardDraft">Descartar cópia local</button>
+        </section>
+        <section class="creator-plan" aria-label="Plano do presente">
+          <label for="creatorPlan">Plano do presente</label>
+          <select id="creatorPlan"></select>
+          <p id="creatorPlanDetails"></p>
         </section>
         <nav class="wizard-nav" aria-label="Etapas do presente">
           <div class="wizard-progress">
@@ -321,6 +325,7 @@
                 </span>
               </label>
               <div class="erro-campo-msg" data-msg="musica">Adicione pelo menos uma foto.</div>
+              <button type="button" id="removerMusica" class="btn-sec">Remover música</button>
             </div>
             <div class="campo" id="musicaPreviewWrap" hidden>
               <label for="musicaPreview">Ouça o arquivo escolhido</label>

@@ -161,16 +161,6 @@ NA_CONFIG_READY.then(() => {
 
     revelarTemas();
 
-    const valor = CONFIG.preco;
-    if (typeof valor !== "number") return;
-    const promoPrice=document.getElementById("promoPor");
-    if(promoPrice)promoPrice.textContent=formatarPreco(valor);
-    const inteiro = Math.floor(valor);
-    const centavos = String(Math.round((valor - inteiro) * 100)).padStart(2, "0");
-    const el = document.getElementById("precoValor");
-    if (el) {
-        el.innerHTML = '<span class="cifrao">R$</span>' + inteiro + '<span class="centavos">,' + centavos + '</span>';
-    }
 });
 
 /* =====================================================

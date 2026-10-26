@@ -1,11 +1,34 @@
 {
+  "admin/planos": {
+    "url": "/admin/planos.html",
+    "view": "admin.planos",
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css",
+      "resources/css/admin-pricing.css",
+      "resources/css/admin-premium.css",
+      "resources/css/accessibility.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/app.js",
+      "resources/js/admin/planos.js"
+    ],
+    "entry": "resources/js/entries/admin-planos.js"
+  },
   "admin/clientes": {
     "url": "/admin/clientes.html",
     "view": "admin.clientes",
     "styles": [
       "resources/css/base.css",
       "resources/css/admin.css",
-      "resources/css/pages/admin-clientes-extracted.css"
+      "resources/css/pages/admin-clientes-extracted.css",
+      "resources/css/admin-premium.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -22,17 +45,15 @@
     "url": "/admin/dashboard.html",
     "view": "admin.dashboard",
     "styles": [
-      "resources/css/base.css",
-      "resources/css/admin.css"
+      "resources/css/admin-workspace.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
       "resources/js/api/client.js",
       "resources/js/api/auth.js",
-      "resources/js/api/admin.js",
       "resources/js/admin/auth.js",
-      "resources/js/admin/header.js",
-      "resources/js/admin/dashboard.js"
+      "resources/js/admin/workspace.js"
     ],
     "entry": "resources/js/entries/admin-dashboard.js"
   },
@@ -40,16 +61,15 @@
     "url": "/admin/login.html",
     "view": "admin.login",
     "styles": [
-      "resources/css/base.css",
-      "resources/css/admin.css",
-      "resources/css/pages/admin-login-extracted.css"
+      "resources/css/admin-login-premium.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
       "resources/js/api/client.js",
       "resources/js/api/auth.js",
       "resources/js/admin/auth.js",
-      "resources/js/pages/extracted/admin-login-0.js"
+      "resources/js/admin/login.js"
     ],
     "entry": "resources/js/entries/admin-login.js"
   },
@@ -58,7 +78,9 @@
     "view": "admin.reembolsos",
     "styles": [
       "resources/css/base.css",
-      "resources/css/admin.css"
+      "resources/css/admin.css",
+      "resources/css/admin-premium.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -76,7 +98,9 @@
     "view": "admin.suporte",
     "styles": [
       "resources/css/base.css",
-      "resources/css/admin.css"
+      "resources/css/admin.css",
+      "resources/css/admin-premium.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -85,7 +109,7 @@
       "resources/js/api/admin.js",
       "resources/js/admin/auth.js",
       "resources/js/admin/header.js",
-      "resources/js/admin/suporte.js"
+      "resources/js/admin/support-conversation.js"
     ],
     "entry": "resources/js/entries/admin-suporte.js"
   },
@@ -94,7 +118,8 @@
     "view": "criar",
     "styles": [
       "resources/css/base.css",
-      "resources/css/criar.css"
+      "resources/css/criar.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -117,7 +142,8 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/home.css",
-      "resources/css/pages/home-extracted.css"
+      "resources/css/pages/home-extracted.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -125,7 +151,8 @@
       "resources/js/api/auth.js",
       "resources/js/app.js",
       "resources/js/core/navbar.js",
-      "resources/js/pages/home.js"
+      "resources/js/pages/home.js",
+      "resources/js/pages/home-pricing.js"
     ],
     "entry": "resources/js/entries/home.js"
   },
@@ -133,7 +160,8 @@
     "url": "/index.html",
     "view": "index",
     "styles": [
-      "resources/css/pages/index-extracted.css"
+      "resources/css/pages/index-extracted.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/pages/extracted/index-0.js"
@@ -145,7 +173,8 @@
     "view": "login",
     "styles": [
       "resources/css/base.css",
-      "resources/css/login.css"
+      "resources/css/login.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -163,7 +192,8 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/minha-conta.css",
-      "resources/css/pages/minha-conta-extracted.css"
+      "resources/css/pages/minha-conta-extracted.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -183,7 +213,8 @@
     "view": "pagamento",
     "styles": [
       "resources/css/base.css",
-      "resources/css/pagamento.css"
+      "resources/css/pagamento.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -191,6 +222,7 @@
       "resources/js/api/purchases.js",
       "resources/js/app.js",
       "resources/js/core/navbar.js",
+      "resources/js/vendor/qrcode.js",
       "resources/js/pages/pagamento.js"
     ],
     "entry": "resources/js/entries/pagamento.js"
@@ -200,7 +232,8 @@
     "view": "privacidade",
     "styles": [
       "resources/css/base.css",
-      "resources/css/legal.css"
+      "resources/css/legal.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -216,7 +249,8 @@
     "view": "recuperar-senha",
     "styles": [
       "resources/css/base.css",
-      "resources/css/recuperar-senha.css"
+      "resources/css/recuperar-senha.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -230,7 +264,8 @@
     "view": "reembolso",
     "styles": [
       "resources/css/base.css",
-      "resources/css/legal.css"
+      "resources/css/legal.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -246,7 +281,8 @@
     "view": "resultado",
     "styles": [
       "resources/css/base.css",
-      "resources/css/resultado.css"
+      "resources/css/resultado.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/vendor/qrcode.js",
@@ -266,7 +302,8 @@
     "view": "termos",
     "styles": [
       "resources/css/base.css",
-      "resources/css/legal.css"
+      "resources/css/legal.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -281,7 +318,8 @@
     "url": "/teste/amizade.html",
     "view": "themes.amizade",
     "styles": [
-      "resources/css/themes/amizade.css"
+      "resources/css/themes/amizade.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -293,7 +331,8 @@
     "url": "/teste/aniversario.html",
     "view": "themes.aniversario",
     "styles": [
-      "resources/css/themes/aniversario.css"
+      "resources/css/themes/aniversario.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -305,7 +344,8 @@
     "url": "/teste/carta-antiga.html",
     "view": "themes.carta-antiga",
     "styles": [
-      "resources/css/themes/carta-antiga.css"
+      "resources/css/themes/carta-antiga.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -317,7 +357,8 @@
     "url": "/teste/casamento.html",
     "view": "themes.casamento",
     "styles": [
-      "resources/css/themes/casamento.css"
+      "resources/css/themes/casamento.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -329,7 +370,8 @@
     "url": "/teste/cinema.html",
     "view": "themes.cinema",
     "styles": [
-      "resources/css/themes/cinema.css"
+      "resources/css/themes/cinema.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -342,7 +384,8 @@
     "url": "/teste/familia.html",
     "view": "themes.familia",
     "styles": [
-      "resources/css/themes/familia.css"
+      "resources/css/themes/familia.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -354,7 +397,8 @@
     "url": "/teste/jardim.html",
     "view": "themes.jardim",
     "styles": [
-      "resources/css/themes/jardim.css"
+      "resources/css/themes/jardim.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -367,7 +411,8 @@
     "view": "themes.namoro",
     "styles": [
       "resources/css/themes/namoro.css",
-      "resources/css/pages/themes-namoro-extracted.css"
+      "resources/css/pages/themes-namoro-extracted.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/pages/extracted/themes-namoro-0.js",
@@ -379,7 +424,8 @@
     "url": "/teste/netflix.html",
     "view": "themes.netflix",
     "styles": [
-      "resources/css/themes/netflix.css"
+      "resources/css/themes/netflix.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -392,7 +438,8 @@
     "url": "/teste/retro.html",
     "view": "themes.retro",
     "styles": [
-      "resources/css/themes/retro.css"
+      "resources/css/themes/retro.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -405,7 +452,8 @@
     "url": "/teste/scrapbook.html",
     "view": "themes.scrapbook",
     "styles": [
-      "resources/css/themes/scrapbook.css"
+      "resources/css/themes/scrapbook.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -417,7 +465,8 @@
     "url": "/teste/spotify.html",
     "view": "themes.spotify",
     "styles": [
-      "resources/css/themes/spotify.css"
+      "resources/css/themes/spotify.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -430,7 +479,8 @@
     "url": "/teste/vinil.html",
     "view": "themes.vinil",
     "styles": [
-      "resources/css/themes/vinil.css"
+      "resources/css/themes/vinil.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/core/theme-runtime.js",
@@ -443,7 +493,8 @@
     "url": "/ver.html",
     "view": "ver",
     "styles": [
-      "resources/css/ver.css"
+      "resources/css/ver.css",
+      "resources/css/accessibility.css"
     ],
     "scripts": [
       "resources/js/app.js",

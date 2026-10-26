@@ -14,11 +14,21 @@ const CONFIG_CACHE_KEY = "nossoamor_config_cache";
 
 function _aplicarConfig(data) {
   if (!data || typeof data !== "object") return;
+  window.APP_CONFIG ||= {};
+  window.APP_CONFIG.DIRECT_UPLOADS = data.media_upload === 'direct';
+  window.APP_CONFIG.MEDIA_STORAGE_CONFIGURED = data.media_storage?.configured;
+  window.APP_CONFIG.MEDIA_LIMITS = data.media_storage?.limits;
+  window.APP_CONFIG.PAYMENTS = data.payments;
+  window.NA_THEME_METADATA=data.theme_metadata||data.themes||{};
+  const storeName=document.getElementById("siteStoreName"),contact=document.getElementById("siteSupportContact");
+  if(storeName)storeName.textContent=data.site?.storeName||"KoaLove";
+  if(contact){contact.textContent=[data.site?.supportEmail,data.site?.whatsapp].filter(Boolean).join(" · ");contact.hidden=!contact.textContent;}
+  window.NA_PRICING = {plans:data.plans || [],default_plan_id:data.default_plan_id,server_time_ms:data.server_time_ms};
   if (typeof data.price_cents === "number") CONFIG.preco = data.price_cents / 100;
   if (typeof data.simulation === 'boolean') CONFIG.modoTeste = data.simulation;
   if (data.currency) CONFIG.currency = data.currency;
   if (data.coupons && typeof data.coupons === "object") CONFIG.coupons = data.coupons;
-  if (data.themes && typeof data.themes === "object") Object.assign(THEMES, data.themes);
+  if (data.themes && typeof data.themes === "object") { for(const key of Object.keys(THEMES))delete THEMES[key];Object.assign(THEMES, data.themes); }
 }
 
 /* Promessa global: aguardar antes de usar THEMES ou CONFIG.preco */
@@ -27,6 +37,9 @@ window.NA_CONFIG_READY = (async () => {
   try {
     const res = await fetch(base + "/config", { credentials: "include" });
     const body = await res.json();
+    if (res.status===503&&body?.error?.code==='MAINTENANCE') {
+      const notice=document.createElement('div');notice.className='noscript-notice';notice.setAttribute('role','status');notice.textContent=body.error.message;document.body.prepend(notice);return null;
+    }
     if (!res.ok || !body.ok) throw new Error((body && body.error && body.error.message) || "Falha ao carregar configuração.");
     _aplicarConfig(body.data);
     try { localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({ data: body.data, at: Date.now() })); } catch {}

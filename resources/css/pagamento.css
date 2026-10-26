@@ -681,6 +681,12 @@
         100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
 
+    [hidden] { display: none !important; }
+    .pg-pix { overflow-wrap: anywhere; animation: none; }
+    .pg-pix canvas { display: block; max-width: 100%; height: auto !important; margin: 16px auto; }
+    .pg-pix p { margin: 12px 0; }
+    .pg-pix textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid var(--ouro); border-radius: 12px; padding: 12px; margin: 8px 0 16px; font: inherit; }
+
     /* =====================================================
        RESPONSIVO
     ===================================================== */

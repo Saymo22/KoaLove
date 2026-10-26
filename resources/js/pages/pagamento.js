@@ -5,10 +5,19 @@ let metodoSelecionado = "pix";
 const $ = (x) => document.getElementById(x);
 
 /* =====================================================
-   CUPONS — vêm de GET /api/config (nada hardcoded)
+   CUPONS — validados no servidor para o pedido
 ===================================================== */
 let descontoAtivo = null;
 let precoOriginal = null; // CONFIG.preco (price_cents / 100)
+let currentQuote = null;
+async function refreshQuote(coupon = null) {
+    const {quote}=await window.ApiPurchases.quote(id,coupon);
+    currentQuote=quote;precoOriginal=quote.base_price_cents/100;
+    animarTotal(formatarPreco(quote.amount_cents/100));
+    const notice=$('pgCupomOk');notice.textContent=quote.discount_percent?`${quote.discount_percent}% de desconto aplicado. Você economiza ${formatarPreco((quote.base_price_cents-quote.amount_cents)/100)}.`:'';
+    notice.style.display=quote.discount_percent?'block':'none';
+    return quote;
+}
 
 /* =====================================================
    NAVBAR SCROLL
@@ -44,6 +53,7 @@ NA_CONFIG_READY.then(async () => {
     }
 
     if (pedido.status === "paid") { location.href = "resultado.html?id=" + id; return; }
+    if (pedido.status === 'refunded') { $('erro').textContent = 'Este pedido foi reembolsado. Entre em contato com o suporte.'; $('btnPagar').disabled = true; return; }
 
     // Mídia local (fotos/vídeos/música) — blobs ficam no IndexedDB
     midia = await buscarPedido(id).catch(() => null);
@@ -70,6 +80,7 @@ NA_CONFIG_READY.then(async () => {
     const fotos = pedido.content_version===1 ? pedido.fotos||[] : midia?.fotos||[];
     const videos = pedido.content_version===1 ? pedido.videos||[] : midia?.videos||[];
     const linhas = [
+        ["Plano", pedido.plan?.name || "Presente completo", "🎁"],
         ["Tema", (t.emoji || "🎁") + " " + (t.nome || pedido.tema), "🎨"],
         ["Para", pedido.para, "💌"],
         ["Fotos", fotos.length + (fotos.length === 1 ? " foto" : " fotos"), "📸"],
@@ -89,12 +100,78 @@ NA_CONFIG_READY.then(async () => {
         $("resumo").appendChild(li);
     });
 
-    animarTotal(formatarPreco(precoOriginal));
+    try { await refreshQuote(pedido.checkout?.coupon || null); }
+    catch(error){$('erro').textContent=error.message;$('btnPagar').disabled=true;return;}
 
-    // Checkout sempre em modo teste neste servidor (sem gateway integrado)
+    // A disponibilidade vem do backend; retorno do provedor não prova aprovação.
     $("avisoTeste").classList.toggle("on",CONFIG.modoTeste);
-    $("btnPagarTxt").textContent = CONFIG.modoTeste ? "✨ Simular pagamento aprovado" : "Pagamento indisponível";
-    if (!CONFIG.modoTeste) { $("btnPagar").disabled = true; $("erro").textContent = "O pagamento ainda não foi habilitado. Tente novamente mais tarde."; }
+    const disponivel = CONFIG.modoTeste || window.APP_CONFIG?.PAYMENTS?.configured;
+    const manual = window.APP_CONFIG?.PAYMENTS?.provider === 'pix_manual';
+    if (manual) {
+        document.querySelectorAll('.pg-metodo').forEach(m => { if (m.dataset.metodo === 'card') m.hidden = true; });
+        $('pixDescription').textContent = 'Conferência manual pelo responsável';
+    }
+    $("btnPagar").disabled = !disponivel || pedido.content_version !== 1;
+    $("btnPagarTxt").textContent = CONFIG.modoTeste ? "✨ Simular pagamento aprovado" : disponivel ? manual ? 'Gerar Pix' : "🔒 Continuar no Mercado Pago" : "Pagamento indisponível";
+    if (!disponivel) $("erro").textContent = "O pagamento ainda não foi habilitado. Tente novamente mais tarde.";
+    if (pedido.checkout) {
+        $('editarRascunho').href = 'minha-conta.html';
+        $('editarRascunho').textContent = 'Ver meus presentes';
+        metodoSelecionado = pedido.checkout.method;
+        document.querySelectorAll('.pg-metodo').forEach(m => m.classList.toggle('sel', m.dataset.metodo === metodoSelecionado));
+        $('pgCupom').value = pedido.checkout.coupon || '';
+        $('pgCupom').disabled = $('pgCupomBtn').disabled = true;
+        descontoAtivo = pedido.checkout.coupon ? {codigo:pedido.checkout.coupon} : null;
+        animarTotal(formatarPreco(pedido.checkout.amount_cents / 100));
+        if (disponivel && pedido.checkout.provider === 'pix_manual') await mostrarPix(pedido.checkout);
+    }
+    if (parametro('retorno') === '1' && pedido.checkout) verificarRetorno();
+});
+
+async function verificarRetorno(tentativa = 0) {
+    try {
+        const {purchase} = await window.ApiPurchases.getOne(id);
+        if (purchase.status === 'paid') { location.href = 'resultado.html?id=' + encodeURIComponent(id); return; }
+        const status = purchase.checkout?.status;
+        if (purchase.checkout?.provider === 'pix_manual') {
+            $('erro').textContent = purchase.status === 'refunded' ? 'O pagamento foi reembolsado. Entre em contato com o suporte.' : 'Aguardando conferência manual do Pix. O presente será liberado após confirmar o recebimento.';
+            if (purchase.status === 'refunded') $('btnPagar').disabled = true;
+            return;
+        }
+        $('erro').textContent = ['rejected','cancelled'].includes(status)
+            ? 'O pagamento não foi aprovado. Você pode tentar novamente no Mercado Pago.'
+            : ['refunded','partially_refunded','charged_back','in_mediation'].includes(status)
+                ? 'O pagamento foi estornado ou está em análise. Entre em contato com o suporte.'
+                : 'Aguardando a confirmação do Mercado Pago. O presente será liberado após a aprovação.';
+        if (['refunded','partially_refunded','charged_back','in_mediation'].includes(status)) $('btnPagar').disabled = true;
+        if (tentativa < 11 && !['rejected','cancelled','refunded','partially_refunded','charged_back','in_mediation'].includes(status)) setTimeout(() => verificarRetorno(tentativa + 1), 5000);
+    } catch { $('erro').textContent = 'Não foi possível verificar o pagamento agora. Atualize esta página em alguns instantes.'; }
+}
+
+async function mostrarPix(checkout) {
+    const pix = checkout.pix;
+    $('pixManual').hidden = false;
+    $('pixReceiver').textContent = pix.name;
+    $('pixKey').textContent = pix.key;
+    $('pixReference').textContent = pix.txid;
+    $('pixPayload').value = pix.payload;
+    $('btnPagarTxt').textContent = 'Verificar liberação do presente';
+    $('btnPagar').disabled = false;
+    $('pgCupom').disabled = $('pgCupomBtn').disabled = true;
+    $('editarRascunho').href = 'minha-conta.html';
+    $('editarRascunho').textContent = 'Ver meus presentes';
+    $('erro').textContent = 'Aguardando pagamento e conferência manual. Se já pagou, aguarde a liberação.';
+    try {
+        const canvas = document.createElement('canvas');
+        await NAQRCode.toCanvas(canvas,pix.payload,{width:240,margin:4,errorCorrectionLevel:'M'});
+        canvas.setAttribute('role','img'); canvas.setAttribute('aria-label','QR Code para pagamento Pix');
+        $('pixQr').replaceChildren(canvas);
+    } catch { $('pixFeedback').textContent = 'Use o código Copia e Cola abaixo para pagar.'; }
+}
+
+$('pixCopy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('pixPayload').value); $('pixFeedback').textContent = 'Código Pix copiado.'; }
+    catch { $('pixPayload').focus(); $('pixPayload').select(); $('pixFeedback').textContent = 'Selecione e copie o código Pix acima.'; }
 });
 
 /* =====================================================
@@ -122,6 +199,7 @@ function animarTotal(valorFormatado) {
 ===================================================== */
 document.querySelectorAll(".pg-metodo").forEach(m => {
     m.addEventListener("click", () => {
+        if (pedido?.checkout) return;
         document.querySelectorAll(".pg-metodo").forEach(x => x.classList.remove("sel"));
         m.classList.add("sel");
         metodoSelecionado = m.dataset.metodo;
@@ -131,82 +209,36 @@ document.querySelectorAll(".pg-metodo").forEach(m => {
 /* =====================================================
    CUPOM (validado contra GET /api/config)
 ===================================================== */
-$("pgCupomBtn").addEventListener("click", () => {
-    const codigo = $("pgCupom").value.trim().toUpperCase();
-    const el = $("pgCupom");
-    const btn = $("pgCupomBtn");
-    const aviso = $("pgCupomOk");
-
-    if (!codigo) {
-        el.focus();
-        el.style.borderColor = "#b3263e";
-        setTimeout(() => el.style.borderColor = "", 900);
-        return;
-    }
-
-    // Remove cupom já aplicado se clicar novamente
-    if (descontoAtivo && descontoAtivo.codigo === codigo) {
-        descontoAtivo = null;
-        el.value = "";
-        el.style.borderColor = "";
-        el.style.background = "#faf6f1";
-        btn.textContent = "Aplicar";
-        btn.style.background = "";
-        btn.style.color = "";
-        aviso.style.display = "none";
-        animarTotal(formatarPreco(precoOriginal));
-        return;
-    }
-
-    const cupom = (CONFIG.coupons || {})[codigo];
-
-    if (!cupom) {
-        el.style.borderColor = "#b3263e";
-        el.style.background = "#fde8ec";
-        btn.textContent = "✕ Inválido";
-        btn.style.background = "#fde8ec";
-        btn.style.color = "#b3263e";
-        aviso.style.display = "none";
-        setTimeout(() => {
-            el.style.borderColor = "";
-            el.style.background = "#faf6f1";
-            btn.textContent = "Aplicar";
-            btn.style.background = "";
-            btn.style.color = "";
-        }, 1800);
-        return;
-    }
-
-    // Aplicar (cálculo local apenas para preview; o servidor é a autoridade)
-    const desc = cupom.discount_percent || 0;
-    const novoPreco = precoOriginal * (1 - desc / 100);
-    descontoAtivo = { codigo, desc, preco: novoPreco };
-
-    el.style.borderColor = "var(--ouro)";
-    el.style.background = "linear-gradient(135deg, #fff8e6, #fffbe9)";
-    btn.textContent = "✓ " + desc + "% off";
-    btn.style.background = "linear-gradient(135deg, #46d369, #2ea854)";
-    btn.style.color = "#fff";
-
-    animarTotal(formatarPreco(novoPreco));
-
-    aviso.innerHTML = "🎉 Cupom aplicado! Você economizou " + formatarPreco(precoOriginal - novoPreco);
-    aviso.style.display = "block";
+$("pgCupomBtn").addEventListener("click", async () => {
+    const code=$("pgCupom").value.trim().toUpperCase();
+    if(!code){$("pgCupom").focus();return;}
+    const remove=descontoAtivo?.codigo===code;
+    $("pgCupomBtn").disabled=true;$("erro").textContent='';
+    try{
+        const quote=await refreshQuote(remove?null:code);
+        descontoAtivo=remove?null:{codigo:quote.coupon};
+        if(remove)$("pgCupom").value='';
+        $("pgCupomBtn").textContent=remove?'Aplicar':'Remover';
+    }catch(error){
+        descontoAtivo=null;$("pgCupomBtn").textContent='Aplicar';$("erro").textContent=error.message;
+        try{await refreshQuote();}catch{$('btnPagar').disabled=true;}
+    }finally{$("pgCupomBtn").disabled=false;}
 });
 
 /* =====================================================
    PAGAMENTO (contrato: POST /api/purchases/:id/pay)
 ===================================================== */
 async function pagar() {
-    const { purchase } = await window.ApiPurchases.pay(
+    return window.ApiPurchases.pay(
         id,
         metodoSelecionado,
-        descontoAtivo ? descontoAtivo.codigo : null
+        descontoAtivo ? descontoAtivo.codigo : null,
+        currentQuote?.amount_cents
     );
-    pedido = purchase;
 }
 
 $("btnPagar").addEventListener("click", async (e) => {
+    if (pedido?.checkout?.provider === 'pix_manual') { await verificarRetorno(); return; }
     const btn = $("btnPagar");
     const txt = $("btnPagarTxt");
 
@@ -226,7 +258,20 @@ $("btnPagar").addEventListener("click", async (e) => {
     $("erro").textContent = "";
 
     try {
-        await pagar();
+        const resposta = await pagar();
+        pedido = resposta.purchase;
+        if (resposta.checkout?.provider === 'pix_manual') {
+            pedido.checkout = resposta.checkout;
+            await mostrarPix(resposta.checkout);
+            return;
+        }
+        if (pedido.status !== 'paid') {
+            const url = resposta.checkout?.url;
+            const destino = url ? new URL(url) : null;
+            if (!destino || destino.protocol !== 'https:' || !['www.mercadopago.com.br','www.mercadopago.com','sandbox.mercadopago.com.br','sandbox.mercadopago.com'].includes(destino.hostname) || destino.username || destino.password || destino.port) throw new Error('O checkout não está disponível. Atualize a página para continuar.');
+            location.assign(destino.href);
+            return;
+        }
 
         confetes();
 
@@ -235,6 +280,10 @@ $("btnPagar").addEventListener("click", async (e) => {
             location.href = "resultado.html?id=" + id;
         }, 900);
     } catch (err) {
+        if ((err.status===409 || err.status===422) && !pedido?.checkout) {
+            try { await refreshQuote(descontoAtivo?.codigo || null); }
+            catch { descontoAtivo=null;$('pgCupom').value='';$('pgCupomBtn').textContent='Aplicar';try{await refreshQuote();}catch{} }
+        }
         if (err && (err.code === "RATE_LIMITED" || err.code === "CLIENT_RATE_LIMITED")) {
             $("erro").textContent = `Muitas tentativas. Aguarde ${err.retryAfter || 60}s e tente de novo.`;
         } else {

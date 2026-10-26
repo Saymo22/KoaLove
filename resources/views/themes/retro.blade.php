@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RADICAL 80s — Nossa História em Neon</title>
+@include('partials.seo')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Monoton&family=Pacifico&family=Press+Start+2P&family=Righteous&family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -15,6 +15,7 @@
     @vite(["resources/css/themes/retro.css","resources/js/entries/themes-retro.js"])
 </head>
 <body>
+    @include('partials.noscript')
 
 <!-- CRT OVERLAY -->
 <div class="crt-flicker"></div>

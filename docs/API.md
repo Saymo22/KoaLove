@@ -1,29 +1,65 @@
 # API Laravel
 
+Pix e cartão usam o [Mercado Pago Checkout Pro](PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
+
 Mesma origem e prefixo /api. Sessão Laravel em cookie HttpOnly/SameSite=Lax; mutações exigem CSRF e Content-Type application/json, exceto o upload binário. O meta csrf-token vem de uma página Blade. Não há CORS aberto nem autenticação por ID/token de dono na URL.
 
 Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Validação: 422; autenticação: 401; autorização: 403; conflito: 409; corpo grande: 413; formato: 415; sessão CSRF expirada: 419; limite: 429 com Retry-After. Erros internos não devolvem stack traces nem SQL.
 
 ## Endpoints
 
-- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação.
+- GET /config: temas, catálogo `plans`, `default_plan_id`, preço em centavos, moeda, relógio `server_time_ms` e disponibilidade da simulação. Cada plano inclui limites e cotação da promoção vigente; `coupons` permanece um objeto vazio por compatibilidade, sem divulgar códigos. `payments` informa provider/configured/live, sem segredos. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
 - POST /auth/register (name,email,password), /auth/login (email,password), /auth/logout.
+- Novas senhas no cadastro e na redefinição exigem 8 caracteres, no máximo 128 caracteres e, com o bcrypt padrão, no máximo 72 bytes; acentos e emojis podem usar vários bytes. Bytes nulos são rejeitados com 422. A validação de login preserva compatibilidade com senhas existentes.
 - GET /auth/me: usuário sem hashes, tokens ou campos internos.
+- O cadastro devolve `role=user`; novas senhas recusam combinações comuns e igualdade com nome/e-mail. O perfil administrativo de suporte não recebe os presentes e reembolsos no detalhe legado de clientes e não lê compras alheias pela rota de compras. Administradores owner/manager mantêm leitura autorizada.
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.
 - GET/POST /purchases, GET /purchases/{purchase}.
+- POST /purchases aceita `plan_id` UUID opcional; sem ele, usa o plano ativo principal. Benefícios e limites ficam registrados em `plan_snapshot`. O dono recebe `plan_id` e `plan` na projeção da compra; a projeção compartilhada não recebe cobrança.
+- POST /purchases/{purchase}/quote: `{cupom:null}` ou `{cupom:"CODIGO"}`; retorna `quote` com base/total em centavos, percentual, fonte e estado frozen. Somente o dono autorizado. Cupons são validados aqui, nunca pelo catálogo público.
 - POST /purchases/{purchase}/media/{asset}: corpo binário, MIME real validado; asset de 16 a 100 caracteres alfanuméricos, hífen ou sublinhado. Repetições do mesmo ID/tipo reutilizam a mídia existente.
+- Com `GET /config` indicando `media_upload=direct`, POST /purchases/{purchase}/media/{asset}/upload-url recebe mime/bytes e devolve upload_id/url/headers para PUT direto sem cookies; pode devolver complete=true para asset já concluído. POST /purchases/{purchase}/media/{asset}/complete-upload recebe upload_id e valida o objeto antes de liberar seu uso. Reservas contam na cota e expiram em 20 minutos; a URL de PUT vale 5 minutos. Uma nova tentativa começa solicitando upload-url novamente.
 - POST /purchases/{purchase}/update: conteúdo + media:{photos:[asset],videos:[asset],music:asset|null}. Só aceita mídias da própria compra; finaliza content_version=1.
 - POST /purchases/{purchase}/migrate: atualização de compra legada paga ainda sem mídia sincronizada.
-- POST /purchases/{purchase}/pay: metodo pix/card e cupom opcional; preço calculado no servidor. Repetir pagamento aprovado não duplica a operação.
+- POST /purchases/{purchase}/pay: metodo pix/card e cupom opcional; preço calculado no servidor. No Mercado Pago retorna purchase pendente e checkout:{status,url,method,coupon,amount_cents}; redirecione para checkout.url. Iniciar checkout congela conteúdo, valor, cupom e método; novas tentativas reutilizam a preferência. Repetir pagamento aprovado devolve a compra paga. Consulte [PAYMENTS.md](PAYMENTS.md).
+- POST /webhooks/mercadopago: notificação payment assinada por HMAC; única mutação sem CSRF. Consulta o pagamento no provedor e verifica referência, titular, BRL, valor e modo live/test antes de aprovar. Parâmetros de retorno do navegador não aprovam compras. Assinatura inválida: 401; divergência no pagamento: 422; provedor/configuração indisponível: 503.
 - POST /purchases/{purchase}/delete: soft delete; revoga compartilhamento.
+- POST /purchases/{purchase}/refund: `reason` de 5–1000 caracteres e `request_kind` opcional (`commercial` padrão ou `legal_review`), somente o dono de uma compra paga ativa. A garantia comercial exige menos de 72h desde o pagamento, histórico verificável e link compartilhado ainda não aberto; caso contrário, retorna 409. A análise de direitos legais permanece disponível para revisão humana, sem essas recusas comerciais automáticas. Solicitações e decisões existentes são preservadas, com uma análise legal após recusa comercial. A projeção privada inclui `refund:{id,status,request_kind,created_at}|null` e `refund_eligibility`, sem notas internas; a projeção compartilhada não contém esses campos. Consulte [REFUNDS.md](REFUNDS.md).
 - GET /shared/{token}, /shared/{token}/media/{asset}: somente presente pago, finalizado e ativo. Token aleatório de 256 bits. Projeção pública não inclui dono, cobrança nem dados de outros temas. Mídia aceita Range via Symfony.
 - GET /purchases/{purchase}/media/{asset}: exige dono e mídia selecionada no manifesto.
+- Para mídia S3, o GET autorizado retorna redirecionamento para uma URL privada assinada por 1 minuto; o armazenamento atende Range. Objetos em quarentena não são acessíveis por essas rotas.
 - GET /privacy/export: exportação autenticada JSON. Arquivos binários seguem disponíveis nos presentes da conta; não estão embutidos na exportação.
 - POST /privacy/delete: confirma password, desativa conta e links imediatamente; purga em até 30 dias.
-- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Reembolso e status da compra mudam na mesma transação. Não há gateway de estorno real.
+- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Para compras simuladas, reembolso e status mudam na mesma transação. Para Pix manual, aprovar reembolso exige refund_sent=true após devolver no banco. Para Mercado Pago, aprovar a solicitação retorna 409 até o provedor confirmar status refunded pelo webhook; depois disso, o admin pode concluir o atendimento sem efetuar uma nova devolução.
+- Admin: GET /admin/pricing; POST /admin/plans e /admin/plans/{uuid}; POST /admin/pricing/promotions/{uuid?} e /admin/pricing/coupons/{uuid?}. Sem ID cria; com ID edita. Campos e regras em [PRICING.md](PRICING.md). Preço em centavos e desconto inteiro de 1–95%; ofertas aceitam `plan_id:null` para todos os planos. Desative para encerrar sem apagar histórico.
+- POST /purchases/{purchase}/pay também aceita `expected_amount_cents`: divergência com a cotação do servidor retorna 409 antes de iniciar cobrança. O checkout guarda `pricing_details` e congela o total. Promoção e cupom não acumulam; aplica-se o maior desconto válido.
 
-## Limites
+## Chat e suporte
+
+- GET `/support`: somente autenticado, retorna `user_id` e `ticket:{id,subject,status,messages}|null` da própria conta. Resposta privada sem cache.
+- POST `/support/start`: `text` (3–2000 caracteres), `message_id` UUID, `category` (`payment`, `media`, `account`, `refund`, `themes`, `creation`, `sharing`, `other`), `page` caminho `.html` sem query e `context` opcional (até 3 textos de 500 caracteres). Reutiliza atendimento ativo ou cria um; não aceita dono/status fornecidos pelo cliente.
+- POST `/support/messages`: `text` (1–2000) e `message_id` UUID, sempre no atendimento da própria conta. Repetição do mesmo UUID é idempotente. Reabre o estado para `open`.
+- A rota admin `/admin/tickets/{ticket}/reply` devolve a conversa atualizada. Respostas têm `role=admin`, UUID e data do servidor. A leitura do cliente recupera essas respostas no mesmo chat.
+- Escritas: 10/min por conta, 30/min por IP; CSRF e sessão obrigatórios. Ver [CHATBOT.md](CHATBOT.md) para triagem, polling, histórico e limites.
+
+## Limites gerais
+
+Com `FILESYSTEM_DISK=supabase`, o teto configurado do provedor também se aplica: no plano Free são 50.000.000 bytes por arquivo. `media_storage.limits` publica os limites efetivos; o cliente verifica antes do envio e o servidor verifica a reserva e o arquivo normalizado. O disco é registrado em cada asset/reserva; referências dos temas permanecem estáveis.
 
 Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recuperação 3, criação 10, mutações 90, admin 120. O cache deve ser compartilhado entre workers. Metadados JSON: 2 MiB e profundidade limitada. themeData: 200 KB, profundidade 10, máximo 300 itens por nível, texto 4000 caracteres. Upload: foto 15 MiB/16 MP, áudio 25 MiB, vídeo 100 MiB; 300 MiB e 80 assets por compra. Manifesto: 1–12 fotos, até 4 vídeos e 1 música.
 
+Além do IP, login permite 5 tentativas/minuto por e-mail normalizado; solicitação de recuperação, 3/hora por e-mail; redefinição, 5/minuto por e-mail. As chaves do cache usam HMAC, sem o e-mail em texto aberto. Exclusão de conta exige a senha atual e permite 5 tentativas/minuto por usuário e IP. Não há bloqueio permanente de conta. Recuperação usa sempre APP_URL para o link; validação, troca de senha, revogação de sessões e consumo do token são atômicos.
+
 Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. URLs .html foram preservadas; são views Laravel, não arquivos públicos.
+
+## Dashboard completo
+
+Consulte [ADMIN-UI.md](ADMIN-UI.md) para o mapa de ações. `GET /admin/workspace` entrega os dados autorizados e a função atual; requer sessão admin. Suporte não recebe catálogo, chave Pix nem razão financeira.
+
+Novas mutações JSON autenticadas/CSRF: `POST /admin/settings` (campos validados e preferências por conta), `/admin/clients/{user}/note` (`note` até 2000), `/admin/clients/{user}/delete` (`confirmed:true`), `/admin/tickets/{ticket}/manage` (`priority:low|normal|high`, `status:open|answered|closed`), `/admin/themes/{key}` (`active`), `/admin/purchases/{purchase}/reject-pix` (`reason` 5–300), `/admin/catalog/{plans|promotions|coupons}/{uuid}/delete`, `/admin/activities/clear` (`confirmed:true`), `/admin/administrators/invite` (`email`, `level:owner|manager|support`) e `/admin/administrators/{user}/remove`.
+
+Convites: GET `/admin/invitations/{uuid}` exige assinatura temporária e conta com o mesmo e-mail. O aceite é um formulário web POST `/admin/invitations/{uuid}/accept`, com CSRF, autenticação e `confirmed=1`. Não aceita role/email no corpo.
+
+Ofertas aceitam `discount_cents` inteiro positivo como alternativa a `discount_percent` inteiro de 1–95. Cupons aceitam `usage_limit` positivo ou null (ilimitado). A cotação inclui desconto monetário e identifica o cupom no snapshot privado para preservar contagem após edição. O checkout reserva usos e mantém o preço congelado. Códigos com checkouts legados sem identificador de cupom não podem ser renomeados; desative e crie outro código.
+
+`GET /config` inclui `site:{storeName,supportEmail,whatsapp}` e `theme_metadata` com os 13 temas, enquanto `themes` lista somente os ativos para novas criações. Não inclui a chave Pix, e-mails de clientes, códigos de cupons nem configurações privadas. Manutenção devolve 503 com `MAINTENANCE` e `Retry-After:300` para APIs de clientes; webhook, cron e autenticação permanecem operacionais.
