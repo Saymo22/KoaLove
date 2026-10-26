@@ -1638,7 +1638,18 @@
             .trust-bar .wrap { justify-content: center; text-align: center; }
         }
         @media (max-width: 720px) {
-            .preview-stage { aspect-ratio: auto; min-height: 440px; }
+            .preview-stage { aspect-ratio: auto; height: 440px; min-height: 440px; }
+            .preview-viewport { min-height: 0; }
+            #previewIframe { position: absolute; inset: 0; }
+            .preview-browser { padding-inline: 10px; gap: 8px; }
+            .preview-browser .url {
+                display: block;
+                min-width: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                padding-inline: 8px;
+            }
             .bonus-box { padding: 40px 24px; }
             .trust-rating { text-align: center; }
             .trust-avatars { justify-content: center; }
