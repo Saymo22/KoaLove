@@ -1,5 +1,7 @@
 @php($seo = app(\App\Services\Seo::class)->metadata(request()))
+@unless(request()->is('ver.html', 'teste', 'teste/*'))
 @vite('resources/js/chat/entry.js')
+@endunless
 @vite('resources/css/brand.css')
 <link rel="icon" type="image/svg+xml" href="/branding/koalove-simbolo-principal.svg">
 <title>{{ $seo['title'] }}</title>

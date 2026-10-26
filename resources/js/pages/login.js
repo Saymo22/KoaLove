@@ -1,3 +1,4 @@
+// Links antigos de recuperação continuam aceitos, com token somente no fragmento.
 function destinoAposLogin() {
   const next = new URLSearchParams(location.search).get('next');
   try {
@@ -10,10 +11,10 @@ function destinoAposLogin() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const loginRecovery=(()=>{const params=new URLSearchParams(location.hash.slice(1));const token=params.get('token'),email=params.get('email');if(token)history.replaceState(null,'',location.pathname+location.search);return {token,email,requested:!!token||location.hash==='#recuperar'};})();
   try {
     await window.ApiAuth.me();
-    window.location.href = destinoAposLogin();
-    return;
+    if(!loginRecovery.requested){window.location.href = destinoAposLogin();return;}
   } catch { /* não logado */ }
 
   const $ = (s) => document.querySelector(s);
@@ -125,32 +126,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   const erroEl = $("#erro");
   const sealText = $("#sealText");
   let mode = "login";
+  const fieldPass=$("#fieldPass"),fieldEmail=$("#fieldEmail"),fieldConfirm=$("#fieldConfirm"),confirmPass=$("#confirmPass");
+  const forgot=$("#forgotPassword"),back=$("#recoveryBack");
 
   function setMode(newMode) {
-    if (newMode === mode) return;
-    mode = newMode;
-    tabBtns.forEach((b) => b.classList.toggle("is-active", b.dataset.mode === mode));
-    tabs.dataset.mode = mode;
-    inputName.disabled = mode !== 'register';
-
-    if (mode === "login") {
-      titleEl.textContent = "Que bom te ver";
-      subEl.textContent = "Sua história continua de onde parou.";
-      sealText.textContent = "Entrar";
-      fieldName.classList.add("is-hidden");
-      inputName.required = false;
-      inputName.value = "";
-      inputPass.setAttribute("autocomplete", "current-password");
-    } else {
-      titleEl.textContent = "Vamos começar";
-      subEl.textContent = "Leva menos de um minuto para eternizar.";
-      sealText.textContent = "Criar conta";
-      fieldName.classList.remove("is-hidden");
-      inputName.required = true;
-      inputPass.setAttribute("autocomplete", "new-password");
-    }
-    clearError();
+    if(newMode===mode)return;
+    mode=newMode;
+    const register=mode==='register',recovery=mode==='recovery',reset=mode==='reset';
+    tabBtns.forEach(button=>button.classList.toggle('is-active',button.dataset.mode===mode));
+    tabs.dataset.mode=register?'register':'login';
+    fieldName.classList.toggle('is-hidden',!register);inputName.disabled=!register;inputName.required=register;
+    if(!register)inputName.value='';
+    fieldPass.hidden=recovery;inputPass.disabled=recovery;inputPass.required=!recovery;
+    fieldEmail.hidden=reset;inputEmail.disabled=reset;inputEmail.required=!reset;
+    fieldConfirm.hidden=!reset;confirmPass.disabled=!reset;confirmPass.required=reset;
+    forgot.hidden=mode!=='login';back.hidden=!(recovery||reset);$('#alternateLogin').hidden=recovery||reset;
+    inputPass.autocomplete=register||reset?'new-password':'current-password';
+    const label=fieldPass.querySelector('label');label.textContent=reset?'Nova senha':'Sua senha';
+    const copy={login:['Que bom te ver','Sua história continua de onde parou.','Entrar'],register:['Vamos começar','Leva menos de um minuto para eternizar.','Criar conta'],recovery:['Recuperar senha','Informe seu e-mail para receber o link de recuperação.','Enviar link'],reset:['Definir nova senha','Escolha sua nova senha para continuar.','Salvar nova senha']}[mode];
+    titleEl.textContent=copy[0];subEl.textContent=copy[1];sealText.textContent=copy[2];clearError();
+    inputPass.value=confirmPass.value='';inputPass.type='password';peekBtn.setAttribute('aria-label','Mostrar senha');
   }
+  forgot.addEventListener('click',event=>{event.preventDefault();if(!btn.disabled){setMode('recovery');inputEmail.focus();}});
+  back.addEventListener('click',event=>{event.preventDefault();if(!btn.disabled){setMode('login');inputEmail.focus();}});
+  if(loginRecovery.requested)setMode(loginRecovery.token?'reset':'recovery');
 
   tabBtns.forEach((b) => {
     b.addEventListener("click", () => {
@@ -163,6 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     peekBtn.addEventListener("click", () => {
       const showing = inputPass.type === "text";
       inputPass.type = showing ? "password" : "text";
+      peekBtn.setAttribute("aria-label",showing?"Mostrar senha":"Ocultar senha");
       peekBtn.style.color = showing ? "var(--text-muted)" : "var(--gold-1)";
     });
   }
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   function clearError() {
     erroEl.textContent = "";
-    erroEl.classList.remove("is-visible");
+    erroEl.classList.remove("is-visible", "is-success");
   }
   [inputEmail, inputPass, inputName].forEach(el => el && el.addEventListener("input", clearError));
 
@@ -181,6 +181,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
     clearError();
 
+    if(btn.disabled)return;
+    if(mode==='recovery'||mode==='reset'){await handleRecovery();return;}
     const email = inputEmail.value.trim().toLowerCase();
     const pass = inputPass.value;
     const name = inputName ? inputName.value.trim() : "";
@@ -230,6 +232,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       showError(err.message || "Erro ao autenticar. Tente novamente.");
     }
   });
+
+  async function handleRecovery(){
+    const reset=mode==='reset';
+    if(!reset&&!inputEmail.checkValidity()){inputEmail.reportValidity();return;}
+    if(reset&&(inputPass.value.length<8||inputPass.value!==confirmPass.value)){showError('Informe uma senha com pelo menos 8 caracteres e confirme a mesma senha.');return;}
+    btn.disabled=true;btn.classList.add('is-loading');
+    try{
+      const result=await ApiClient.post('/auth/'+(reset?'reset-password':'forgot-password'),reset?{token:loginRecovery.token,email:loginRecovery.email,password:inputPass.value}:{email:inputEmail.value.trim()});
+      if(reset){loginRecovery.token=null;setMode('login');}
+      erroEl.classList.add('is-success');showError(result.message);
+    }catch(error){showError(error.message||'Não foi possível concluir. Tente novamente.');}
+    finally{btn.disabled=false;btn.classList.remove('is-loading');}
+  }
 
   function spawnPetalBurst() {
     const rect = btn.getBoundingClientRect();

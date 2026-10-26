@@ -1227,7 +1227,7 @@ footer small{
 #toast.on{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 
 /* ============ PETALS ============ */
-.petal{
+.floating-petal{
   position:fixed;z-index:9600;pointer-events:none;
   will-change:transform,opacity;
   font-size:18px;
@@ -1252,3 +1252,9 @@ footer small{
 @media(pointer:coarse){button,[role=button],.flower,.polaroid,.member-card,.g-item{cursor:pointer}}
 @media(prefers-reduced-motion:reduce){[data-reveal]{opacity:1!important;transform:none!important}}
 @media(max-width:600px){.hero-inner,.hero-grid,.hero-text,.hero-content{min-width:0;max-width:100%}.hero-title,.hero-names,.hero-title span{overflow-wrap:anywhere}.hero-title .line1,.hero-title .line2{font-size:clamp(2rem,11vw,4.5rem)}.hero-sub,.hero-lede{max-width:100%}.hero-title{max-width:100%}}
+
+/* Galeria sempre florida: fotos e pétalas não dependem de hover no celular. */
+.flower .flower-svg .petal{transform:scale(1.15)}
+.flower .flower-svg .flower-photo{opacity:1}
+.flower .flower-svg .flower-center{fill:var(--gold-lt)}
+.flower .flower-label{opacity:1;white-space:normal;width:100%}
