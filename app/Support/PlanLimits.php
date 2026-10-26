@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\MediaUpload;
 use App\Models\Purchase;
+use App\Services\MediaValidator;
 use InvalidArgumentException;
 
 /**
@@ -101,7 +102,10 @@ class PlanLimits
 
         $new = $assets->count();
         if ($countPending) {
-            $pending = MediaUpload::where('purchase_id', $purchase->id)->where('bytes', '>', 0)->where('expires_at', '>', now());
+            $mimes = array_keys(array_filter(MediaValidator::TYPES, fn ($type) => $type === self::kind($kind)));
+            $pending = MediaUpload::where('purchase_id', $purchase->id)->whereIn('mime', $mimes)->where('bytes', '>', 0)->where('expires_at', '>', now());
+            // A completion can persist an asset before clearing its reservation.
+            $pending->whereNotIn('asset_id', $purchase->assets()->getQuery()->select('asset_id'));
             if ($manifestIds !== []) {
                 $pending->whereNotIn('asset_id', $manifestIds);
             }

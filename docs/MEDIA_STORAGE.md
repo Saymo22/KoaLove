@@ -59,6 +59,8 @@ Cota por compra: 80 assets e 300 MiB, além da cota de mídia de cada plano. O c
 
 ## Operação, backups e exclusão
 
+Antes do envio, `/media/selection` libera a cota de arquivos abandonados por uma tentativa interrompida. O manifesto salvo continua íntegro até a substituição ser finalizada. Reservas diretas canceladas e caminhos descartados conservam marcadores com bytes zero para o `privacy:prune`, inclusive se uma URL PUT ainda válida for reutilizada ou o armazenamento estiver temporariamente indisponível.
+
 - Mantenha GD e FFprobe atualizados, espaço livre, limites de memória e monitoramento de falhas. Não exponha caminhos privados nem credenciais em mensagens da API.
 - Execute o scheduler diariamente para `privacy:prune`. Links são revogados ao excluir um presente; os arquivos e os registros são purgados conforme os prazos de retenção em `SECURITY.md`.
 - Faça backups criptografados do banco **e** do diretório privado. Preserve a associação entre referências e arquivos; restauração apenas do banco não recupera mídias. O prazo máximo de backups definido para o projeto é 30 dias.

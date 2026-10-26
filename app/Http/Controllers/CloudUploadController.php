@@ -77,7 +77,8 @@ class CloudUploadController extends ApiController
         $data = $request->validate(['upload_id' => 'required|uuid']);
         $upload = MediaUpload::whereKey($data['upload_id'])->where('purchase_id', $purchase->id)->where('asset_id', $asset)->where('expires_at', '>', now())->firstOrFail();
         if ($upload->bytes === 0) {
-            $saved = $purchase->assets()->where('asset_id', $asset)->firstOrFail();
+            $saved = $purchase->assets()->where('asset_id', $asset)->first();
+            abort_unless($saved, 409, 'Esta reserva foi cancelada. Envie novamente a seleção atual.');
 
             return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
         }

@@ -40,6 +40,42 @@ test('NAPlanLimits resume, orienta e mensagens com singular e plural corretos',(
   assert.equal(limits.failureMessage(null),null);
 });
 
+test('Criador usa o formato normalizado nos textos, no bloqueio e no rascunho sem truncar',()=>{
+  const limits=loadLimits();
+  const plan=limits.fromPlan({photos_limit:1,videos_limit:0,music_limit:0});
+  assert.equal(limits.summary(plan),'1 foto e 0 vídeos (sem música)');
+  assert.equal(limits.hint(plan).fotos,'1 imagem · escolha a capa abaixo');
+  assert.equal(limits.limitMessage(plan,'photos'),'Máximo de 1 foto.');
+  assert.equal(limits.overLimit(plan,{photos:2,videos:0,music:false}).photos,true);
+  const source=fs.readFileSync('resources/js/pages/criar.js','utf8');
+  const creator=source.slice(source.indexOf('function creatorPlan(){'),source.indexOf('function currentMediaCounts(){'));
+  const capture=source.slice(source.indexOf('function captureDraft(){'),source.indexOf('const MAX_EVENTOS'));
+  const window={NAPlanLimits:limits,NA_PRICING:{plans:[{id:'one',photos_limit:1,videos_limit:0,music_limit:0}],default_plan_id:'one'},NACreatorWorkflow:{current:8,profile:()=>({namesOnly:false})}};
+  const scope=vm.createContext({window,pedidoAntigo:null,selectedPlanId:'one',draftKey:'fixture',requestId:'fixture-request',pedidoEditandoId:null,tema:'namoro',fotoFiles:['first','second'],photoIds:['first-id','second-id'],videoIds:[],musicId:null,
+    $:()=>({value:'',checked:false,files:[]}),document:{querySelectorAll:()=>[]},NAGift:{prepare:p=>p}});
+  vm.runInContext(creator+'\n'+capture,scope);
+  assert.equal(vm.runInContext('window.NAPlanLimits.overLimit(creatorPlan(),{photos:fotoFiles.length}).photos',scope),true);
+  assert.equal(vm.runInContext('captureDraft().fotos.length',scope),2,'O rascunho preserva a seleção acima da cota para correção pelo usuário');
+});
+
+test('Sincronização reconcilia a seleção antes do primeiro upload e mantém a retentativa',async()=>{
+  const calls=[];
+  const window={};
+  const scope=vm.createContext({window,URL,Blob,crypto:require('node:crypto').webcrypto,location:{origin:'https://fixture.example.test'},ApiPurchases:{
+    selectMedia:async(id,body)=>{calls.push({kind:'selection',id,body});},
+    upload:async(id,asset)=>{calls.push({kind:'upload',id,asset});},
+  },ApiClient:{post:async(path,body)=>{calls.push({kind:'update',path,body});return {purchase:{id:'p_fixture'}};}}});
+  vm.runInContext(fs.readFileSync('resources/js/core/gift-sync.js','utf8'),scope);
+  const photo=new Blob(['fixture'],{type:'image/png'});
+  await window.NAGift.sync({fotos:[photo],photoIds:['photo-fixture-11111111'],videos:[],musica:null},'p_fixture');
+  assert.deepEqual(calls.map(c=>c.kind),['selection','upload','update']);
+  assert.equal(calls[0].body.photos[0],'photo-fixture-11111111');
+  calls.length=0;
+  await window.NAGift.sync({fotos:['/api/purchases/p_fixture/media/photo-fixture-11111111'],videos:[],musica:null},'p_fixture');
+  assert.deepEqual(calls.map(c=>c.kind),['selection','update']);
+  assert.equal(calls[0].body.photos[0],'photo-fixture-11111111');
+});
+
 test('NAPlanLimits detecta mídia acima do plano sem apagar dados',()=>{
   const limits=loadLimits();
   assert.equal(limits.overLimit(PLAN,{photos:12,videos:4,music:true}),null);

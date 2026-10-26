@@ -81,10 +81,8 @@ let draftKey='__draft_'+requestId;
 const mediaURL=NAGift.url;
 function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
 function captureDraft(){
- const plan=creatorPlan();
- const photoLimit=plan?plan.photos:undefined,videoLimit=plan?plan.videos:undefined;
  const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
- fotos:[...fotoFiles].slice(0,photoLimit),videos:$('videos').files.length?[...$('videos').files].slice(0,videoLimit):(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
+ fotos:[...fotoFiles],videos:$('videos').files.length?[...$('videos').files]:(pedidoAntigo?.videos||[]),musica:$('musica').files[0]||pedidoAntigo?.musica||null,
  themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
  usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
  eventos:[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(e=>e.titulo||e.texto),
@@ -778,10 +776,10 @@ $("form").addEventListener("submit", async (e) => {
     $('erroMedia').textContent=PLAN_RELOAD_MESSAGE;$('erro3').textContent='';btn.disabled=false;btn.textContent='Continuar para pagamento';ir(3);return;
   }
   const draft=captureDraft();
-  // Contagens reais (não o rascunho, que é limitado): o envio bloqueia sem apagar mídia.
+  // Valida a seleção completa antes de persistir ou enviar, sem apagar mídia.
   const used={
     photos:typeof fotoFiles!=='undefined'&&Array.isArray(fotoFiles)?fotoFiles.length:draft.fotos.length,
-    videos:window.NACreatorMedia?.videos?.()?.length??draft.videos.length,
+    videos:draft.videos.length,
     music:(typeof musicId!=='undefined'&&!!musicId)||!!draft.musica,
   };
   if(window.NAPlanLimits?.overLimit?.(plan,used)){

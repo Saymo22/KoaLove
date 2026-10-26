@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminWorkspaceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudUploadController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MediaSelectionController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\PrivacyController;
@@ -62,6 +63,7 @@ Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(f
             Route::post('purchases/{purchase}/migrate', [PurchaseController::class, 'update'])->name('purchases.migrate');
             Route::post('purchases/{purchase}/delete', [PurchaseController::class, 'destroy']);
             Route::post('purchases/{purchase}/pay', [PurchaseController::class, 'pay']);
+            Route::post('purchases/{purchase}/media/selection', [MediaSelectionController::class, 'store']);
             Route::post('purchases/{purchase}/media/{asset}', [MediaController::class, 'upload']);
             Route::post('purchases/{purchase}/media/{asset}/upload-url', [CloudUploadController::class, 'reserve']);
             Route::post('purchases/{purchase}/media/{asset}/complete-upload', [CloudUploadController::class, 'complete']);

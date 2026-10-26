@@ -2,13 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Models\MediaUpload;
+use App\Models\PaymentCheckout;
 use App\Models\Plan;
 use App\Models\Purchase;
 use App\Models\User;
+use App\Services\GiftMedia;
 use App\Support\PlanLimits;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class PlanMediaLimitsTest extends TestCase
@@ -173,6 +177,116 @@ class PlanMediaLimitsTest extends TestCase
             ->assertJsonPath('error.message', 'O limite do plano escolhido é de 12 fotos. Remova uma mídia da seleção ou substitua uma existente antes de enviar.');
         $photos = $purchase->assets()->orderBy('asset_id')->pluck('asset_id')->all();
         $this->postJson('/api/purchases/'.$purchase->id.'/update', ['tema' => 'namoro', 'para' => 'Bia', 'media' => $this->media($photos)])->assertOk();
+    }
+
+    public function test_direct_reservations_and_completion_count_only_their_media_kind(): void
+    {
+        config(['filesystems.default' => 's3', 'filesystems.disks.s3.bucket' => 'test-bucket', 'filesystems.disks.s3.region' => 'us-east-1']);
+        $disk = Storage::fake('s3');
+        $disk->buildTemporaryUploadUrlsUsing(fn () => ['url' => 'https://storage.example.test/upload', 'headers' => []]);
+        $draft = $this->draft(User::factory()->create(), $this->plan('Um de cada', ['photos_limit' => 1, 'videos_limit' => 1, 'music_limit' => 1]));
+        $base = '/api/purchases/'.$draft['id'].'/media/';
+        $this->postJson($base.'pending-photo-11111111/upload-url', ['mime' => 'image/png', 'bytes' => 100])->assertOk();
+        $this->postJson($base.'pending-video-11111111/upload-url', ['mime' => 'video/webm', 'bytes' => 100])->assertOk();
+        $wave = $this->wave();
+        $ticket = $this->postJson($base.'pending-music-11111111/upload-url', ['mime' => 'audio/wav', 'bytes' => strlen($wave)])->assertOk()->json('data.upload_id');
+        $upload = MediaUpload::findOrFail($ticket);
+        $disk->put($upload->path, $wave);
+        $this->postJson($base.'pending-music-11111111/complete-upload', ['upload_id' => $ticket])->assertOk();
+        $this->postJson($base.'pending-photo-22222222/upload-url', ['mime' => 'image/png', 'bytes' => 100])->assertUnprocessable();
+    }
+
+    public function test_completion_does_not_count_an_uploaded_asset_and_its_reservation_twice(): void
+    {
+        config(['filesystems.default' => 's3', 'filesystems.disks.s3.bucket' => 'test-bucket', 'filesystems.disks.s3.region' => 'us-east-1']);
+        $disk = Storage::fake('s3');
+        $disk->buildTemporaryUploadUrlsUsing(fn () => ['url' => 'https://storage.example.test/upload', 'headers' => []]);
+        $draft = $this->draft(User::factory()->create(), $this->plan('Duas fotos', ['photos_limit' => 2]));
+        $base = '/api/purchases/'.$draft['id'].'/media/';
+        $png = file_get_contents(base_path('tests/Fixtures/pixel.png'));
+        $this->postJson($base.'parallel-photo-11111111/upload-url', ['mime' => 'image/png', 'bytes' => strlen($png)])->assertOk();
+        $second = $this->postJson($base.'parallel-photo-22222222/upload-url', ['mime' => 'image/png', 'bytes' => strlen($png)])->assertOk()->json('data.upload_id');
+        // The first request has committed its asset, but is still deleting quarantine.
+        Purchase::findOrFail($draft['id'])->assets()->create(['asset_id' => 'parallel-photo-11111111', 'kind' => 'photo', 'mime' => 'image/png', 'bytes' => strlen($png), 'disk' => 's3', 'path' => 'synthetic/already-uploaded']);
+        $upload = MediaUpload::findOrFail($second);
+        $disk->put($upload->path, $png);
+        $this->postJson($base.'parallel-photo-22222222/complete-upload', ['upload_id' => $second])->assertOk();
+        $this->assertDatabaseCount('media_assets', 2);
+    }
+
+    public function test_reconciling_selection_recovers_partial_uploads_and_keeps_saved_media(): void
+    {
+        $disk = Storage::fake('local');
+        $draft = $this->draft(User::factory()->create(), $this->plan('Uma foto', ['photos_limit' => 1]));
+        $this->upload($draft, 'abandoned-photo-11111111')->assertOk();
+        $purchase = Purchase::findOrFail($draft['id']);
+        $abandoned = $purchase->assets()->firstOrFail();
+        $selection = '/api/purchases/'.$purchase->id.'/media/selection';
+        $this->postJson($selection, $this->media(['replacement-photo-11111111']))->assertOk();
+        $this->assertDatabaseMissing('media_assets', ['id' => $abandoned->id]);
+        $this->assertDatabaseHas('media_uploads', ['path' => $abandoned->path, 'bytes' => 0]);
+        $disk->assertMissing($abandoned->path);
+        $this->assertSame(0, $purchase->fresh()->content_version);
+        $this->upload($draft, 'replacement-photo-11111111')->assertOk();
+        $body = ['tema' => 'namoro', 'para' => 'Bia', 'media' => $this->media(['replacement-photo-11111111'])];
+        $this->postJson('/api/purchases/'.$purchase->id.'/update', $body)->assertOk();
+        $saved = $purchase->assets()->firstOrFail();
+        $this->postJson($selection, $this->media(['replacement-photo-22222222']))->assertOk();
+        $disk->assertExists($saved->path);
+        $this->assertDatabaseHas('media_assets', ['id' => $saved->id]);
+        $this->assertSame(['replacement-photo-11111111'], $purchase->fresh()->manifest['photos']);
+        $this->upload($draft, 'replacement-photo-22222222')->assertOk();
+    }
+
+    public function test_discarded_direct_reservations_release_quota_but_keep_replay_cleanup(): void
+    {
+        config(['filesystems.default' => 's3', 'filesystems.disks.s3.bucket' => 'test-bucket', 'filesystems.disks.s3.region' => 'us-east-1']);
+        $disk = Storage::fake('s3');
+        $disk->buildTemporaryUploadUrlsUsing(fn () => ['url' => 'https://storage.example.test/upload', 'headers' => []]);
+        $draft = $this->draft(User::factory()->create(), $this->plan('Reserva', ['photos_limit' => 1]));
+        $base = '/api/purchases/'.$draft['id'].'/media/';
+        $png = file_get_contents(base_path('tests/Fixtures/pixel.png'));
+        $ticket = $this->postJson($base.'canceled-photo-11111111/upload-url', ['mime' => 'image/png', 'bytes' => strlen($png)])->assertOk()->json('data.upload_id');
+        $upload = MediaUpload::findOrFail($ticket);
+        $disk->put($upload->path, $png);
+        $this->postJson('/api/purchases/'.$draft['id'].'/media/selection', $this->media(['current-photo-11111111']))->assertOk();
+        $this->assertDatabaseHas('media_uploads', ['id' => $ticket, 'bytes' => 0]);
+        $disk->assertMissing($upload->path);
+        $this->postJson($base.'canceled-photo-11111111/complete-upload', ['upload_id' => $ticket])->assertConflict();
+        // A completion request that read the ticket before cancellation must recheck it under the purchase lock.
+        $tmp = tempnam(sys_get_temp_dir(), 'quota-test-');
+        file_put_contents($tmp, $png);
+        try {
+            app(GiftMedia::class)->store(Purchase::findOrFail($draft['id']), $upload->asset_id, $tmp, $upload->mime, $ticket);
+            $this->fail('A canceled reservation must not persist an asset.');
+        } catch (HttpException $error) {
+            $this->assertSame(409, $error->getStatusCode());
+        } finally {
+            unlink($tmp);
+        }
+        $this->assertDatabaseCount('media_assets', 0);
+        $this->postJson($base.'current-photo-11111111/upload-url', ['mime' => 'image/png', 'bytes' => strlen($png)])->assertOk();
+        $disk->put($upload->path, $png); // A previously issued signed PUT can still be replayed.
+        $this->travel(21)->minutes();
+        $this->artisan('privacy:prune')->assertSuccessful();
+        $disk->assertMissing($upload->path);
+        $this->assertDatabaseMissing('media_uploads', ['id' => $ticket]);
+    }
+
+    public function test_selection_requires_owner_and_cannot_bypass_limits_or_frozen_checkout(): void
+    {
+        Storage::fake('local');
+        $owner = User::factory()->create();
+        $draft = $this->draft($owner, $this->plan('Uma', ['photos_limit' => 1]));
+        $this->upload($draft, 'keep-photo-1111111111')->assertOk();
+        $url = '/api/purchases/'.$draft['id'].'/media/selection';
+        $this->post($url, $this->media(['new-photo-1111111111']), ['Accept' => 'application/json'])->assertStatus(415);
+        $this->actingAs(User::factory()->create())->postJson($url, $this->media(['new-photo-1111111111']))->assertForbidden();
+        $this->actingAs($owner)->postJson($url, $this->media(['new-photo-1111111111', 'new-photo-2222222222']))->assertUnprocessable();
+        $this->assertDatabaseCount('media_assets', 1);
+        PaymentCheckout::create(['id' => (string) Str::uuid(), 'purchase_id' => $draft['id'], 'method' => 'pix', 'amount_cents' => 1990, 'live' => false]);
+        $this->postJson($url, $this->media(['new-photo-1111111111']))->assertConflict();
+        $this->assertDatabaseCount('media_assets', 1);
     }
 
     public function test_direct_upload_reservations_count_against_the_plan_quota(): void

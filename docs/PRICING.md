@@ -19,6 +19,8 @@ O botão de cada card leva o plano selecionado ao formulário. O nome, os benef�
 
 Os uploads recusam novas fotos, vídeos ou músicas acima da cota do tipo definida no plano (`422`), mas permitem substituir mídias já referenciadas pelo rascunho. Ao finalizar, o servidor revalida o manifesto contra o `plan_snapshot` congelado na compra e devolve uma mensagem com o nome do plano e os limites aplicados. Os tetos globais de 80 assets e 300 MiB por compra continuam valendo.
 
+Reservas diretas contam somente na cota do próprio tipo, identificado pelo MIME validado. Antes de reenviar uma tentativa interrompida, o criador declara a seleção em `/media/selection`; arquivos abandonados liberam a cota, e arquivos do manifesto anterior são preservados até o novo salvamento concluir. Reservas canceladas mantêm seus registros de limpeza até expirar, pois uma URL PUT já emitida ainda pode ser utilizada. O frontend aceita cotas do catálogo e normalizadas no mesmo helper; rascunhos preservam todos os arquivos e o envio bloqueia excessos para ajuste explícito, sem truncar a seleção.
+
 Antes do checkout, o servidor consulta o preço atual e os descontos válidos. O cliente envia o total que acabou de mostrar: se houver divergência, o pagamento é interrompido para revisar o novo valor. Ao iniciar o checkout, valor, percentual, cupom e detalhes do preço ficam congelados. Alterações posteriores não modificam esse checkout nem compras já pagas. Pedidos antigos sem plano mantêm seu preço base registrado e continuam compatíveis.
 
 Pix e cartão continuam pelo Mercado Pago. Configurar um plano ou cupom não efetua cobranças. O servidor calcula valores inteiros em centavos; valores ou percentuais enviados pelo navegador não determinam o preço.

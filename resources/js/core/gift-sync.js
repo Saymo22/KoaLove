@@ -17,6 +17,19 @@ window.NAGift = (() => {
   }
   async function sync(p,purchaseId,legacy=false) {
     prepare(p);
+    const assetId=(value,id)=>{
+      if(value instanceof Blob)return id;
+      const parsed=new URL(value,location.origin);
+      if(parsed.origin!==location.origin||!parsed.pathname.startsWith('/api/purchases/'+purchaseId+'/media/'))throw new Error('Selecione novamente a mídia para sincronizar.');
+      return decodeURIComponent(parsed.pathname.split('/').pop());
+    };
+    // Declare the current selection before uploads so abandoned staged files do not
+    // consume a slot forever after an interrupted sync. Saved manifest files survive.
+    await ApiPurchases.selectMedia(purchaseId,{
+      photos:p.fotos.map((value,i)=>assetId(value,p.photoIds[i])),
+      videos:(p.videos||[]).map((value,i)=>assetId(value,p.videoIds[i])),
+      music:p.musica?assetId(p.musica,p.musicId):null,
+    });
     const send=async(value,asset)=>{
       if(value instanceof Blob){await ApiPurchases.upload(purchaseId,asset,value);return asset;}
       const parsed=new URL(value,location.origin);

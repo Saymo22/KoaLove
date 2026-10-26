@@ -33,6 +33,9 @@ class GiftMedia
             $result = DB::transaction(function () use ($purchase, $asset, $verified, $disk, $path, $uploadId) {
                 $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
                 $this->gifts->editable($p, true);
+                if ($uploadId !== null) {
+                    abort_unless(MediaUpload::whereKey($uploadId)->where('purchase_id', $p->id)->where('asset_id', $asset)->where('bytes', '>', 0)->where('expires_at', '>', now())->exists(), 409, 'Esta reserva foi cancelada ou expirou. Envie novamente a seleção atual.');
+                }
                 if ($old = $p->assets()->where('asset_id', $asset)->first()) {
                     abort_unless($old->kind === $verified['kind'], 409, 'Identificador já usado por outro tipo de mídia.');
 

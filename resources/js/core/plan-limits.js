@@ -14,6 +14,7 @@
   ];
 
   function toCount(value) {
+    if (value === null || value === undefined || value === "") return null;
     const count = Number(value);
     return Number.isFinite(count) && count >= 0 ? Math.floor(count) : null;
   }
@@ -23,7 +24,7 @@
     if (!plan || typeof plan !== "object") return null;
     const limits = {};
     for (const media of MEDIA) {
-      const value = toCount(plan[media.planKey]);
+      const value = toCount(plan[media.planKey] ?? plan[media.key]);
       if (value === null) return null;
       limits[media.key] = value;
     }
