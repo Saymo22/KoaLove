@@ -47,9 +47,9 @@
             <h2 id="solicitar">2. Como Solicitar o Reembolso</h2>
             <p>Para solicitar o reembolso, siga os passos abaixo:</p>
             <ol>
-                <li>Envie um e-mail para <strong>suporte@nossoamor.com</strong> com o assunto "Solicitação de Reembolso".</li>
-                <li>Informe o <strong>ID do Pedido</strong> (ele está disponível no seu comprovante de pagamento, acessível na tela "Minha Conta").</li>
-                <li>Explique brevemente o motivo da solicitação.</li>
+                <li>Acesse <a href="minha-conta.html">Minha Conta</a> e encontre o presente pago.</li>
+                <li>Clique em <strong>Reembolso</strong>, ao lado dos dados do presente.</li>
+                <li>Explique brevemente o motivo e envie a solicitação. O botão mostrará o andamento da análise.</li>
             </ol>
             <p>Nossa equipe de suporte responderá em até 48 horas úteis.</p>
 

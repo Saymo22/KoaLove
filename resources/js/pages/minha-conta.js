@@ -184,7 +184,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             if(pago&&pedido.content_version===1&&pedido.share_token){const share=button('btn-share','🔗','Copiar link');share.dataset.link=new URL('ver.html?token='+encodeURIComponent(pedido.share_token),location.href).href;actions.append(share);}
             if(hasReceipt(pedido)){const receipt=button('btn-receipt','🧾','Ver comprovante');receipt.dataset.id=pedido.id;actions.append(receipt);}
             const remove=button('btn-delete','🗑️','Excluir');remove.dataset.id=pedido.id;remove.dataset.status=pedido.status;actions.append(remove);
-            info.append(title,to,actions);card.append(cover,info);
+            const meta=node('div','gift-meta');meta.append(to);
+            if(pago){
+                const labels={pending:'Em análise',approved:'Aprovado',rejected:'Não aprovado'};
+                const refund=button('btn-refund',labels[pedido.refund?.status]||'Reembolso','Solicitar reembolso');
+                const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');
+                const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M8 5 3 10l5 5M3 10h11a6 6 0 0 1 0 12');icon.append(path);refund.prepend(icon);
+                refund.dataset.refundId=pedido.id;refund.disabled=!!pedido.refund;
+                refund.setAttribute('aria-label',pedido.refund?'Reembolso: '+(labels[pedido.refund.status]||'solicitado'):'Solicitar reembolso de '+(pedido.titulo||'seu presente'));
+                if(pedido.refund)refund.title='Solicitação '+({pending:'em análise',approved:'aprovada',rejected:'não aprovada'}[pedido.refund.status]||'registrada');
+                else refund.addEventListener('click',()=>abrirReembolso(pedido));
+                meta.append(refund);
+            }
+            info.append(title,meta,actions);card.append(cover,info);
 
             if (!window.matchMedia("(pointer: coarse)").matches) {
                 card.addEventListener("mousemove", (e) => {
@@ -361,6 +373,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         idParaExcluir = null;
         statusParaExcluir = null;
+    });
+
+    // ================= SOLICITAÇÃO DE REEMBOLSO =================
+    const refundDialog=$('refundDialog'),refundForm=$('refundForm');
+    let refundTarget=null,refundTrigger=null,refundSending=false;
+    function abrirReembolso(pedido){
+        refundTarget=pedido;refundTrigger=document.activeElement;refundForm.reset();
+        $('refundGiftTitle').textContent=pedido.titulo||'Seu presente';
+        $('refundAmount').textContent=typeof pedido.amount_paid_cents==='number'?fmtCents(pedido.amount_paid_cents):'—';
+        $('refundError').textContent='';refundDialog.showModal();$('refundReason').focus();
+    }
+    $('cancelRefund').addEventListener('click',()=>refundDialog.close());
+    refundDialog.addEventListener('cancel',event=>{if(refundSending)event.preventDefault();});
+    refundDialog.addEventListener('close',()=>{
+        const target=[...document.querySelectorAll('[data-refund-id]')].find(el=>el.dataset.refundId===refundTarget?.id);
+        if(refundTrigger?.isConnected)refundTrigger.focus();else if(target&&!target.disabled)target.focus();
+        else if(target){const card=target.closest('.gift-card');card.tabIndex=-1;card.focus({preventScroll:true});}
+        refundTarget=null;
+    });
+    refundForm.addEventListener('submit',async event=>{
+        event.preventDefault();if(refundSending||!refundTarget)return;
+        const reason=$('refundReason').value.trim();
+        if(reason.length<5){$('refundError').textContent='Descreva o motivo com pelo menos 5 caracteres.';$('refundReason').focus();return;}
+        refundSending=true;$('submitRefund').disabled=$('cancelRefund').disabled=true;$('submitRefund').textContent='Enviando…';$('refundError').textContent='';
+        try{
+            const {refund}=await ApiPurchases.requestRefund(refundTarget.id,reason);refundTarget.refund=refund;
+            renderGifts();refundDialog.close();showToast('Solicitação enviada. Acompanhe a análise pelo seu presente.','✓');
+        }catch(error){$('refundError').textContent=error.message||'Não foi possível enviar. Tente novamente.';}
+        finally{refundSending=false;$('submitRefund').disabled=$('cancelRefund').disabled=false;$('submitRefund').textContent='Enviar solicitação';}
     });
 
     // Init

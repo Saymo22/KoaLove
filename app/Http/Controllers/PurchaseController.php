@@ -6,6 +6,7 @@ use App\Contracts\PaymentGateway;
 use App\Http\Requests\PurchaseRequest;
 use App\Models\PaymentCheckout;
 use App\Models\Purchase;
+use App\Models\Refund;
 use App\Services\ManualPix;
 use App\Services\MercadoPagoCheckout;
 use App\Services\Pricing;
@@ -17,6 +18,29 @@ use Illuminate\Support\Str;
 
 class PurchaseController extends ApiController
 {
+    public function requestRefund(Request $request, Purchase $purchase)
+    {
+        Gate::authorize('update', $purchase);
+        $data = $request->validate(['reason' => 'required|string|min:5|max:1000']);
+        $refund = DB::transaction(function () use ($purchase, $data, $request) {
+            $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
+            Gate::authorize('update', $p);
+            if ($existing = Refund::where('purchase_id', $p->id)->latest()->first()) {
+                return $existing;
+            }
+            abort_unless($p->status === 'paid', 409, 'Somente compras pagas podem receber uma solicitação de reembolso.');
+
+            return Refund::create(['id' => 'r_'.Str::random(24), 'purchase_id' => $p->id, 'user_id' => $request->user()->id, 'reason' => $data['reason'], 'status' => 'pending']);
+        });
+
+        return $this->ok(['refund' => $this->refundStatus($refund)]);
+    }
+
+    private function refundStatus(Refund $refund): array
+    {
+        return ['id' => $refund->id, 'status' => $refund->status, 'created_at' => $refund->created_at?->getTimestampMs()];
+    }
+
     public function index(Request $request)
     {
         return $this->ok(['purchases' => Purchase::withTrashed()->where('user_id', $request->user()->id)->where(fn ($q) => $q->whereNull('deleted_at')->orWhereNotNull('paid_at'))->latest()->get()->map(fn ($p) => $this->project($p))->all()]);
@@ -165,6 +189,8 @@ class PurchaseController extends ApiController
         if (! $shared) {
             $out['plan_id'] = $p->plan_id;
             $out['plan'] = $p->plan_snapshot;
+            $refund = Refund::where('purchase_id', $p->id)->latest()->first(['id', 'status', 'created_at']);
+            $out['refund'] = $refund ? $this->refundStatus($refund) : null;
         }
 
         return $out;
