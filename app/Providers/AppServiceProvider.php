@@ -50,9 +50,28 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl(config('app.url'));
         }
         Gate::policy(Purchase::class, PurchasePolicy::class);
-        foreach (['pages' => 1200, 'login' => 5, 'register' => 3, 'recovery' => 3, 'api' => 240, 'write' => 90, 'create' => 10, 'admin' => 120] as $name => $limit) {
+        foreach (['pages' => 1200, 'register' => 3, 'api' => 240, 'write' => 90, 'create' => 10, 'admin' => 120] as $name => $limit) {
             RateLimiter::for($name, fn ($request) => Limit::perMinute($limit)->by($name.':'.$request->ip()));
         }
-        ResetPassword::createUrlUsing(fn ($user, $token) => url('/recuperar-senha.html').'#token='.rawurlencode($token).'&email='.rawurlencode($user->email));
+        $accountKey = function ($request): string {
+            $email = $request->input('email');
+
+            return hash_hmac('sha256', is_string($email) ? strtolower(trim($email)) : '', config('app.key'));
+        };
+        RateLimiter::for('login', fn ($request) => [
+            Limit::perMinute(5)->by('login-ip:'.$request->ip()),
+            Limit::perMinute(5)->by('login-account:'.$accountKey($request)),
+        ]);
+        RateLimiter::for('recovery', fn ($request) => [
+            Limit::perMinute(3)->by('recovery-ip:'.$request->ip()),
+            $request->is('api/auth/forgot-password')
+                ? Limit::perHour(3)->by('forgot-account:'.$accountKey($request))
+                : Limit::perMinute(5)->by('reset-account:'.$accountKey($request)),
+        ]);
+        RateLimiter::for('sensitive', fn ($request) => [
+            Limit::perMinute(5)->by('sensitive-ip:'.$request->ip()),
+            Limit::perMinute(5)->by('sensitive-account:'.$request->user()->id),
+        ]);
+        ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').'/recuperar-senha.html#token='.rawurlencode($token).'&email='.rawurlencode($user->email));
     }
 }

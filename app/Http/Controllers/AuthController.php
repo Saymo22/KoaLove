@@ -18,7 +18,7 @@ class AuthController extends ApiController
         if (is_string($request->input('email'))) {
             $request->merge(['email' => strtolower(trim($request->input('email')))]);
         }
-        $data = $request->validate(['name' => 'required|string|min:2|max:60', 'email' => 'required|email:rfc|max:254|unique:users,email', 'password' => ['required', 'string', PasswordRule::min(8), 'max:128']]);
+        $data = $request->validate(['name' => 'required|string|min:2|max:60', 'email' => 'required|email:rfc|max:254|unique:users,email', 'password' => $this->passwordRules()]);
         $data['email'] = strtolower($data['email']);
         try {
             $user = User::create($data);
@@ -61,20 +61,27 @@ class AuthController extends ApiController
     {
         $data = $request->validate(['email' => 'required|email:rfc|max:254']);
         abort_if(app()->isProduction() && config('mail.default') === 'log', 503, 'Recuperação por e-mail não configurada.');
-        $user = User::where('email', strtolower($data['email']))->whereNull('deletion_requested_at')->first();
-        if ($user) {
-            Password::sendResetLink(['email' => $user->email]);
-        }
+        // Keep unknown/inactive accounts inside the broker's timebox too.
+        Password::sendResetLink(['email' => strtolower($data['email']), 'deletion_requested_at' => null]);
 
         return $this->ok(['message' => 'Se existir uma conta com esse e-mail, você receberá um link para redefinir a senha.']);
     }
 
     public function reset(Request $request)
     {
-        $data = $request->validate(['email' => 'required|email:rfc', 'token' => 'required|string|max:128', 'password' => 'required|string|min:8|max:128']);
-        abort_if(User::where('email', $data['email'])->whereNotNull('deletion_requested_at')->exists(), 400, 'Link inválido ou expirado. Solicite outro.');
-        $result = Password::reset($data, function (User $user, string $password) {
-            DB::transaction(function () use ($user, $password) {
+        if (is_string($request->input('email'))) {
+            $request->merge(['email' => strtolower(trim($request->input('email')))]);
+        }
+        $data = $request->validate(['email' => 'required|email:rfc|max:254', 'token' => 'required|string|max:128', 'password' => $this->passwordRules()]);
+        $result = DB::transaction(function () use ($data) {
+            // Serialize token validation and consumption with account deletion and
+            // concurrent resets. A failed token deletion must roll back the password.
+            $account = User::where('email', $data['email'])->lockForUpdate()->first();
+            if (! $account || $account->deletion_requested_at) {
+                return Password::INVALID_TOKEN;
+            }
+
+            return Password::reset($data, function (User $user, string $password) {
                 $user->forceFill(['password' => $password, 'remember_token' => null])->save();
                 DB::table('sessions')->where('user_id', $user->id)->delete();
             });
@@ -82,6 +89,18 @@ class AuthController extends ApiController
         abort_unless($result === Password::PASSWORD_RESET, 400, 'Link inválido ou expirado. Solicite outro.');
 
         return $this->ok(['message' => 'Senha alterada. Entre novamente com a nova senha.']);
+    }
+
+    private function passwordRules(): array
+    {
+        return ['bail', 'required', 'string', PasswordRule::min(8), 'max:128', function ($attribute, $value, $fail) {
+            if (str_contains($value, "\0")) {
+                $fail('A senha contém um caractere inválido.');
+            }
+            if (config('hashing.driver') === 'bcrypt' && strlen($value) > 72) {
+                $fail('A senha deve ter no máximo 72 bytes. Acentos e emojis ocupam mais de um byte.');
+            }
+        }];
     }
 
     private function user(User $user): array

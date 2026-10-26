@@ -6,11 +6,15 @@ Valide limites, tipos e propriedade no servidor mesmo que haja validação no na
 
 Senhas usam o hasher Laravel; sessão regenerada no login/cadastro, cookie HttpOnly, SameSite e Secure em produção. Reset usa token hash, expiração e revoga sessões. Não devolva password, remember_token, reset token, caminhos privados ou SQL. Não registre bodies, cookies ou query strings de links compartilhados. Segredos somente por ambiente. Recupere cópia segura antes de migrations destrutivas.
 
+Login e recuperação também limitam tentativas por conta normalizada, usando HMAC para não gravar o e-mail na chave do cache. Alterar o IP não reinicia esse limite. Links de recuperação derivam exclusivamente de APP_URL. A redefinição trava a conta e executa validação, alteração, revogação de sessões e remoção do token na mesma transação; falha em consumir o token desfaz a alteração. A exclusão trava a mesma conta e confere novamente a senha atual, além de aplicar limite específico de tentativas. A CSP inclui form-action 'self' para impedir envio de formulários a origens externas.
+
 Mutações da sessão passam pela proteção CSRF Laravel e limites por IP persistidos no cache. A exceção exata é `/api/webhooks/mercadopago`, que exige assinatura HMAC e consulta autenticada ao provedor. JSON tem limite antes da desserialização. Upload é binário, gravado em arquivo temporário em blocos, com limite por arquivo/compra. MIME declarado é comparado ao conteúdo; imagens são decodificadas sob limite de 16 MP e recodificadas em PNG, removendo metadados e conteúdo extra. GIF animado vira imagem estática. GD não é antivírus; áudio/vídeo são analisados pelo FFprobe com protocolos restritos e timeout de 15s. Para produção, mantenha GD/FFmpeg atualizados e limite workers/memória/tempo no sistema; uma instância pública pode precisar de scanner/sandbox adicional conforme risco.
 
 Mídias ficam em storage/app/private, sem symlink público. Downloads verificam dono ou token de presente pago e selecionado; usam nosniff/no-store. CSP restringe scripts à mesma origem; estilos dinâmicos dos temas ainda exigem unsafe-inline para style-src. A migração elimina código inline das views. Bibliotecas/dependências têm lockfiles e auditoria na CI. Não relaxe essas regras para fazer um teste passar.
 
 ## Acesso, retenção e LGPD
+
+Novas senhas com bcrypt são limitadas a 72 bytes para evitar truncamento; bytes nulos são rejeitados. O limite é por bytes UTF-8, não apenas quantidade de caracteres, e vale para cadastro/redefinição. Não há alteração automática das senhas já existentes.
 
 A infraestrutura Supabase usa PostgreSQL no schema `app_private`, fora da Data API, e bucket privado `gift-media`; o backend Laravel continua na Vercel. Contas, hashes e sessões permanecem no esquema Laravel, sem duplicação em Supabase Auth. O role dedicado não é superusuário nem administra outros roles; segredos S3 ficam somente no backend. Consulte [SUPABASE.md](SUPABASE.md) para configurar e verificar a implantação. A alternativa local continua exigindo volume persistente privado; funções Vercel recusam esse modo, sem fallback para `/tmp`.
 
@@ -32,6 +36,8 @@ Exportação autenticada e exclusão estão em Minha Conta. Para correção, con
 Não há AdSense, analytics ou publicidade integrados. Fontes Google e imagens/mídias de demonstração externas recebem requisições do navegador; conteúdo de temas pode referenciar URLs externas escolhidas pelo usuário. Isso expõe ao provedor IP e informações técnicas. Para reduzir esse compartilhamento, hospede fontes e demonstrações localmente. QR é gerado no próprio navegador; não envia o link a serviço externo. MAIL_* determina o provedor SMTP para recuperação. O Mercado Pago Checkout Pro está implementado, condicionado às credenciais e à ativação explícita; não recebe conteúdo dos presentes nem coleta cartão no aplicativo. Recibos guardam somente IDs, estados e valores; exportação autenticada inclui os registros do titular. Veja [PAYMENTS.md](PAYMENTS.md) para confirmação, estornos e limites operacionais. Declare operador de hospedagem e provedores efetivamente usados antes do lançamento.
 
 ## Operação e incidentes
+
+Exceções inesperadas são reportadas somente com tipo, arquivo/linha e padrão da rota. O logger não recebe a mensagem original ou o objeto da exceção, pois eles podem conter bindings SQL, conteúdo de presentes ou URLs assinadas. Não acrescente dumps de Request ou contexto bruto de provedores aos logs de produção.
 
 Sirva somente public/, HTTPS, debug desativado, conta DB com menor privilégio, SMTP/PRIVACY_EMAIL configurados, scheduler monitorado. Não confie em cabeçalhos de proxy sem configurar os proxies autorizados. Limite corpo e conexões no reverse proxy. Revise exposição e retenção dos logs do servidor web.
 

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -26,6 +27,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend([SecurityHeaders::class, LimitJsonBody::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->report(function (Throwable $error) {
+            // Exception messages/SQL bindings can contain private content or signed URLs.
+            Log::error('Falha interna da aplicação.', [
+                'exception_type' => $error::class,
+                'file' => basename($error->getFile()),
+                'line' => $error->getLine(),
+                'route' => request()->route()?->uri() ?? 'unmatched',
+            ]);
+
+            return false;
+        });
         $exceptions->render(function (Throwable $error, Request $request) {
             if (! $request->is('api/*')) {
                 return null;

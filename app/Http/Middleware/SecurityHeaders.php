@@ -27,7 +27,7 @@ class SecurityHeaders
         }
         $response->headers->set('X-Robots-Tag', $response->getStatusCode() === 200 ? app(Seo::class)->metadata($request)['robots'] : 'noindex, nofollow');
         $origins = implode(' ', array_filter(config('gift.upload_origins', []), fn ($origin) => preg_match('/\Ahttps:\/\/[a-z0-9.-]+(?::[0-9]+)?\z/i', $origin)));
-        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' $origins; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' $origins; frame-ancestors 'self'; form-action 'self'; base-uri 'self'; object-src 'none'");
         if ($request->is('api/*')) {
             $response->headers->set('Cache-Control', 'no-store');
         }
