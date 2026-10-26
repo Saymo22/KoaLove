@@ -75,4 +75,91 @@ class RefundRequestTest extends TestCase
         $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Solicitação de teste.'])->assertNotFound();
         $this->assertDatabaseCount('refunds', 0);
     }
+
+    public function test_commercial_window_expires_at_exactly_72_hours_but_legal_review_remains_available(): void
+    {
+        $this->travelTo(now()->startOfSecond());
+        $p = $this->paid();
+        $this->travel(72 * 3600 - 1)->seconds();
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.eligible', true);
+        $this->travel(1)->seconds();
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.reason', 'expired');
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Teste fora do prazo comercial.'])->assertConflict();
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Solicito análise dos direitos legais.', 'request_kind' => 'legal_review'])->assertOk()->assertJsonPath('data.refund.request_kind', 'legal_review');
+        $this->assertDatabaseHas('purchases', ['id' => $p->id, 'status' => 'paid']);
+    }
+
+    public function test_first_public_open_blocks_commercial_requests_and_is_immutable_without_public_leaks(): void
+    {
+        $this->travelTo(now()->startOfSecond());
+        $p = $this->paid();
+        $p->update(['content_version' => 1]);
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.eligible', true);
+        $this->head('/api/shared/'.$p->share_token)->assertOk();
+        $this->assertNull($p->fresh()->first_shared_opened_at);
+        $this->get('/ver.html?demo=1&tema=namoro')->assertOk();
+        $this->assertNull($p->fresh()->first_shared_opened_at);
+        $this->travel(10)->seconds();
+        $response = $this->getJson('/api/shared/'.$p->share_token)->assertOk()->assertJsonMissingPath('data.purchase.refund_eligibility')->assertJsonMissingPath('data.purchase.first_shared_opened_at');
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $opened = $p->fresh()->first_shared_opened_at->toIso8601String();
+        $this->assertSame(now()->toIso8601String(), $opened);
+        $this->travel(5)->minutes();
+        $this->getJson('/api/shared/'.$p->share_token)->assertOk();
+        $this->assertSame($opened, $p->fresh()->first_shared_opened_at->toIso8601String());
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.reason', 'link_opened');
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Teste após abertura.', 'first_shared_opened_at' => null, 'paid_at' => now()->toIso8601String()])->assertConflict();
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Avaliação dos direitos legais.', 'request_kind' => 'legal_review'])->assertOk();
+        $this->assertDatabaseHas('refunds', ['purchase_id' => $p->id, 'request_kind' => 'legal_review', 'status' => 'pending']);
+    }
+
+    public function test_historical_unknown_access_and_unknown_payment_date_require_individual_review(): void
+    {
+        $p = $this->paid();
+        $p->update(['share_tracking_started_at' => now()->addMinute()]);
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.reason', 'tracking_unverified');
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Histórico não verificável.'])->assertConflict();
+        $p->update(['paid_at' => null]);
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.reason', 'payment_date_unknown');
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Data de pagamento não verificável.'])->assertConflict();
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Peço avaliação individual.', 'request_kind' => 'legal_review'])->assertOk();
+    }
+
+    public function test_legal_review_after_commercial_rejection_preserves_history_and_is_idempotent_with_timestamp_ties(): void
+    {
+        $this->travelTo(now()->startOfSecond());
+        $p = $this->paid();
+        Refund::create(['id' => 'z_commercial', 'purchase_id' => $p->id, 'user_id' => $p->user_id, 'request_kind' => 'commercial', 'status' => 'rejected', 'reason' => 'Motivo original.', 'created_at' => now()]);
+        $id = $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Solicito análise legal específica.', 'request_kind' => 'legal_review'])->assertOk()->assertJsonPath('data.refund.request_kind', 'legal_review')->json('data.refund.id');
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Repetição de análise legal.', 'request_kind' => 'legal_review'])->assertOk()->assertJsonPath('data.refund.id', $id);
+        $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund.id', $id)->assertJsonPath('data.purchase.refund.status', 'pending');
+        $this->assertDatabaseCount('refunds', 2);
+        $this->assertDatabaseHas('refunds', ['id' => 'z_commercial', 'status' => 'rejected', 'reason' => 'Motivo original.']);
+    }
+
+    public function test_request_conditions_are_preserved_if_link_opens_and_time_passes_after_submission(): void
+    {
+        $p = $this->paid();
+        $p->update(['content_version' => 1]);
+        $id = $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Pedido comercial dentro do prazo.'])->assertOk()->json('data.refund.id');
+        $this->getJson('/api/shared/'.$p->share_token)->assertOk();
+        $this->travel(4)->days();
+        $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Repetição após quatro dias.'])->assertOk()->assertJsonPath('data.refund.id', $id);
+        $this->assertTrue(Refund::findOrFail($id)->eligibility_snapshot['eligible']);
+        $this->assertDatabaseCount('refunds', 1);
+    }
+
+    public function test_invalid_or_unavailable_shared_access_does_not_record_an_open(): void
+    {
+        $p = $this->paid();
+        $this->getJson('/api/shared/'.$p->share_token)->assertNotFound();
+        $p->update(['content_version' => 1, 'status' => 'pending']);
+        $this->getJson('/api/shared/'.$p->share_token)->assertNotFound();
+        $this->getJson('/api/shared/'.str_repeat('a', 64))->assertNotFound();
+        $this->assertNull($p->fresh()->first_shared_opened_at);
+        $p->update(['status' => 'paid']);
+        foreach (['invalid', ['commercial']] as $kind) {
+            $this->postJson('/api/purchases/'.$p->id.'/refund', ['reason' => 'Teste de tipo inválido.', 'request_kind' => $kind])->assertUnprocessable();
+        }
+    }
 }

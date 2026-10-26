@@ -456,7 +456,7 @@ function bindAudio(){
 async function getPurchase(id){
  const token=query.get('token');
  const endpoint=token?'/api/shared/'+encodeURIComponent(token):'/api/purchases/'+encodeURIComponent(id);
- const r=await fetch(endpoint,{credentials:'include',headers:{Accept:'application/json'}});
+ const r=await fetch(endpoint,{credentials:'include',cache:'no-store',headers:{Accept:'application/json'}});
  const body=await r.json();
  if(!r.ok||!body.ok)throw new Error(body?.error?.message||'Não foi possível consultar o presente.');
  const remote=body.data?.purchase;

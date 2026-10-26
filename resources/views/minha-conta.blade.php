@@ -130,7 +130,7 @@
         <form id="refundForm">
             <span class="refund-kicker">Cuidado com a sua experiência</span>
             <h2 id="refundDialogTitle">Solicitar reembolso</h2>
-            <p id="refundIntro">Conte o motivo para nossa equipe analisar sua solicitação.</p>
+            <p id="refundIntro">Garantia comercial: até 3 dias (72 horas) após o pagamento, enquanto o link compartilhado não tiver sido aberto.</p>
             <div class="refund-summary"><strong id="refundGiftTitle"></strong><span id="refundAmount"></span></div>
             <label for="refundReason">Motivo da solicitação</label>
             <textarea id="refundReason" minlength="5" maxlength="1000" rows="4" required placeholder="Como podemos ajudar?"></textarea>

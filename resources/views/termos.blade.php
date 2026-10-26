@@ -21,7 +21,7 @@
     <header class="legal-hero">
         <div class="legal-eyebrow">Institucional</div>
         <h1 class="legal-title">Termos de Uso</h1>
-        <p class="legal-date">Última atualização: 24 de Maio de 2024</p>
+        <p class="legal-date">Última atualização: 24 de outubro de 2026</p>
     </header>
 
     <main class="legal-container">
@@ -59,6 +59,7 @@
 
             <h2 id="pagamentos">4. Pagamentos e Entrega</h2>
             <p>O pagamento é feito em ambiente seguro e libera o acesso imediato ao link do presente. Após a confirmação do pagamento, você receberá um link exclusivo e um QR Code para compartilhar com quem desejar.</p>
+            <p>A garantia comercial vale por 3 dias (72 horas) após a confirmação do pagamento e antes da primeira abertura do link compartilhado. Os direitos legais obrigatórios permanecem preservados, com canal próprio de análise em Minha Conta. Consulte as condições na <a href="reembolso.html">Política de Reembolso</a>.</p>
 
             <h2 id="privacidade">5. Privacidade e Dados</h2>
             <p>O tratamento de seus dados pessoais e do conteúdo enviado é regido pela nossa <a href="privacidade.html">Política de Privacidade</a>.</p>

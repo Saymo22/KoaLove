@@ -21,7 +21,7 @@
     <header class="legal-hero">
         <div class="legal-eyebrow">Institucional</div>
         <h1 class="legal-title">Política de Privacidade</h1>
-        <p class="legal-date">Última atualização: 23 de Outubro de 2026</p>
+        <p class="legal-date">Última atualização: 24 de outubro de 2026</p>
     </header>
 
     <main class="legal-container">
@@ -41,6 +41,7 @@
 
         <article class="legal-content">
 <h2 id="dados">1. Dados coletados</h2>
+<p>Para validar a garantia comercial e analisar solicitações de reembolso, registramos a data do primeiro acesso ao conteúdo pelo link compartilhado, o início desse registro e as condições da compra no envio da solicitação. Esses campos não identificam o destinatário e não são expostos no presente público.</p>
 <p>Guardamos nome, e-mail, senha protegida por hash e o conteúdo fornecido para os presentes: fotos, vídeos, áudios, textos e datas. As sessões registram IP e navegador para segurança; a auditoria usa IP pseudonimizado, rota sem parâmetros, usuário interno, resultado e data.</p>
 <h2 id="uso">2. Finalidades</h2>
 <p>Usamos esses dados para autenticar sua conta, criar e entregar os presentes, recuperar acesso e prevenir abuso. Pagamentos por Pix e cartão são processados no checkout externo do Mercado Pago; o presente é liberado após a confirmação verificada do provedor. Registramos identificadores de transações, valores e estados para entregar a compra e tratar estornos. Não armazenamos números de cartão nem códigos de segurança. Pedidos que já geraram Pix manual continuam sujeitos à conferência do recebimento pelo administrador, com registro do identificador bancário e da data da conferência.</p>

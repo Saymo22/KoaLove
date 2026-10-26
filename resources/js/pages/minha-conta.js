@@ -53,6 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const isPago = (p) => p.status === "paid";
     const fmtCents = (cents) => (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    let refundClockOffset=0;
+    const commercialAvailable=p=>p.refund_eligibility?.eligible&&Number.isFinite(p.refund_eligibility.expires_at)&&Date.now()+refundClockOffset<p.refund_eligibility.expires_at;
+    const refundBlockLabel=p=>p.refund_eligibility?.eligible&&!commercialAvailable(p)?'Prazo encerrado':({expired:'Prazo encerrado',link_opened:'Link aberto',tracking_unverified:'Análise necessária',payment_date_unknown:'Análise necessária'}[p.refund_eligibility?.reason]||'Indisponível');
 
     let filtroAtual = "all";
     let termoBusca = "";
@@ -88,6 +91,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Compras reais do backend
             ({ purchases: todosPedidos } = await window.ApiPurchases.list());
+            const refundServerTime=todosPedidos.find(p=>p.refund_eligibility)?.refund_eligibility.server_time_ms;
+            if(Number.isFinite(refundServerTime))refundClockOffset=refundServerTime-Date.now();
 
             // Migra exclusões antigas deste navegador para a conta autenticada.
             for(const pedido of todosPedidos){if(deletados.has(pedido.id)&&!pedido.deleted){await ApiPurchases.remove(pedido.id);pedido.deleted=true;}}
@@ -187,16 +192,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             const meta=node('div','gift-meta');meta.append(to);
             if(pago){
                 const labels={pending:'Em análise',approved:'Aprovado',rejected:'Não aprovado'};
-                const refund=button('btn-refund',labels[pedido.refund?.status]||'Reembolso','Solicitar reembolso');
+                const allowed=commercialAvailable(pedido);
+                const refund=button('btn-refund','','Solicitar reembolso pela garantia comercial de 3 dias');
+                refund.append(node('span','refund-button-label',labels[pedido.refund?.status]||(allowed?'Reembolso':refundBlockLabel(pedido))));
                 const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');
                 const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M8 5 3 10l5 5M3 10h11a6 6 0 0 1 0 12');icon.append(path);refund.prepend(icon);
-                refund.dataset.refundId=pedido.id;refund.disabled=!!pedido.refund;
-                refund.setAttribute('aria-label',pedido.refund?'Reembolso: '+(labels[pedido.refund.status]||'solicitado'):'Solicitar reembolso de '+(pedido.titulo||'seu presente'));
+                refund.dataset.refundId=pedido.id;refund.disabled=!!pedido.refund||!allowed;
+                refund.setAttribute('aria-label',pedido.refund?'Reembolso: '+(labels[pedido.refund.status]||'solicitado'):allowed?'Solicitar reembolso de '+(pedido.titulo||'seu presente'):'Garantia comercial: '+refundBlockLabel(pedido));
                 if(pedido.refund)refund.title='Solicitação '+({pending:'em análise',approved:'aprovada',rejected:'não aprovada'}[pedido.refund.status]||'registrada');
-                else refund.addEventListener('click',()=>abrirReembolso(pedido));
+                else if(allowed)refund.addEventListener('click',()=>abrirReembolso(pedido));
                 meta.append(refund);
             }
-            info.append(title,meta,actions);card.append(cover,info);
+            info.append(title,meta);
+            if(pago&&pedido.refund_eligibility?.legal_review_available&&(!pedido.refund||(pedido.refund.status==='rejected'&&pedido.refund.request_kind!=='legal_review'))){
+                const review=button('refund-review-link','Solicitar análise de direitos legais ↗');
+                review.addEventListener('click',()=>abrirReembolso(pedido,'legal_review'));info.append(review);
+            }
+            info.append(actions);card.append(cover,info);
 
             if (!window.matchMedia("(pointer: coarse)").matches) {
                 card.addEventListener("mousemove", (e) => {
@@ -377,9 +389,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ================= SOLICITAÇÃO DE REEMBOLSO =================
     const refundDialog=$('refundDialog'),refundForm=$('refundForm');
-    let refundTarget=null,refundTrigger=null,refundSending=false;
-    function abrirReembolso(pedido){
+    let refundTarget=null,refundTrigger=null,refundSending=false,refundKind='commercial';
+    function abrirReembolso(pedido,kind='commercial'){
+        refundKind=kind;
         refundTarget=pedido;refundTrigger=document.activeElement;refundForm.reset();
+        $('refundDialogTitle').textContent=kind==='legal_review'?'Análise de direitos legais':'Solicitar reembolso';
+        $('refundIntro').textContent=kind==='legal_review'?'Descreva sua solicitação para análise individual, inclusive após o prazo comercial ou a abertura do link.':'Garantia comercial: até 3 dias (72 horas) após o pagamento, enquanto o link compartilhado não tiver sido aberto.';
         $('refundGiftTitle').textContent=pedido.titulo||'Seu presente';
         $('refundAmount').textContent=typeof pedido.amount_paid_cents==='number'?fmtCents(pedido.amount_paid_cents):'—';
         $('refundError').textContent='';refundDialog.showModal();$('refundReason').focus();
@@ -398,11 +413,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         if(reason.length<5){$('refundError').textContent='Descreva o motivo com pelo menos 5 caracteres.';$('refundReason').focus();return;}
         refundSending=true;$('submitRefund').disabled=$('cancelRefund').disabled=true;$('submitRefund').textContent='Enviando…';$('refundError').textContent='';
         try{
-            const {refund}=await ApiPurchases.requestRefund(refundTarget.id,reason);refundTarget.refund=refund;
+            const {refund}=await ApiPurchases.requestRefund(refundTarget.id,reason,refundKind);refundTarget.refund=refund;
             renderGifts();refundDialog.close();showToast('Solicitação enviada. Acompanhe a análise pelo seu presente.','✓');
-        }catch(error){$('refundError').textContent=error.message||'Não foi possível enviar. Tente novamente.';}
+        }catch(error){
+            $('refundError').textContent=error.message||'Não foi possível enviar. Tente novamente.';
+            if(error.status===409){try{const {purchase}=await ApiPurchases.getOne(refundTarget.id);Object.assign(refundTarget,purchase);renderGifts();}catch{}}
+        }
         finally{refundSending=false;$('submitRefund').disabled=$('cancelRefund').disabled=false;$('submitRefund').textContent='Enviar solicitação';}
     });
+
+    function refreshRefundDeadlineButtons(){
+        for(const el of document.querySelectorAll('.btn-refund:not(:disabled)')){
+            const p=todosPedidos.find(p=>p.id===el.dataset.refundId);
+            if(p&&!commercialAvailable(p)){el.disabled=true;el.querySelector('.refund-button-label').textContent=refundBlockLabel(p);el.setAttribute('aria-label','Garantia comercial: '+refundBlockLabel(p));el.title='A garantia comercial terminou. A análise de direitos legais continua disponível.';}
+        }
+    }
+    let refundExpiryTimer=setInterval(refreshRefundDeadlineButtons,1000);
+    window.addEventListener('pagehide',()=>clearInterval(refundExpiryTimer),{once:true});
+    window.addEventListener('pageshow',event=>{if(event.persisted){loadData();clearInterval(refundExpiryTimer);refundExpiryTimer=setInterval(refreshRefundDeadlineButtons,1000);}});
 
     // Init
     loadData();
