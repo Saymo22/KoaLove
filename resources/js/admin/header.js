@@ -19,19 +19,21 @@ function renderAdminHeader(activeTab) {
     header.innerHTML=`
       <button class="admin-nav-backdrop" type="button" aria-label="Fechar menu"></button>
       <aside class="admin-sidebar" id="adminSidebar" aria-label="Menu administrativo">
-        <a href="dashboard.html" class="admin-logo"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"><span class="admin-brand-caption">Administração</span></a>
+        <a href="dashboard.html" class="admin-logo"><img class="admin-brand-image" src="/branding/koalove-logo-admin.svg" width="184" height="64" alt="KoaLove"><span class="admin-brand-caption">Painel premium</span></a>
         <p class="admin-nav-label">Administração</p>
         <nav class="admin-tabs" aria-label="Navegação do painel">${tabs.map(([id,label])=>`<a href="${id}.html" class="admin-tab ${id===activeTab?'active':''}"${id===activeTab?' aria-current="page"':''}>${adminIcon(id)}<span>${label}</span></a>`).join('')}</nav>
         <div class="admin-sidebar-footer">
-          <div class="admin-workspace">${adminIcon('lock')}<strong>Cuidado em cada detalhe.</strong><p>Um espaço para gerenciar histórias que merecem ficar.</p><a href="../home.html">Visitar o site <span aria-hidden="true">↗</span></a></div>
+          <a class="admin-site-link" href="../home.html">Visitar o site <span aria-hidden="true">↗</span></a>
+          <div class="admin-user-chip"><img src="/branding/koalove-simbolo-sobre-rose.svg" width="44" height="44" alt=""><div><strong id="adminUserName"></strong><span>Administrador</span></div></div>
           <button class="btn-logout-admin" type="button">${adminIcon('logout')}Sair do painel</button>
         </div>
       </aside>
       <div class="admin-topbar">
         <button class="admin-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="adminSidebar">${adminIcon('menu')}</button>
         <div class="admin-breadcrumb"><span>Painel</span><span aria-hidden="true">/</span><b>${title}</b></div>
-        <div class="admin-topbar-end"><time class="admin-date">${new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</time><span class="admin-private">${adminIcon('lock')}Área restrita</span><span class="admin-avatar" aria-hidden="true">KL</span></div>
+        <div class="admin-topbar-end"><time class="admin-date">${new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</time><span class="admin-private">${adminIcon('lock')}Acesso seguro</span></div>
       </div>`;
+    header.querySelector('#adminUserName').textContent = obterAdminAtual()?.name || 'Administrador';
     document.querySelectorAll('[data-admin-icon]').forEach(el=>{el.innerHTML=adminIcon(el.dataset.adminIcon);});
     const toggle=header.querySelector('.admin-menu-toggle'),sidebar=header.querySelector('.admin-sidebar');
     function setOpen(open){document.body.classList.toggle('admin-navigation-open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');if('inert' in sidebar)sidebar.inert=matchMedia('(max-width:760px)').matches&&!open;}

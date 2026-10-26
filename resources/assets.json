@@ -2,8 +2,22 @@
   "admin/planos": {
     "url": "/admin/planos.html",
     "view": "admin.planos",
-    "styles": ["resources/css/base.css", "resources/css/admin.css", "resources/css/admin-pricing.css", "resources/css/accessibility.css"],
-    "scripts": ["resources/js/core/config.js", "resources/js/api/client.js", "resources/js/api/auth.js", "resources/js/admin/auth.js", "resources/js/admin/header.js", "resources/js/app.js", "resources/js/admin/planos.js"],
+    "styles": [
+      "resources/css/base.css",
+      "resources/css/admin.css",
+      "resources/css/admin-pricing.css",
+      "resources/css/admin-premium.css",
+      "resources/css/accessibility.css"
+    ],
+    "scripts": [
+      "resources/js/core/config.js",
+      "resources/js/api/client.js",
+      "resources/js/api/auth.js",
+      "resources/js/admin/auth.js",
+      "resources/js/admin/header.js",
+      "resources/js/app.js",
+      "resources/js/admin/planos.js"
+    ],
     "entry": "resources/js/entries/admin-planos.js"
   },
   "admin/clientes": {
@@ -13,6 +27,7 @@
       "resources/css/base.css",
       "resources/css/admin.css",
       "resources/css/pages/admin-clientes-extracted.css",
+      "resources/css/admin-premium.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [
@@ -32,6 +47,7 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/admin.css",
+      "resources/css/admin-premium.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [
@@ -49,9 +65,7 @@
     "url": "/admin/login.html",
     "view": "admin.login",
     "styles": [
-      "resources/css/base.css",
-      "resources/css/admin.css",
-      "resources/css/pages/admin-login-extracted.css",
+      "resources/css/admin-login-premium.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [
@@ -59,7 +73,7 @@
       "resources/js/api/client.js",
       "resources/js/api/auth.js",
       "resources/js/admin/auth.js",
-      "resources/js/pages/extracted/admin-login-0.js"
+      "resources/js/admin/login.js"
     ],
     "entry": "resources/js/entries/admin-login.js"
   },
@@ -69,6 +83,7 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/admin.css",
+      "resources/css/admin-premium.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [
@@ -88,6 +103,7 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/admin.css",
+      "resources/css/admin-premium.css",
       "resources/css/accessibility.css"
     ],
     "scripts": [

@@ -1,4 +1,6 @@
 /* Auth do admin — usa a API (cookie HttpOnly + role=admin). */
+let adminSessionUser = null;
+function obterAdminAtual() { return adminSessionUser; }
 async function fazerLoginAdmin(email, pass) {
   try {
     const user = await window.ApiAuth.login(email, pass);
@@ -13,15 +15,18 @@ async function fazerLoginAdmin(email, pass) {
 }
 
 async function fazerLogoutAdmin() {
-  await window.ApiAuth.logout();
+  await window.ApiClient.post('/auth/logout', {});
+  window.ApiClient.setCachedUser(null);
+  adminSessionUser = null;
   window.location.href = "login.html";
 }
 
 async function estaLogadoAdmin() {
   try {
     const user = await window.ApiAuth.me();
+    adminSessionUser = user.role === 'admin' ? user : null;
     return user.role === "admin";
-  } catch { return false; }
+  } catch { adminSessionUser = null; return false; }
 }
 
 async function protegerRotaAdmin() {
