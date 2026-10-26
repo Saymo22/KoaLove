@@ -50,27 +50,27 @@
       // Contrato: sub-arrays sempre presentes (nunca omitidos)
       const lista = (arr, txt) => arr.length
         ? arr.map(x => `<li>${txt(x)}</li>`).join("")
-        : `<li style="color:#8b717b;">— nenhum —</li>`;
+        : `<li class="admin-empty">Nenhum registro por enquanto.</li>`;
 
       panel.innerHTML = `
         <div class="table-container">
-          <h3 style="margin-bottom:8px;">${escapeHtml(client.name ?? "—")} <span style="font-weight:400;color:#8b717b;">(${escapeHtml(client.email ?? "—")})</span></h3>
-          <p style="font-size:13px;color:#8b717b;margin-bottom:16px;">Cliente desde ${client.created_at ? new Date(client.created_at).toLocaleDateString("pt-BR") : "—"}</p>
+          <div class="client-detail-head"><p class="admin-eyebrow">Histórico do cliente</p><h3>${escapeHtml(client.name ?? "—")}</h3><span>${escapeHtml(client.email ?? "—")}</span>
+          <p>Cliente desde ${client.created_at ? new Date(client.created_at).toLocaleDateString("pt-BR") : "—"}</p></div>
 
-          <h4 style="margin-bottom:6px;">🎁 Compras (${purchases.length})</h4>
-          <ul style="font-size:13px;margin-bottom:16px;line-height:1.8;">
+          <div class="client-detail-grid"><section><h4>Compras <span>${purchases.length}</span></h4>
+          <ul>
             ${lista(purchases, p => `<b>#${escapeHtml(String(p.id).slice(0, 8))}</b> — ${escapeHtml(p.titulo ?? "Presente")} — ${fmt(p.amount_paid_cents || 0)} ${badge(p.status)}`)}
-          </ul>
+          </ul></section>
 
-          <h4 style="margin-bottom:6px;">🎧 Tickets (${tickets.length})</h4>
-          <ul style="font-size:13px;margin-bottom:16px;line-height:1.8;">
+          <section><h4>Atendimentos <span>${tickets.length}</span></h4>
+          <ul>
             ${lista(tickets, t => `<b>${escapeHtml(String(t.id).slice(0, 10))}</b> — ${escapeHtml(t.subject)} (${t.status === "open" ? "aberto" : "respondido"})`)}
-          </ul>
+          </ul></section>
 
-          <h4 style="margin-bottom:6px;">💸 Reembolsos (${refunds.length})</h4>
-          <ul style="font-size:13px;line-height:1.8;">
+          <section><h4>Reembolsos <span>${refunds.length}</span></h4>
+          <ul>
             ${lista(refunds, r => `<b>#${escapeHtml(String(r.id).slice(0, 8))}</b> — ${escapeHtml(r.reason)} (${r.status})`)}
-          </ul>
+          </ul></section></div>
         </div>
       `;
       panel.scrollIntoView({ behavior: "smooth", block: "start" });

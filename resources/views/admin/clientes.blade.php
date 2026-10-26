@@ -15,10 +15,9 @@
     @include('partials.noscript')
     <header id="adminHeader"></header>
     <main class="admin-main">
-        <h1 class="page-title">Clientes</h1>
-        <p class="page-desc">Todos os clientes cadastrados, com compras, tickets e reembolsos associados.</p>
+        <p class="admin-eyebrow">Relacionamentos</p><h1 class="page-title">Cada cliente, uma história.</h1><p class="page-desc">Encontre as contas e acompanhe cada pedido, atendimento e solicitação.</p>
 
-        <div class="table-container">
+        <section class="table-container" aria-label="Diretório de clientes"><div class="admin-table-heading"><div><h2>Diretório de clientes</h2><p>O histórico completo de quem escolheu o Nosso Amor.</p></div><span data-admin-icon="clientes" aria-hidden="true"></span></div><div class="admin-table-scroll" role="region" aria-label="Diretório de clientes" tabindex="0">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -34,11 +33,11 @@
                 </thead>
                 <tbody id="tabelaClientes"></tbody>
             </table>
-        </div>
+        </div></section>
 
         <div id="clientDetailPanel" class="migrated-admin-clientes-0"></div>
     </main>
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
 
 

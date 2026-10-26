@@ -15,10 +15,9 @@
     @include('partials.noscript')
     <header id="adminHeader"></header>
     <main class="admin-main">
-        <h1 class="page-title">Gestão de Reembolsos</h1>
-        <p class="page-desc">Analise e processe as solicitações de estorno dos clientes.</p>
+        <p class="admin-eyebrow">Cuidado e confiança</p><h1 class="page-title">Reembolsos, com atenção.</h1><p class="page-desc">Analise cada solicitação e acompanhe o andamento das devoluções.</p>
 
-        <div class="table-container">
+        <section class="table-container" aria-label="Solicitações de reembolso"><div class="admin-table-heading"><div><h2>Solicitações de reembolso</h2><p>Consulte os motivos e registre sua decisão com segurança.</p></div><span data-admin-icon="reembolsos" aria-hidden="true"></span></div><div class="admin-table-scroll" role="region" aria-label="Solicitações de reembolso" tabindex="0">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -32,9 +31,9 @@
                 </thead>
                 <tbody id="tabelaReembolsos"></tbody>
             </table>
-        </div>
+        </div></section>
     </main>
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
 
 

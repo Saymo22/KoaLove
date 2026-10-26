@@ -15,10 +15,9 @@
     @include('partials.noscript')
     <header id="adminHeader"></header>
     <main class="admin-main">
-        <h1 class="page-title">Atendimento ao Cliente</h1>
-        <p class="page-desc">Responda às dúvidas, problemas técnicos e sugestões.</p>
+        <p class="admin-eyebrow">Sempre por perto</p><h1 class="page-title">Um bom atendimento importa.</h1><p class="page-desc">Acompanhe as conversas e ajude cada cliente a criar uma experiência especial.</p>
 
-        <div class="table-container">
+        <section class="table-container" aria-label="Central de atendimento"><div class="admin-table-heading"><div><h2>Central de atendimento</h2><p>Dúvidas, sugestões e pedidos de ajuda em um só lugar.</p></div><span data-admin-icon="suporte" aria-hidden="true"></span></div><div class="admin-table-scroll" role="region" aria-label="Central de atendimento" tabindex="0">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -32,9 +31,9 @@
                 </thead>
                 <tbody id="tabelaSuporte"></tbody>
             </table>
-        </div>
+        </div></section>
     </main>
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
 
 

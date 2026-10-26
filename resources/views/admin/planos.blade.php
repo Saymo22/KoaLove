@@ -13,10 +13,10 @@
     @include('partials.noscript')
     <header id="adminHeader"></header>
     <main class="admin-main pricing-admin">
-        <h1 class="page-title">Planos, descontos e cupons</h1>
+        <p class="admin-eyebrow">Sua vitrine</p><h1 class="page-title">Ofertas que fazem sentido.</h1>
         <p class="page-desc">As alterações aparecem automaticamente na home. Pagamentos já iniciados mantêm o valor combinado.</p>
         <p id="pricingStatus" role="status" aria-live="polite"></p>
-        <section class="pricing-panel" aria-labelledby="plansTitle">
+        <section class="pricing-panel pricing-catalog" aria-labelledby="plansTitle">
             <h2 id="plansTitle">Planos</h2>
             <p>Até três planos ativos na vitrine. Desative para retirar da venda, preservando os pedidos existentes.</p>
             <div id="plansList" class="pricing-records"></div>
@@ -58,7 +58,7 @@
                 <div id="couponsList" class="pricing-records"></div>
                 <form id="couponForm" class="pricing-form" data-kind="coupons">
                     <input name="id" type="hidden">
-                    <label class="wide">Código<input name="code" required minlength="3" maxlength="20" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,19}" placeholder="AMOR10"></label>
+                    <label class="wide">Código<input name="code" required minlength="3" maxlength="20" pattern="[A-Za-z0-9][A-Za-z0-9_\-]{2,19}" placeholder="AMOR10"></label>
                     <label>Plano<select name="plan_id" class="pricing-plan-options"></select></label>
                     <label>Desconto (%)<input name="discount_percent" type="number" min="1" max="95" required></label>
                     <label>Início (opcional)<input name="starts_at" type="datetime-local"></label>
