@@ -20,7 +20,7 @@
         const item = document.createElement('div'); item.className = 'recent-item pix-review';
         const info = document.createElement('div'); info.className = 'recent-info';
         const title = document.createElement('b'); title.textContent = `${p.cliente?.name || 'Cliente'} — ${fmt(p.checkout.amount_cents)}`;
-        const detail = document.createElement('span'); detail.textContent = `Pedido ${p.id} • Referência Pix ${p.checkout.pix.txid}`;
+        const detail = document.createElement('span'); detail.textContent = `Pedido ${p.id} • Referência Pix ${(p.checkout.pix?.txid || '—')}`;
         const bank = document.createElement('input'); bank.placeholder = 'ID da transação recebida (EndToEndId)'; bank.setAttribute('aria-label', 'ID da transação recebida no banco'); bank.maxLength = 64;
         const button = document.createElement('button'); button.type = 'button'; button.className = 'btn-action'; button.textContent = 'Confirmar recebimento e liberar';
         const feedback = document.createElement('span'); feedback.setAttribute('role','status');
@@ -29,44 +29,51 @@
           if (!/^[A-Za-z0-9-]{8,64}$/.test(reference)) { feedback.textContent = 'Informe o identificador da transação no extrato.'; bank.focus(); return; }
           if (!confirm(`Confirme somente se recebeu ${fmt(p.checkout.amount_cents)} no banco para o pedido ${p.id}. Já conferiu o crédito e o pagador?`)) return;
           button.disabled = true;
-          try { await window.ApiAdmin.confirmPix(p.id,p.checkout.amount_cents,reference); await loadPix(); }
+          try { await window.ApiAdmin.confirmPix(p.id,p.checkout.amount_cents,reference); await Promise.all([loadPix(), loadSummary()]); }
           catch (err) { feedback.textContent = err.message; button.disabled = false; }
         });
         info.append(title,detail,bank,feedback); item.append(info,button); list.append(item);
       }
     } catch (err) { list.textContent = 'Não foi possível carregar os Pix: ' + err.message; }
   }
-  await loadPix();
+  async function loadSummary() {
+    try {
+      const { kpis, recentes } = await window.ApiAdmin.summary();
 
-  try {
-    const { kpis, recentes } = await window.ApiAdmin.summary();
+      $("metricReceita").textContent = fmt(kpis.receita_cents);
+      $("metricCompras").textContent = kpis.compras;
+      $("metricReembolsos").textContent = kpis.reembolsos_pendentes;
+      $("metricTickets").textContent = kpis.tickets_abertos;
 
-    $("metricReceita").textContent = fmt(kpis.receita_cents);
-    $("metricCompras").textContent = kpis.compras;
-    $("metricReembolsos").textContent = kpis.reembolsos_pendentes;
-    $("metricTickets").textContent = kpis.tickets_abertos;
-
-    const list = $("recentList");
-    if (!recentes.length) {
-      list.innerHTML = `<p style="color:#8b717b;font-size:14px;">Nenhuma transação registrada.</p>`;
-    } else {
-      list.innerHTML = recentes.map(p => `
-        <div class="recent-item">
-          <div class="recent-info">
-            <b>${escapeHtml(p.titulo || "Presente")}</b>
-            <span>${escapeHtml(p.cliente_nome ?? "—")} • ${p.paid_at ? new Date(p.paid_at).toLocaleDateString("pt-BR") : "—"}</span>
+      const list = $("recentList");
+      if (!recentes.length) {
+        list.innerHTML = `<p class="dashboard-empty">Nenhuma transação registrada.</p>`;
+      } else {
+        list.innerHTML = recentes.map(p => `
+          <div class="recent-item">
+            <div class="recent-info">
+              <b>${escapeHtml(p.titulo || "Presente")}</b>
+              <span>${escapeHtml(p.cliente_nome ?? "—")} • ${p.paid_at ? new Date(p.paid_at).toLocaleDateString("pt-BR") : "—"}</span>
+            </div>
+            <div class="recent-value">${fmt(p.valor_cents)}</div>
           </div>
-          <div class="recent-value">${fmt(p.valor_cents)}</div>
-        </div>
-      `).join("");
+        `).join("");
+      }
+    } catch (err) {
+      $("metricReceita").textContent = "—";
+      $("metricCompras").textContent = "—";
+      $("metricReembolsos").textContent = "—";
+      $("metricTickets").textContent = "—";
+      $("recentList").textContent = "Não foi possível carregar métricas: " + err.message;
     }
-  } catch (err) {
-    console.error("[admin dashboard]", err);
-    $("metricReceita").textContent = "—";
-    $("metricCompras").textContent = "—";
-    $("metricReembolsos").textContent = "—";
-    $("metricTickets").textContent = "—";
-    $("recentList").innerHTML =
-      `<p style="color:#b3263e;font-size:14px;">Não foi possível carregar métricas: ${escapeHtml(err.message)}</p>`;
   }
+  async function refresh() {
+    const button = $('refreshDashboard');
+    button.disabled = true; button.setAttribute('aria-busy', 'true');
+    $('dashboardStatus').textContent = 'Consultando os dados do servidor…';
+    try { await Promise.all([loadPix(), loadSummary()]); }
+    finally { button.disabled = false; button.setAttribute('aria-busy', 'false'); $('dashboardStatus').textContent = ''; }
+  }
+  $('refreshDashboard').addEventListener('click', refresh);
+  await refresh();
 })();

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.seo')
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/css/base.css','resources/css/admin.css','resources/css/admin-pricing.css','resources/js/entries/admin-planos.js'])
+    @vite(["resources/css/base.css","resources/css/admin.css","resources/css/admin-pricing.css","resources/css/admin-premium.css","resources/js/entries/admin-planos.js"])
 </head>
 <body class="admin-body">
     @include('partials.noscript')

@@ -12,7 +12,7 @@ test('Publicação estática inclui todos os SVGs de marca e não copia o PHP p�
         await fs.copyFile('public/favicon.svg',path.join(source,'favicon.svg'));
         await fs.cp('public/branding',path.join(source,'branding'),{recursive:true});
         await publishStaticAssets(source,output);
-        const svgNames=await fs.readdir('public/branding');assert.equal(svgNames.length,10);
+        const svgNames=await fs.readdir('public/branding');assert.equal(svgNames.length,11);
         for(const name of svgNames)assert.deepEqual(await fs.readFile(path.join(output,'branding',name)),await fs.readFile('public/branding/'+name));
         assert.equal(await fs.readFile(path.join(output,'build/assets/app.js'),'utf8'),'example');
         assert.equal(await fs.readFile(path.join(output,'media/preview.mp4'),'utf8'),'example');
