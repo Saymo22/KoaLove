@@ -6,6 +6,7 @@ use App\Models\MediaUpload;
 use App\Models\Purchase;
 use App\Services\GiftMedia;
 use App\Services\MediaValidator;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -45,6 +46,7 @@ class CloudUploadController extends ApiController
 
                 return $same;
             }
+            PlanLimits::assertUploadAllowed($p, $kind, $asset);
             abort_if($p->assets()->count() + (clone $pending)->count() >= 80 || $p->assets()->sum('bytes') + (clone $pending)->sum('bytes') + $data['bytes'] > 314572800, 413, 'Limite de 300 MB atingido.');
             $id = (string) Str::uuid();
             $p->touch();

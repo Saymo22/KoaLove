@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Services\GiftMedia;
 use App\Services\MediaValidator;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,8 @@ class MediaController extends ApiController
         abort_unless($kind, 415, 'Formato não suportado.');
         $limit = MediaValidator::limits()[$kind];
         abort_if((int) $request->header('Content-Length') > $limit, 413, 'Arquivo muito grande.');
+        // Rejeita novos arquivos acima da cota do plano antes de ler o corpo.
+        PlanLimits::assertUploadAllowed($purchase, $kind, $asset);
         $tmp = tempnam(sys_get_temp_dir(), 'na_');
         try {
             $input = $request->getContent(true);

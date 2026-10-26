@@ -6,6 +6,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Models\MediaAsset;
 use App\Models\MediaUpload;
 use App\Models\Purchase;
+use App\Support\PlanLimits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -37,6 +38,9 @@ class GiftMedia
 
                     return $old;
                 }
+                // Defesa final: mesmo que o upload direto tenha sido reservado antes de uma
+                // mudança de plano, a cota do tipo de mídia é conferida ao gravar o asset.
+                PlanLimits::assertUploadAllowed($p, $verified['kind'], $asset, $uploadId);
                 $reserved = MediaUpload::where('purchase_id', $p->id)->where('expires_at', '>', now())->when($uploadId, fn ($q) => $q->where('id', '!=', $uploadId))->sum('bytes');
                 abort_if($p->assets()->count() >= 80 || $p->assets()->sum('bytes') + $reserved + $verified['bytes'] > 314572800, 413, 'Limite de 300 MB atingido.');
                 $p->touch();

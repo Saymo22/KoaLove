@@ -13,6 +13,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Services\AdminConfiguration;
 use App\Services\Pricing;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -84,6 +85,7 @@ class AdminWorkspaceController extends ApiController
                 'manager' => 'Gerente','support' => 'Suporte',default => 'Super Admin'
             }, 'avatar' => '']) : [],
             'invitations' => $level === 'owner' ? DB::table('admin_invitations')->whereNull('revoked_at')->whereNull('accepted_at')->where('expires_at', '>', now())->get(['id', 'email', 'level', 'expires_at']) : [],
+            'limits' => PlanLimits::caps(),
             'settings' => $settings, 'history' => (object) [], 'me' => ['id' => $request->user()->id, 'nome' => $request->user()->name, 'email' => $request->user()->email, 'role' => match ($level) {
                 'manager' => 'Gerente','support' => 'Suporte',default => 'Super Admin'
             }, 'level' => $level],

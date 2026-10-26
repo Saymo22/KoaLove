@@ -16,6 +16,7 @@ use App\Services\MediaStorage;
 use App\Services\PaymentSettings;
 use App\Services\Pricing;
 use App\Services\Seo;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +30,7 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {
-    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'plan_limits' => PlanLimits::caps(), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);

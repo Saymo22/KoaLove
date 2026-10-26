@@ -9,6 +9,7 @@ use App\Models\Promotion;
 use App\Models\Purchase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -129,16 +130,31 @@ class PricingTest extends TestCase
 
     public function test_plan_selection_and_limits_are_enforced_on_server(): void
     {
+        Storage::fake('local');
         $plan = Plan::first();
         $plan->update(['photos_limit' => 1, 'videos_limit' => 0, 'music_limit' => 0]);
         $this->actingAs(User::factory()->create());
         $body = ['tema' => 'namoro', 'para' => 'Teste', 'plan_id' => $plan->id, 'price_cents' => 1];
         $p = $this->postJson('/api/purchases', $body)->assertCreated()->assertJsonPath('data.purchase.plan.photos_limit', 1)->assertJsonPath('data.purchase.price_cents', 1990)->json('data.purchase');
-        foreach (['photo-asset-11111111', 'photo-asset-22222222'] as $asset) {
-            $this->call('POST', '/api/purchases/'.$p['id'].'/media/'.$asset, [], [], [], ['CONTENT_TYPE' => 'image/png', 'HTTP_ACCEPT' => 'application/json'], file_get_contents(base_path('tests/Fixtures/pixel.png')))->assertOk();
-        }
-        $this->postJson('/api/purchases/'.$p['id'].'/update', [...$body, 'media' => ['photos' => ['photo-asset-11111111', 'photo-asset-22222222'], 'videos' => []]])->assertUnprocessable();
+        $this->call('POST', '/api/purchases/'.$p['id'].'/media/photo-asset-11111111', [], [], [], ['CONTENT_TYPE' => 'image/png', 'HTTP_ACCEPT' => 'application/json'], file_get_contents(base_path('tests/Fixtures/pixel.png')))->assertOk();
+        // A cota do plano também é aplicada no upload, não apenas ao finalizar o manifesto.
+        $this->call('POST', '/api/purchases/'.$p['id'].'/media/photo-asset-22222222', [], [], [], ['CONTENT_TYPE' => 'image/png', 'HTTP_ACCEPT' => 'application/json'], file_get_contents(base_path('tests/Fixtures/pixel.png')))
+            ->assertUnprocessable()->assertJsonPath('error.message', 'O limite do plano Presente completo é de 1 foto. Remova uma mídia da seleção ou substitua uma existente antes de enviar.');
+        $this->assertDatabaseCount('media_assets', 1);
         $this->postJson('/api/purchases/'.$p['id'].'/update', [...$body, 'media' => ['photos' => ['photo-asset-11111111'], 'videos' => []]])->assertOk();
+        // Finalizar um manifesto acima da cota do plano continua sendo recusado no servidor.
+        $wide = Plan::create(['id' => (string) Str::uuid(), 'name' => 'Dois', 'description' => '', 'price_cents' => 1990, 'features' => ['Duas fotos'],
+            'photos_limit' => 2, 'videos_limit' => 0, 'music_limit' => 0, 'active' => true, 'featured' => false, 'sort_order' => 1]);
+        $body = ['tema' => 'namoro', 'para' => 'Teste', 'plan_id' => $wide->id];
+        $draft = $this->postJson('/api/purchases', $body)->assertCreated()->json('data.purchase');
+        foreach (['photo-asset-33333333', 'photo-asset-44444444'] as $asset) {
+            $this->call('POST', '/api/purchases/'.$draft['id'].'/media/'.$asset, [], [], [], ['CONTENT_TYPE' => 'image/png', 'HTTP_ACCEPT' => 'application/json'], file_get_contents(base_path('tests/Fixtures/pixel.png')))->assertOk();
+        }
+        $this->postJson('/api/purchases/'.$draft['id'].'/update', [...$body, 'media' => ['photos' => ['photo-asset-33333333', 'photo-asset-44444444'], 'videos' => []]])->assertOk();
+        $draftPurchase = Purchase::findOrFail($draft['id']);
+        $draftPurchase->update(['plan_snapshot' => array_merge($draftPurchase->plan_snapshot, ['photos_limit' => 1])]);
+        $this->postJson('/api/purchases/'.$draft['id'].'/update', [...$body, 'media' => ['photos' => ['photo-asset-33333333', 'photo-asset-44444444'], 'videos' => []]])
+            ->assertUnprocessable()->assertJsonPath('error.message', 'As mídias ultrapassam os limites do plano Dois: até 1 foto, 0 vídeos e 0 músicas.');
     }
 
     public function test_invalid_promotion_period_and_duplicate_coupon_are_rejected(): void
