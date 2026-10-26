@@ -1,12 +1,14 @@
 # API Laravel
 
+Pix e cartão usam o [Mercado Pago Checkout Pro](PAYMENTS.md), com liberação após confirmação verificada do provedor. Pedidos Pix manuais existentes mantêm sua conferência pelo admin.
+
 Mesma origem e prefixo /api. Sessão Laravel em cookie HttpOnly/SameSite=Lax; mutações exigem CSRF e Content-Type application/json, exceto o upload binário. O meta csrf-token vem de uma página Blade. Não há CORS aberto nem autenticação por ID/token de dono na URL.
 
 Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Validação: 422; autenticação: 401; autorização: 403; conflito: 409; corpo grande: 413; formato: 415; sessão CSRF expirada: 419; limite: 429 com Retry-After. Erros internos não devolvem stack traces nem SQL.
 
 ## Endpoints
 
-- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
+- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação. `payments` informa provider/configured/live, sem segredos. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
 - POST /auth/register (name,email,password), /auth/login (email,password), /auth/logout.
 - GET /auth/me: usuário sem hashes, tokens ou campos internos.
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.
@@ -15,14 +17,15 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - Com `GET /config` indicando `media_upload=direct`, POST /purchases/{purchase}/media/{asset}/upload-url recebe mime/bytes e devolve upload_id/url/headers para PUT direto sem cookies; pode devolver complete=true para asset já concluído. POST /purchases/{purchase}/media/{asset}/complete-upload recebe upload_id e valida o objeto antes de liberar seu uso. Reservas contam na cota e expiram em 20 minutos; a URL de PUT vale 5 minutos. Uma nova tentativa começa solicitando upload-url novamente.
 - POST /purchases/{purchase}/update: conteúdo + media:{photos:[asset],videos:[asset],music:asset|null}. Só aceita mídias da própria compra; finaliza content_version=1.
 - POST /purchases/{purchase}/migrate: atualização de compra legada paga ainda sem mídia sincronizada.
-- POST /purchases/{purchase}/pay: metodo pix/card e cupom opcional; preço calculado no servidor. Repetir pagamento aprovado não duplica a operação.
+- POST /purchases/{purchase}/pay: metodo pix/card e cupom opcional; preço calculado no servidor. No Mercado Pago retorna purchase pendente e checkout:{status,url,method,coupon,amount_cents}; redirecione para checkout.url. Iniciar checkout congela conteúdo, valor, cupom e método; novas tentativas reutilizam a preferência. Repetir pagamento aprovado devolve a compra paga. Consulte [PAYMENTS.md](PAYMENTS.md).
+- POST /webhooks/mercadopago: notificação payment assinada por HMAC; única mutação sem CSRF. Consulta o pagamento no provedor e verifica referência, titular, BRL, valor e modo live/test antes de aprovar. Parâmetros de retorno do navegador não aprovam compras. Assinatura inválida: 401; divergência no pagamento: 422; provedor/configuração indisponível: 503.
 - POST /purchases/{purchase}/delete: soft delete; revoga compartilhamento.
 - GET /shared/{token}, /shared/{token}/media/{asset}: somente presente pago, finalizado e ativo. Token aleatório de 256 bits. Projeção pública não inclui dono, cobrança nem dados de outros temas. Mídia aceita Range via Symfony.
 - GET /purchases/{purchase}/media/{asset}: exige dono e mídia selecionada no manifesto.
 - Para mídia S3, o GET autorizado retorna redirecionamento para uma URL privada assinada por 1 minuto; o armazenamento atende Range. Objetos em quarentena não são acessíveis por essas rotas.
 - GET /privacy/export: exportação autenticada JSON. Arquivos binários seguem disponíveis nos presentes da conta; não estão embutidos na exportação.
 - POST /privacy/delete: confirma password, desativa conta e links imediatamente; purga em até 30 dias.
-- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Reembolso e status da compra mudam na mesma transação. Não há gateway de estorno real.
+- Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Para compras simuladas, reembolso e status mudam na mesma transação. Para Pix manual, aprovar reembolso exige refund_sent=true após devolver no banco. Para Mercado Pago, aprovar a solicitação retorna 409 até o provedor confirmar status refunded pelo webhook; depois disso, o admin pode concluir o atendimento sem efetuar uma nova devolução.
 
 ## Limites
 

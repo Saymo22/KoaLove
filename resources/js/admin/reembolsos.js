@@ -57,7 +57,8 @@
     const id = btn.dataset.id, act = btn.dataset.act;
     btn.disabled = true;
     try {
-      await window.ApiAdmin.refundDecision(id, act);
+      if (act === 'approved' && !confirm('Para Pix manual, faça a devolução no aplicativo do banco antes de aprovar. A aprovação aqui só registra a devolução e revoga o presente. Deseja continuar?')) { btn.disabled = false; return; }
+      await window.ApiAdmin.refundDecision(id, act, undefined, act === 'approved');
       toast(`Reembolso ${act === "approved" ? "aprovado" : "recusado"}.`);
       await load();
     } catch (err) {

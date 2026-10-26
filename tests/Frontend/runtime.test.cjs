@@ -40,6 +40,7 @@ test('Armazenamento indisponível preserva o rascunho e não inicia upload',asyn
   assert.equal(contacted,false);
 });
 test('Oito etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
+test('Checkout envia card, redireciona sem aprovar e aguarda confirmação do servidor',require('./payment-flow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));
 test('Todas as páginas e os 13 temas carregam assets separados pelo Vite',()=>{
   const pages=JSON.parse(fs.readFileSync('resources/assets.json'));

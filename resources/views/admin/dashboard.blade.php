@@ -57,6 +57,12 @@
         </div>
 
         <div class="recent-panel">
+            <h3>Pix aguardando conferência</h3>
+            <p>Confira o crédito no aplicativo do banco antes de liberar. Comprovante sozinho não confirma recebimento.</p>
+            <div class="recent-list" id="pendingPixList" aria-live="polite"></div>
+        </div>
+
+        <div class="recent-panel">
             <h3>Últimas Transações</h3>
             <div class="recent-list" id="recentList">
                 <!-- Injetado via JS -->

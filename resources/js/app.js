@@ -18,6 +18,7 @@ function _aplicarConfig(data) {
   window.APP_CONFIG.DIRECT_UPLOADS = data.media_upload === 'direct';
   window.APP_CONFIG.MEDIA_STORAGE_CONFIGURED = data.media_storage?.configured;
   window.APP_CONFIG.MEDIA_LIMITS = data.media_storage?.limits;
+  window.APP_CONFIG.PAYMENTS = data.payments;
   if (typeof data.price_cents === "number") CONFIG.preco = data.price_cents / 100;
   if (typeof data.simulation === 'boolean') CONFIG.modoTeste = data.simulation;
   if (data.currency) CONFIG.currency = data.currency;

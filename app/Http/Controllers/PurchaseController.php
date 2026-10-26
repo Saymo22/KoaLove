@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Contracts\PaymentGateway;
 use App\Http\Requests\PurchaseRequest;
+use App\Models\PaymentCheckout;
 use App\Models\Purchase;
+use App\Services\ManualPix;
+use App\Services\MercadoPagoCheckout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -79,10 +82,25 @@ class PurchaseController extends ApiController
         return $this->ok(['purchase' => $this->project($purchase)]);
     }
 
-    public function pay(Request $request, Purchase $purchase, PaymentGateway $gateway)
+    public function pay(Request $request, Purchase $purchase, PaymentGateway $gateway, MercadoPagoCheckout $checkout)
     {
         Gate::authorize('update', $purchase);
         $data = $request->validate(['metodo' => 'required|in:pix,card', 'cupom' => 'nullable|string|max:20']);
+        if ($purchase->status === 'paid') {
+            return $this->ok(['purchase' => $this->project($purchase)]);
+        }
+        if (in_array(config('payments.driver'), ['mercadopago', 'pix_manual'], true)) {
+            $coupon = strtoupper($data['cupom'] ?? '');
+            $existing = PaymentCheckout::where('purchase_id', $purchase->id)->first();
+            abort_if(! $existing && $coupon && ! array_key_exists($coupon, config('gift.coupons')), 400, 'Cupom inválido.');
+            $discount = $existing?->discount_percent ?? (config('gift.coupons')[$coupon]['discount_percent'] ?? 0);
+            $amount = $existing?->amount_cents ?? (int) round($purchase->price_cents * (1 - $discount / 100));
+            $payment = config('payments.driver') === 'pix_manual'
+                ? app(ManualPix::class)->start($purchase, $data['metodo'], $coupon, $discount, $amount)
+                : $checkout->start($purchase, $data['metodo'], $coupon, $discount, $amount);
+
+            return $this->ok(['purchase' => $this->project($purchase->fresh()), 'checkout' => $payment]);
+        }
         $p = DB::transaction(function () use ($purchase, $data, $gateway) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             if ($p->status === 'paid') {
@@ -118,6 +136,7 @@ class PurchaseController extends ApiController
     public function editable(Purchase $p, bool $legacy = false): void
     {
         abort_unless($p->status === 'pending' || ($legacy && $p->status === 'paid' && $p->content_version !== 1), 409, 'Somente rascunhos podem ser alterados.');
+        abort_if(PaymentCheckout::where('purchase_id', $p->id)->exists(), 409, 'O pagamento já foi iniciado. Continue o checkout existente.');
     }
 
     public function project(Purchase $p, bool $shared = false): array
@@ -132,6 +151,10 @@ class PurchaseController extends ApiController
         $out = [...$content, 'status' => $p->status, 'content_version' => $p->content_version, 'photoIds' => $manifest['photos'], 'fotos' => array_map(fn ($id) => $base.rawurlencode($id), $manifest['photos']), 'videos' => array_map(fn ($id) => $base.rawurlencode($id), $manifest['videos']), 'musica' => ! empty($manifest['music']) ? $base.rawurlencode($manifest['music']) : null];
         if (! $shared) {
             $out = [...$out, 'id' => $p->id, 'user_id' => $p->user_id, 'share_token' => $p->share_token, 'price_cents' => $p->price_cents, 'amount_paid_cents' => $p->amount_paid_cents, 'coupon' => $p->coupon, 'payment_method' => $p->payment_method, 'discount_percent' => $p->discount_percent, 'created_at' => $p->created_at?->getTimestampMs(), 'paid_at' => $p->paid_at?->getTimestampMs(), 'deleted' => $p->trashed()];
+        }
+
+        if (! $shared && $checkout = PaymentCheckout::where('purchase_id', $p->id)->first()) {
+            $out['checkout'] = app(MercadoPagoCheckout::class)->project($checkout);
         }
 
         return $out;

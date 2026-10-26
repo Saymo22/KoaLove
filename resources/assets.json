@@ -202,6 +202,7 @@
       "resources/js/api/purchases.js",
       "resources/js/app.js",
       "resources/js/core/navbar.js",
+      "resources/js/vendor/qrcode.js",
       "resources/js/pages/pagamento.js"
     ],
     "entry": "resources/js/entries/pagamento.js"

@@ -30,7 +30,7 @@
                 Último passo
             </div>
             <h1>Falta pouco para o seu <em>presente ficar pronto</em></h1>
-            <p>Revise o resumo, escolha a forma de pagamento e receba o link na hora.</p>
+            <p>Revise o resumo e faça o pagamento. O link será liberado após a confirmação.</p>
         </div>
 
         <div class="pg-card">
@@ -58,12 +58,12 @@
                 <div class="pg-metodo sel" data-metodo="pix">
                     <span class="pg-metodo-icone">⚡</span>
                     <div class="pg-metodo-nome">Pix</div>
-                    <div class="pg-metodo-desc">Aprovação imediata</div>
+                    <div class="pg-metodo-desc" id="pixDescription">Liberação após confirmação</div>
                 </div>
-                <div class="pg-metodo" data-metodo="cartao">
+                <div class="pg-metodo" data-metodo="card">
                     <span class="pg-metodo-icone">💳</span>
                     <div class="pg-metodo-nome">Cartão</div>
-                    <div class="pg-metodo-desc">Crédito ou débito</div>
+                    <div class="pg-metodo-desc">Opções disponíveis no checkout</div>
                 </div>
             </div>
         </div>
@@ -86,15 +86,29 @@
         </div>
 
         <div class="pg-cta-wrap">
-            <button class="btn-pagar" id="btnPagar" type="button">
+            <button class="btn-pagar" id="btnPagar" type="button" disabled>
                 <span id="btnPagarTxt">🔒 Pagar agora com segurança</span>
             </button>
-            <div class="pg-erro" id="erro"></div>
+            <div class="pg-erro" id="erro" role="status" aria-live="polite"></div>
         </div>
+
+        <section class="pg-card pg-pix" id="pixManual" hidden aria-labelledby="pixManualTitle">
+            <h2 class="pg-card-titulo" id="pixManualTitle">Pague com Pix</h2>
+            <p>Confira o recebedor e o valor no aplicativo do banco antes de confirmar.</p>
+            <div id="pixQr"></div>
+            <p><strong>Recebedor:</strong> <span id="pixReceiver"></span></p>
+            <p><strong>Chave Pix:</strong> <span id="pixKey"></span></p>
+            <p><strong>Referência do pedido:</strong> <span id="pixReference"></span></p>
+            <label for="pixPayload">Pix Copia e Cola</label>
+            <textarea id="pixPayload" readonly rows="4"></textarea>
+            <button type="button" class="btn-pagar" id="pixCopy">Copiar código Pix</button>
+            <p>Após pagar, aguarde a conferência manual. Pagar novamente não acelera a liberação. Guarde o comprovante e o identificador da transação.</p>
+            <p id="pixFeedback" role="status" aria-live="polite"></p>
+        </section>
 
         <div class="pg-selos">
             <div class="pg-selo" data-icon="🔒">Pagamento seguro</div>
-            <div class="pg-selo" data-icon="⚡">Liberação imediata</div>
+            <div class="pg-selo" data-icon="⚡">Liberação após confirmação</div>
             <div class="pg-selo" data-icon="💛">Feito no Brasil</div>
         </div>
 

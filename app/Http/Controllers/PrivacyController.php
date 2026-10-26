@@ -18,6 +18,10 @@ class PrivacyController extends ApiController
         $data = ['account' => $user->only(['id', 'name', 'email', 'created_at']),
             'purchases' => Purchase::withTrashed()->where('user_id', $user->id)->get()->makeHidden(['share_token']),
             'refunds' => Refund::where('user_id', $user->id)->get(), 'tickets' => Ticket::where('user_id', $user->id)->get()];
+        $data['payments'] = DB::table('payment_checkouts as c')->join('purchases as p', 'p.id', '=', 'c.purchase_id')->where('p.user_id', $user->id)
+            ->get(['c.id', 'c.purchase_id', 'c.provider', 'c.amount_cents', 'c.coupon', 'c.discount_percent', 'c.status', 'c.live', 'c.bank_reference', 'c.confirmed_at', 'c.created_at', 'c.updated_at']);
+        $data['payment_receipts'] = DB::table('payment_receipts as r')->join('payment_checkouts as c', 'c.id', '=', 'r.checkout_id')->join('purchases as p', 'p.id', '=', 'c.purchase_id')->where('p.user_id', $user->id)
+            ->get(['r.id', 'r.checkout_id', 'r.status', 'r.amount_cents', 'r.refunded_cents', 'r.created_at', 'r.updated_at']);
 
         return response()->json($data)->header('Content-Disposition', 'attachment; filename="meus-dados.json"');
     }

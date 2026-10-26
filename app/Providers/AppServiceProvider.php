@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Adapters\MercadoPagoGateway;
 use App\Adapters\SimulatedPaymentGateway;
+use App\Contracts\CheckoutGateway;
 use App\Contracts\PaymentGateway;
 use App\Models\Purchase;
 use App\Policies\PurchasePolicy;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(PaymentGateway::class, SimulatedPaymentGateway::class);
+        $this->app->bind(CheckoutGateway::class, MercadoPagoGateway::class);
     }
 
     /**

@@ -1,9 +1,8 @@
 import fs from 'node:fs/promises';
-import {createReadStream,createWriteStream} from 'node:fs';
+import {createReadStream} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {Readable} from 'node:stream';
-import {pipeline} from 'node:stream/promises';
+import {downloadRelease} from './download-release.mjs';
 import {setDefaultResultOrder} from 'node:dns';
 import os from 'node:os';
 import path from 'node:path';
@@ -16,8 +15,7 @@ if(process.argv.includes('--function')){
   const work=await fs.mkdtemp(path.join(os.tmpdir(),'na-ffprobe-'));
   const archive=path.join(work,'ffprobe.tar.xz');
   try {
-    const response=await fetch(release.url,{signal:AbortSignal.timeout(180000)});if(!response.ok)throw Error('Falha ao baixar FFprobe.');
-    await pipeline(Readable.fromWeb(response.body),createWriteStream(archive));
+    await downloadRelease(release.url,archive);
     const hash=createHash('sha256');for await(const chunk of createReadStream(archive))hash.update(chunk);
     if(hash.digest('hex')!==release.sha256)throw Error('Checksum do FFprobe divergente.');
     await fs.mkdir('bin',{recursive:true});command('tar',['-xJf',archive,'-C',work]);
