@@ -3,9 +3,10 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 module.exports=function testCreatorWorkflow(){
   const source=fs.readFileSync('resources/js/pages/criar.js','utf8');
-  const fields=Object.fromEntries(['de','para','carta','inicio','erro1'].map(id=>[id,{value:'',textContent:''}]));
+  const fields=Object.fromEntries(['de','para','carta','inicio','erro1','erroMedia'].map(id=>[id,{value:'',textContent:''}]));
   let current=1,redirect=null,invalid=null;
-  const context=vm.createContext({tema:null,fotoFiles:[],window:{NACreatorWorkflow:{get current(){return current;}}},$:id=>fields[id],limparTodosErros(){},ir(n){redirect=n;},marcarErro(field){invalid=field;}});
+  const context=vm.createContext({tema:null,fotoFiles:[],creatorPlan:()=>({photos:12,videos:4,music:1}),currentMediaCounts:()=>({photos:context.fotoFiles.length,videos:0,music:false}),window:{NACreatorWorkflow:{get current(){return current;}}},$:id=>fields[id],limparTodosErros(){},ir(n){redirect=n;},marcarErro(field){invalid=field;}});
+  vm.runInContext(fs.readFileSync('resources/js/core/plan-limits.js','utf8'),context);
   vm.runInContext(source.slice(source.indexOf('function validar(destino)'),source.indexOf('document.querySelectorAll("[data-ir], [data-step]")')),context);
   const valid=n=>{redirect=null;invalid=null;return vm.runInContext(`validar(${n})`,context);};
   assert.equal(valid(2),false);assert.equal(redirect,1);
@@ -21,6 +22,9 @@ module.exports=function testCreatorWorkflow(){
   assert.equal(valid(9),false,'A revisão revalida todos os campos antes de salvar');assert.equal(redirect,2);
   fields.de.value='Ana';fields.carta.value='';assert.equal(valid(9),false);assert.equal(redirect,6);
   fields.carta.value='Uma carta';assert.equal(valid(9),true);
+  current=3;context.creatorPlan=()=>({photos:5,videos:1,music:1});context.fotoFiles=Array(12).fill({});
+  assert.equal(valid(4),false,'Rascunho antigo acima da cota não avança da etapa de mídia');assert.equal(redirect,3);
+  context.fotoFiles=Array(5).fill({});assert.equal(valid(4),true);
   const html=fs.readFileSync('resources/views/criar.blade.php','utf8');
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,'IDs do formulário devem ser únicos');
   assert.equal([...html.matchAll(/data-passo="\d+"/g)].length,8);

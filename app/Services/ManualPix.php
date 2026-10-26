@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\PaymentCheckout;
 use App\Models\Purchase;
+use App\Support\PlanLimits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -58,6 +59,7 @@ class ManualPix
         $checkout = DB::transaction(function () use ($purchase, $coupon, $amount) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             abort_unless($p->status === 'pending' && $p->content_version === 1 && count($p->manifest['photos'] ?? []) > 0, 409, 'Pedido indisponível para pagamento.');
+            PlanLimits::assertManifest(PlanLimits::forPurchase($p), $p->manifest, $p->plan_snapshot['name'] ?? null);
             if ($existing = PaymentCheckout::where('purchase_id', $p->id)->first()) {
                 abort_unless($existing->provider === 'pix_manual' && $existing->amount_cents === $amount && $existing->coupon === ($coupon ?: null), 409, 'Continue o pagamento já iniciado.');
 

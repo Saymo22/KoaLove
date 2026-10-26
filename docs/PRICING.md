@@ -13,6 +13,8 @@ Descontos não se somam: aplica-se o maior percentual válido entre promoção e
 
 ## Home, criação e pagamento
 
+Com três cards, o plano destacado aparece na posição central, mantendo a ordem relativa dos demais. No criador, novas escolhas de fotos/vídeos acrescentam arquivos à coleção existente; duplicatas da mesma seleção não consomem cota, e arquivos podem ser removidos individualmente. Se a seleção ultrapassar um plano menor, a troca é recusada com orientação para reduzir as mídias, preservando o plano e os arquivos atuais. Rascunhos antigos acima da cota não avançam da etapa de mídia nem seguem para pagamento. Depois da primeira criação no servidor, o seletor fica bloqueado no snapshot registrado, inclusive após envio interrompido.
+
 A home consulta o catálogo ao abrir, ao recuperar o foco e a cada 30 segundos. Recarregue para conferir uma alteração imediatamente. Os cards preservam o visual existente, em três colunas no desktop, duas em telas intermediárias e uma no celular. Só aparecem planos ativos. A home, o formulário de criação e o painel administrativo exibem as quantidades a partir do catálogo/API, nunca de números fixos no HTML.
 
 O botão de cada card leva o plano selecionado ao formulário. O nome, os benefícios e os limites são registrados na compra; mudar o cadastro depois não altera os limites de um rascunho já salvo. Para trocar seu plano, crie um novo presente. O servidor valida os limites tanto no upload de cada mídia quanto no manifesto final.
