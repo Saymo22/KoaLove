@@ -12,6 +12,7 @@ use App\Services\ManualPix;
 use App\Services\MercadoPagoCheckout;
 use App\Services\Pricing;
 use App\Services\RefundEligibility;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -92,8 +93,7 @@ class PurchaseController extends ApiController
             $this->editable($p, $request->routeIs('purchases.migrate'));
             $manifest = $request->validated('media');
             abort_unless(is_array($manifest) && count($manifest['photos'] ?? []) > 0 && array_key_exists('videos', $manifest), 422, 'Informe as mídias do presente.');
-            $limits = $p->plan_snapshot ?? ['photos_limit' => 12, 'videos_limit' => 4, 'music_limit' => 1];
-            abort_if(count($manifest['photos']) > $limits['photos_limit'] || count($manifest['videos']) > $limits['videos_limit'] || (! empty($manifest['music']) && ! $limits['music_limit']), 422, 'As mídias ultrapassam os limites do plano escolhido.');
+            PlanLimits::assertManifest(PlanLimits::forPurchase($p), $manifest, $p->plan_snapshot['name'] ?? null);
             $all = array_merge($manifest['photos'], $manifest['videos'], array_filter([$manifest['music'] ?? null]));
             abort_unless(count($all) === count(array_unique($all)), 422, 'Mídia repetida.');
             foreach (['photos' => 'photo', 'videos' => 'video', 'music' => 'music'] as $key => $kind) {

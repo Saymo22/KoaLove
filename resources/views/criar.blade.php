@@ -202,7 +202,7 @@
                 <input type="file" id="fotos" accept="image/*" multiple>
                 <span class="upload-icon">↗</span>
                 <b>Escolher fotos</b>
-                <span>Até 12 imagens · escolha a capa abaixo</span>
+                <span id="fotosHint">Carregando limites do plano…</span>
                 <span class="qtd" id="qtdFotos">
                 </span>
               </label>
@@ -219,7 +219,7 @@
                 <input type="file" id="videos" accept="video/*" multiple>
                 <span class="upload-icon">▷</span>
                 <b>Adicionar vídeos</b>
-                <span>Até 4 vídeos · opcionais</span>
+                <span id="videosHint">Carregando limites do plano…</span>
                 <span class="qtd" id="qtdVideos">
                 </span>
               </label>
@@ -320,7 +320,7 @@
                 <input type="file" id="musica" accept="audio/*" >
                 <span class="upload-icon">♫</span>
                 <b>Escolher a música</b>
-                <span>Arquivo de áudio · opcional</span>
+                <span id="musicaHint">Carregando limites do plano…</span>
                 <span class="qtd" id="qtdMusica">
                 </span>
               </label>

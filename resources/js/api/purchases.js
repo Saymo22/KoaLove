@@ -5,6 +5,7 @@
   window.ApiPurchases = {
     create:  (payload) => post("/purchases", payload),
     update: (id, payload) => post(`/purchases/${encodeURIComponent(id)}/update`, payload),
+    selectMedia: (id, selection) => post(`/purchases/${encodeURIComponent(id)}/media/selection`, selection),
     remove: (id) => post(`/purchases/${encodeURIComponent(id)}/delete`, {}),
     upload: async (id, assetId, blob) => {
       const kind = blob.type?.startsWith('image/') ? 'photo' : blob.type?.startsWith('audio/') ? 'music' : 'video';

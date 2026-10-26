@@ -16,6 +16,8 @@ Mídias ficam em storage/app/private, sem symlink público. Downloads verificam 
 
 ## Acesso, retenção e LGPD
 
+A reconciliação `/media/selection` verifica dono e editabilidade sob trava da compra. Somente arquivos fora da nova seleção e do manifesto salvo são descartados; não altera conteúdo/preço nem permite modificar checkout congelado. Reservas liberadas e caminhos de arquivos abandonados mantêm marcadores de limpeza com bytes zero até expirar. A confirmação direta reconfere a reserva sob a mesma trava, impedindo uma conclusão iniciada antes do cancelamento de recriar o asset descartado.
+
 Novas senhas com bcrypt são limitadas a 72 bytes para evitar truncamento; bytes nulos são rejeitados. O limite é por bytes UTF-8, não apenas quantidade de caracteres, e vale para cadastro/redefinição. Não há alteração automática das senhas já existentes.
 
 A infraestrutura Supabase usa PostgreSQL no schema `app_private`, fora da Data API, e bucket privado `gift-media`; o backend Laravel continua na Vercel. Contas, hashes e sessões permanecem no esquema Laravel, sem duplicação em Supabase Auth. O role dedicado não é superusuário nem administra outros roles; segredos S3 ficam somente no backend. Consulte [SUPABASE.md](SUPABASE.md) para configurar e verificar a implantação. A alternativa local continua exigindo volume persistente privado; funções Vercel recusam esse modo, sem fallback para `/tmp`.

@@ -17,7 +17,8 @@
             value.append(node('span','cifrao','R$'),document.createTextNode(String(Math.floor(cents/100))),node('span','centavos',','+String(cents%100).padStart(2,'0')));
             head.append(value,node('p','plan-description',plan.description),node('span','preco-valor-sub','Pagamento único'));
             const list=node('ul','preco-lista');for(const feature of plan.features||[])list.append(node('li','',feature));
-            const media=node('p','plan-media',`${plan.photos_limit} fotos · ${plan.videos_limit} vídeos · ${plan.music_limit} música`);
+            const mediaSummary=window.NAPlanLimits?.summary?.(plan);
+            const media=node('p','plan-media',mediaSummary||'Fotos, vídeos e música conforme o plano');
             const link=node('a','b ouro magnetic','Criar meu presente');link.href='criar.html?plano='+encodeURIComponent(plan.id);
             const guarantee=node('a','preco-garantia','Garantia comercial de 3 dias · antes de abrir o link');guarantee.href='reembolso.html';
             card.append(head,media,list,link,guarantee);return card;

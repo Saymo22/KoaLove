@@ -18,7 +18,7 @@
 - users: nome, email único normalizado, senha hash, role user/admin, deletion_requested_at, admin_level (owner/manager/support, null legado equivale ao acesso integral existente), admin_note e admin_preferences JSON.
 - purchases: ID textual, user FK, chave idempotente única por usuário, share_token único, status, content/manifest JSON, versão, valores em centavos, timestamps, soft delete.
 - media_assets: purchase FK, asset_id único por compra, tipo, MIME, bytes, disk e caminho privado.
-- media_uploads: UUID, compra/asset, MIME, bytes reservados, disk/caminho privado e expiração; controla uploads diretos em quarentena.
+- media_uploads: UUID, compra/asset, MIME, bytes reservados, disk/caminho privado e expiração; controla uploads diretos em quarentena. Bytes zero preserva marcadores de limpeza para reservas concluídas/canceladas e arquivos abandonados; seleção autenticada não remove arquivos do manifesto salvo.
 - refunds: compra/usuário FK, motivo, status, decisão e datas.
 - payment_checkouts: UUID e compra única/FK, provider, snapshot de valor/cupom/método e live_mode, preferência/URL, expiração, estado e ID do pagamento aprovado. Pix manual guarda payload/recebedor, referência bancária única e admin/data da conferência, rejection_reason para recusa manual. pricing_details inclui coupon_id para contagem estável de usos. Conteúdo e preço ficam congelados após iniciar checkout.
 - payment_receipts: ID Mercado Pago único, checkout FK indexada, estado, valor bruto e estornado em centavos, datas; sem cartão ou payload bruto.

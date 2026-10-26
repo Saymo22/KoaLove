@@ -127,6 +127,7 @@
       "resources/js/api/purchases.js",
       "resources/js/core/gift-sync.js",
       "resources/js/app.js",
+      "resources/js/core/plan-limits.js",
       "resources/js/core/db.js",
       "resources/js/core/navbar.js",
       "resources/js/core/theme-catalog.js",
@@ -150,6 +151,7 @@
       "resources/js/api/client.js",
       "resources/js/api/auth.js",
       "resources/js/app.js",
+      "resources/js/core/plan-limits.js",
       "resources/js/core/navbar.js",
       "resources/js/pages/home.js",
       "resources/js/pages/home-pricing.js"

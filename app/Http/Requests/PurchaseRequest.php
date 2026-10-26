@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\PlanLimits;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -21,9 +22,9 @@ class PurchaseRequest extends FormRequest
             'inicio' => 'nullable|date_format:Y-m-d', 'carta' => 'nullable|string|max:4000',
             'frase' => 'nullable|string|max:'.($this->input('tema') === 'netflix' ? 600 : 90),
             'rodapeCustom' => 'nullable|string|max:500', 'musicaNome' => 'nullable|string|max:100', 'musicaArtista' => 'nullable|string|max:100',
-            'usarIntro' => 'sometimes|boolean', 'autoplay' => 'sometimes|boolean', 'fotoCapa' => 'sometimes|integer|min:0|max:11',
+            'usarIntro' => 'sometimes|boolean', 'autoplay' => 'sometimes|boolean', 'fotoCapa' => 'sometimes|integer|min:0|max:'.(PlanLimits::MAX['photos'] - 1),
             'eventos' => 'sometimes|array|max:6', 'eventos.*.data' => 'nullable|string|max:30', 'eventos.*.titulo' => 'nullable|string|max:50', 'eventos.*.texto' => 'nullable|string|max:800',
-            'amo' => 'sometimes|array|max:20', 'amo.*' => 'string|max:500', 'legendas' => 'sometimes|array|max:12', 'legendas.*' => 'nullable|string|max:60',
+            'amo' => 'sometimes|array|max:20', 'amo.*' => 'string|max:500', 'legendas' => 'sometimes|array|max:'.PlanLimits::MAX['photos'], 'legendas.*' => 'nullable|string|max:60',
             'themeData' => ['nullable', 'array', function ($attribute, $value, $fail) {
                 if (strlen(json_encode($value)) > 200000) {
                     $fail('Detalhes do tema muito extensos.');
@@ -48,8 +49,8 @@ class PurchaseRequest extends FormRequest
             }],
             'client_request_id' => 'nullable|string|regex:/^[\w-]{16,100}$/',
             'preview_data_url' => ['nullable', 'string', 'max:200000', 'regex:/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/'],
-            'media' => 'sometimes|array', 'media.photos' => 'sometimes|array|min:1|max:12', 'media.photos.*' => 'string|max:100',
-            'media.videos' => 'sometimes|array|max:4', 'media.videos.*' => 'string|max:100', 'media.music' => 'nullable|string|max:100',
+            'media' => 'sometimes|array', 'media.photos' => 'sometimes|array|min:1|max:'.PlanLimits::MAX['photos'], 'media.photos.*' => 'string|max:100',
+            'media.videos' => 'sometimes|array|max:'.PlanLimits::MAX['videos'], 'media.videos.*' => 'string|max:100', 'media.music' => 'nullable|string|max:100',
         ];
     }
 

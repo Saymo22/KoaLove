@@ -444,15 +444,17 @@ function labelTables(){
 function openPlanForm(id){
   const p=id?planById(id):null;
   const v=(k,d='')=>p?esc(p[k]):d;
+  const limitAxis=kind=>{const min=db.limits?.min?.[kind],max=db.limits?.max?.[kind];return (Number.isFinite(min)?` min="${min}"`:'')+(Number.isFinite(max)?` max="${max}"`:'');};
+  const limitDefault=(key,fallback)=>Number.isFinite(db.limits?.defaults?.[key])?db.limits.defaults[key]:fallback;
   openModal(head(p?`Editar plano · ${esc(p.nome)}`:'Criar novo plano',p?'Gerencie detalhes, mídia e status':'Preencha as informações do plano',mIco('<path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.2"/>'))+`<div class="modal-body">
     <form class="form" id="formPlano">
       <div class="field"><label>Nome do plano</label><input name="nome" required maxlength="40" value="${v('nome')}" placeholder="Ex.: Premium"></div>
       <div class="field"><label>Preço (R$)</label><input name="preco" type="number" step="0.01" min="0.01" required value="${p?p.preco:''}" placeholder="1290.00"></div>
       <div class="field full"><label>Descrição</label><textarea name="descricao" rows="2" maxlength="200">${v('desc')}</textarea></div>
       <div class="field full"><label>Benefícios (um por linha)</label><textarea name="beneficios" rows="4" placeholder="Acesso ilimitado&#10;4 dispositivos&#10;Suporte 24/7">${p?esc(p.beneficios.join('\n')):''}</textarea></div>
-      <div class="field"><label>Quantidade de fotos</label><input type="number" min="1" max="12" name="fotos" value="${p?p.fotos:2}"></div>
-      <div class="field"><label>Quantidade de vídeos</label><input type="number" min="0" max="4" name="videos" value="${p?p.videos:0}"></div>
-      <div class="field"><label>Quantidade de músicas</label><input type="number" min="0" max="1" name="musicas" value="${p?p.musicas:0}"></div>
+      <div class="field"><label>Quantidade de fotos</label><input type="number"${limitAxis('photos')} name="fotos" value="${p?p.fotos:limitDefault('photos_limit',2)}"></div>
+      <div class="field"><label>Quantidade de vídeos</label><input type="number"${limitAxis('videos')} name="videos" value="${p?p.videos:limitDefault('videos_limit',0)}"></div>
+      <div class="field"><label>Quantidade de músicas</label><input type="number"${limitAxis('music')} name="musicas" value="${p?p.musicas:limitDefault('music_limit',0)}"></div>
       ${p?`<div class="field"><label>Status atual</label><input value="${p.ativo?'Ativo':'Inativo'}" disabled></div>`:
         `<div class="field"><label>Status</label><select name="ativo"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
          <label class="check-row"><input type="checkbox" name="destaque"> Marcar como plano mais vendido (destaque)</label>`}

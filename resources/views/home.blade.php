@@ -323,7 +323,7 @@
                     </div>
                     <ul class="preco-lista">
                         <li>Todos os temas disponíveis (clássicos e especiais)</li>
-                        <li>Até 12 fotos, 4 vídeos e 1 música</li>
+                        <li id="precoMedia">Fotos, vídeos e música conforme o plano escolhido</li>
                         <li>Linha do tempo, carta e contador personalizados</li>
                         <li>Link para compartilhar e QR Code para imprimir</li>
                         <li>Suporte humano por WhatsApp</li>
@@ -345,8 +345,8 @@
             </div>
 
             <div class="incluso-grid">
-                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Até 12 fotos</b><span>Até 12 fotos em alta qualidade, com molduras e efeitos elegantes</span></div></div>
-                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Vídeos especiais</b><span>Até 4 vídeos curtos para reviver os melhores momentos</span></div></div>
+                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Fotos em alta qualidade</b><span>Fotos em alta qualidade, com molduras e efeitos elegantes</span></div></div>
+                <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Vídeos especiais</b><span>Vídeos curtos para reviver os melhores momentos</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Trilha sonora</b><span>Uma música para tocar junto com a história de vocês</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Carta personalizada</b><span>Escreva e edite a carta até ficar exatamente do seu jeito</span></div></div>
                 <div class="incluso-item reveal"><div class="incluso-check">✓</div><div><b>Linha do tempo</b><span>Contador de dias, meses e horas desde o primeiro encontro</span></div></div>

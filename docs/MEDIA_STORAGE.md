@@ -45,8 +45,8 @@ Para ativar upload na Vercel, conclua a configuração [Supabase](SUPABASE.md). 
 1. O usuário autenticado cria um rascunho. A sessão e o token CSRF protegem as mutações.
 2. O cliente envia o corpo binário a `POST /api/purchases/{purchase}/media/{asset}`. O backend verifica propriedade e estado editável.
 3. Um arquivo temporário recebe o corpo em blocos. MIME real, tamanho e conteúdo são validados. Imagens são decodificadas e recodificadas em PNG; áudio e vídeo passam por FFprobe.
-4. A mídia validada é gravada no disco privado. A transação registra a referência na compra, respeitando a cota. Falhas removem arquivos sem referência; tentativas repetidas com o mesmo ID não duplicam a mídia.
-5. A finalização grava o manifesto com as mídias selecionadas. Os temas consomem as referências estáveis. IndexedDB continua sendo um rascunho/cache do navegador, e não substitui a cópia no servidor.
+4. A mídia validada é gravada no disco privado. A transação registra a referência na compra, respeitando a cota do tipo definida no plano (`plan_snapshot`): novas fotos, vídeos ou músicas acima do limite são recusadas com 422 antes de consumir espaço, mas a substituição de mídias já referenciadas no manifesto continua permitida. Falhas removem arquivos sem referência; tentativas repetidas com o mesmo ID não duplicam a mídia.
+5. A finalização grava o manifesto com as mídias selecionadas e revalida as cotas do plano; o upload direto também conta reservas pendentes. Os temas consomem as referências estáveis. IndexedDB continua sendo um rascunho/cache do navegador, e não substitui a cópia no servidor.
 6. O dono usa a rota autenticada de mídia; um destinatário usa o link de um presente pago, ativo e finalizado. Somente mídias do manifesto são entregues. A resposta local suporta Range para reprodução de vídeo/áudio e usa o MIME validado.
 
 | Tipo | Formatos aceitos | Limite por arquivo |
@@ -55,9 +55,11 @@ Para ativar upload na Vercel, conclua a configuração [Supabase](SUPABASE.md). 
 | Música | MP3, WAV, Ogg, MP4/M4A e WebM com faixa de áudio | 25 MiB |
 | Vídeo | MP4, WebM e QuickTime com faixa de vídeo | 100 MiB |
 
-Cota por compra: 80 assets e 300 MiB. Manifesto final: de 1 a 12 fotos, até 4 vídeos e uma música. GIF animado torna-se uma imagem estática. O upload não adiciona suporte a documentos PDF/Word ou outros anexos.
+Cota por compra: 80 assets e 300 MiB, além da cota de mídia de cada plano. O cadastro de planos aceita no máximo 1–12 fotos, 0–4 vídeos e 0–1 música; compras antigas sem `plan_snapshot` usam o padrão 12/4/1. O manifesto final e cada upload respeitam essa cota, e o formulário/home/admin exibem os limites vindos da API. GIF animado torna-se uma imagem estática. O upload não adiciona suporte a documentos PDF/Word ou outros anexos.
 
 ## Operação, backups e exclusão
+
+Antes do envio, `/media/selection` libera a cota de arquivos abandonados por uma tentativa interrompida. O manifesto salvo continua íntegro até a substituição ser finalizada. Reservas diretas canceladas e caminhos descartados conservam marcadores com bytes zero para o `privacy:prune`, inclusive se uma URL PUT ainda válida for reutilizada ou o armazenamento estiver temporariamente indisponível.
 
 - Mantenha GD e FFprobe atualizados, espaço livre, limites de memória e monitoramento de falhas. Não exponha caminhos privados nem credenciais em mensagens da API.
 - Execute o scheduler diariamente para `privacy:prune`. Links são revogados ao excluir um presente; os arquivos e os registros são purgados conforme os prazos de retenção em `SECURITY.md`.

@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\Promotion;
 use App\Models\Purchase;
 use App\Services\Pricing;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -18,7 +19,7 @@ class PricingController extends ApiController
 {
     public function index()
     {
-        return $this->ok(['plans' => Plan::orderBy('sort_order')->get(), 'promotions' => Promotion::latest()->get(), 'coupons' => Coupon::latest()->get()]);
+        return $this->ok(['plans' => Plan::orderBy('sort_order')->get(), 'promotions' => Promotion::latest()->get(), 'coupons' => Coupon::latest()->get(), 'limits' => PlanLimits::caps()]);
     }
 
     public function plan(Request $request, ?Plan $plan = null)
@@ -26,7 +27,9 @@ class PricingController extends ApiController
         $data = $request->validate([
             'name' => 'required|string|min:2|max:60', 'description' => 'nullable|string|max:240',
             'price_cents' => 'required|integer|min:100|max:10000000', 'features' => 'required|array|list|min:1|max:12', 'features.*' => 'required|string|max:160',
-            'photos_limit' => 'required|integer|min:1|max:12', 'videos_limit' => 'required|integer|min:0|max:4', 'music_limit' => 'required|integer|min:0|max:1',
+            'photos_limit' => 'required|integer|min:'.PlanLimits::MIN['photos'].'|max:'.PlanLimits::MAX['photos'],
+            'videos_limit' => 'required|integer|min:'.PlanLimits::MIN['videos'].'|max:'.PlanLimits::MAX['videos'],
+            'music_limit' => 'required|integer|min:'.PlanLimits::MIN['music'].'|max:'.PlanLimits::MAX['music'],
             'active' => 'required|boolean', 'featured' => 'required|boolean', 'sort_order' => 'required|integer|min:0|max:999',
         ]);
         $plan = DB::transaction(function () use ($plan, $data) {

@@ -6,6 +6,7 @@ use App\Models\MediaUpload;
 use App\Models\Purchase;
 use App\Services\GiftMedia;
 use App\Services\MediaValidator;
+use App\Support\PlanLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -45,6 +46,7 @@ class CloudUploadController extends ApiController
 
                 return $same;
             }
+            PlanLimits::assertUploadAllowed($p, $kind, $asset);
             abort_if($p->assets()->count() + (clone $pending)->count() >= 80 || $p->assets()->sum('bytes') + (clone $pending)->sum('bytes') + $data['bytes'] > 314572800, 413, 'Limite de 300 MB atingido.');
             $id = (string) Str::uuid();
             $p->touch();
@@ -75,7 +77,8 @@ class CloudUploadController extends ApiController
         $data = $request->validate(['upload_id' => 'required|uuid']);
         $upload = MediaUpload::whereKey($data['upload_id'])->where('purchase_id', $purchase->id)->where('asset_id', $asset)->where('expires_at', '>', now())->firstOrFail();
         if ($upload->bytes === 0) {
-            $saved = $purchase->assets()->where('asset_id', $asset)->firstOrFail();
+            $saved = $purchase->assets()->where('asset_id', $asset)->first();
+            abort_unless($saved, 409, 'Esta reserva foi cancelada. Envie novamente a seleção atual.');
 
             return $this->ok(['id' => $asset, 'kind' => $saved->kind]);
         }

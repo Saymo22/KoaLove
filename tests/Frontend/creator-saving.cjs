@@ -7,7 +7,7 @@ module.exports=async()=>{
  for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/login.html']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'minha-conta.html');}
  const source=fs.readFileSync(path.join(__dirname,'../../resources/js/pages/criar.js'),'utf8');
  const submit=source.slice(source.indexOf('$("form").addEventListener("submit"'),source.indexOf('function abrirPrevia'));
- let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{}};
+ let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{},erro3:{}};
  const draft={id:'__draft_stable',client_request_id:'stable-request',videos:[],fotos:[{name:'test.png'}],photoIds:['stable-photo'],videoIds:[],musicId:null,tema:'namoro'};
  const context=vm.createContext({
   $:id=>id==='form'?{addEventListener:(_name,fn)=>saveHandler=fn}:controls[id],
@@ -17,6 +17,7 @@ module.exports=async()=>{
   ApiPurchases:{create:async()=>{creates++;return {purchase:{id:'same-purchase'}};}},
   NAGift:{sync:async()=>{syncs++;if(syncs===1)throw new Error('Conexão interrompida no envio');return{purchase:{id:'same-purchase'}};}}
  });
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../../resources/js/core/plan-limits.js'),'utf8'),context);
  vm.runInContext(submit,context);await saveHandler({preventDefault(){}});assert.equal(controls.erroMedia.textContent,'Conexão interrompida no envio');
  await saveHandler({preventDefault(){}});assert.equal(creates,1,'Retry atualiza o pedido criado');assert.equal(syncs,2);assert.equal(context.location.href,'pagamento.html?id=same-purchase','Falha no cache não impede salvamento confirmado');
  context.pedidoEditandoId=null;context.location.href='';let preserved;
@@ -24,5 +25,11 @@ module.exports=async()=>{
  await saveHandler({preventDefault(){}});assert.equal(preserved.fotos[0].name,'test.png');assert.equal(context.location.href,'login.html?next='+encodeURIComponent('criar.html?resume=stable-request'));
  context.location.href='';context.salvarPedido=async()=>{throw new Error('QuotaExceeded');};
  await saveHandler({preventDefault(){}});assert.equal(context.location.href,'','Sem cópia recuperável, não redireciona e não descarta arquivos');
+ context.creatorPlan=()=>({photos:1,videos:0,music:0});context.fotoFiles=[{name:'one.png'},{name:'two.png'}];
+ let attempted=false;context.salvarPedido=async()=>{attempted=true;};
+ await saveHandler({preventDefault(){}});
+ assert.equal(attempted,false,'Seleção acima da cota não inicia persistência nem upload');
+ assert.match(controls.erroMedia.textContent,/ultrapassam/);
+ assert.equal(context.fotoFiles.length,2,'Bloqueio preserva arquivos para ajuste');
 };
 if(require.main===module)module.exports().then(()=>console.log('OK: retorno seguro do login, rascunho com arquivo, retry sem duplicação e cache opcional.')).catch(e=>{console.error(e);process.exitCode=1;});

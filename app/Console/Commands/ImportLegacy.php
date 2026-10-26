@@ -8,6 +8,7 @@ use App\Models\Refund;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\MediaValidator;
+use App\Support\PlanLimits;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -104,7 +105,8 @@ class ImportLegacy extends Command
                     }
                     if (($row['content_version'] ?? 0) === 1) {
                         $manifest = $row['media'] ?? [];
-                        Validator::make($manifest, ['photos' => 'required|array|min:1|max:12', 'videos' => 'present|array|max:4', 'music' => 'nullable|string'])->validate();
+                        Validator::make($manifest, ['photos' => 'required|array|min:1|max:'.PlanLimits::MAX['photos'], 'videos' => 'present|array|max:'.PlanLimits::MAX['videos'], 'music' => 'nullable|string'])->validate();
+                        PlanLimits::assertManifest(PlanLimits::fromSnapshot(null), $manifest);
                         foreach (['photos' => 'photo', 'videos' => 'video', 'music' => 'music'] as $key => $kind) {
                             foreach ($key === 'music' ? array_filter([$manifest[$key] ?? null]) : $manifest[$key] as $assetId) {
                                 throw_unless(($assets[$assetId] ?? null) === $kind, \RuntimeException::class, 'Manifesto de mídia inválido.');
