@@ -1,4 +1,11 @@
 {
+  "admin/planos": {
+    "url": "/admin/planos.html",
+    "view": "admin.planos",
+    "styles": ["resources/css/base.css", "resources/css/admin.css", "resources/css/admin-pricing.css", "resources/css/accessibility.css"],
+    "scripts": ["resources/js/core/config.js", "resources/js/api/client.js", "resources/js/api/auth.js", "resources/js/admin/auth.js", "resources/js/admin/header.js", "resources/js/app.js", "resources/js/admin/planos.js"],
+    "entry": "resources/js/entries/admin-planos.js"
+  },
   "admin/clientes": {
     "url": "/admin/clientes.html",
     "view": "admin.clientes",
@@ -132,7 +139,8 @@
       "resources/js/api/auth.js",
       "resources/js/app.js",
       "resources/js/core/navbar.js",
-      "resources/js/pages/home.js"
+      "resources/js/pages/home.js",
+      "resources/js/pages/home-pricing.js"
     ],
     "entry": "resources/js/entries/home.js"
   },

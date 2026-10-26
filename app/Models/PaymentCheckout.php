@@ -14,6 +14,6 @@ class PaymentCheckout extends Model
 
     protected function casts(): array
     {
-        return ['live' => 'boolean', 'amount_cents' => 'integer', 'discount_percent' => 'integer', 'expires_at' => 'datetime', 'confirmed_at' => 'datetime', 'pix_details' => 'array'];
+        return ['live' => 'boolean', 'amount_cents' => 'integer', 'discount_percent' => 'integer', 'expires_at' => 'datetime', 'confirmed_at' => 'datetime', 'pix_details' => 'array', 'pricing_details' => 'array'];
     }
 }

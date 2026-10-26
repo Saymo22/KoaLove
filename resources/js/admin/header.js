@@ -8,6 +8,7 @@ function renderAdminHeader(activeTab) {
                 <button class="btn-logout-admin" type="button">Sair do Painel</button>
             </div>
             <div class="admin-tabs">
+                <a href="planos.html" class="admin-tab ${activeTab === 'planos' ? 'active' : ''}">🏷️ Planos e descontos</a>
                 <a href="dashboard.html" class="admin-tab ${activeTab === 'dashboard' ? 'active' : ''}">📊 Visão Geral</a>
                 <a href="clientes.html" class="admin-tab ${activeTab === 'clientes' ? 'active' : ''}">👥 Clientes</a>
                 <a href="reembolsos.html" class="admin-tab ${activeTab === 'reembolsos' ? 'active' : ''}">💸 Reembolsos</a>

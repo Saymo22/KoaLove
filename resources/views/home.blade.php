@@ -292,10 +292,14 @@
                 </div>
                 <div class="promo-side">
                     <div class="promo-preco">
-                        <span>Preço do presente</span>
+                        <span id="promoLabel">Preço do presente</span>
+                        <span class="de" id="promoDe" hidden></span>
                         <span class="por" id="promoPor">Carregando…</span>
                     </div>
-                    <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
+                    <div class="promo-countdown" id="promoCountdown" hidden>
+                        <span>Oferta termina em</span><strong id="promoClock" aria-label="Tempo restante da promoção"></strong>
+                    </div>
+                    <a href="criar.html" id="promoLink" class="b ouro magnetic">Criar meu presente</a>
                 </div>
             </div>
         </div>
@@ -306,11 +310,11 @@
         <div class="wrap">
             <div class="tit reveal">
                 <div class="divisor">Sem assinatura</div>
-                <h2 class="mask-reveal"><span>Um <em class="shimmer-gold">preço só</em></span></h2>
+                <h2 class="mask-reveal"><span><em class="shimmer-gold">Preços</em></span></h2>
                 <p>Pagamento único. Sem mensalidade, sem letras miúdas, sem surpresas.</p>
             </div>
 
-            <div class="preco-wrap reveal reveal-zoom">
+            <div class="preco-wrap reveal reveal-zoom" id="pricingCards">
                 <div class="preco-box">
                     <div class="preco-badge">Mais escolhido</div>
                     <div class="preco-valor-wrap">
@@ -340,7 +344,7 @@
             <div class="tit reveal">
                 <div class="divisor">Sem pegadinha</div>
                 <h2 class="mask-reveal"><span>Tudo <em class="shimmer-gold">incluso</em></span></h2>
-                <p>Você não paga nada a mais. É tudo que está aqui dentro, para sempre.</p>
+                <p>Confira os recursos disponíveis e escolha os limites de fotos, vídeos e música no seu plano.</p>
             </div>
 
             <div class="incluso-grid">

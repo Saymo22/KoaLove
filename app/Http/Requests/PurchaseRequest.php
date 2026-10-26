@@ -16,6 +16,7 @@ class PurchaseRequest extends FormRequest
     {
         return [
             'tema' => ['required', 'string', Rule::in(array_keys(config('gift.themes')))],
+            'plan_id' => 'nullable|uuid',
             'para' => 'required|string|max:60', 'de' => 'nullable|string|max:60', 'titulo' => 'nullable|string|max:80',
             'inicio' => 'nullable|date_format:Y-m-d', 'carta' => 'nullable|string|max:4000',
             'frase' => 'nullable|string|max:'.($this->input('tema') === 'netflix' ? 600 : 90),
@@ -54,6 +55,6 @@ class PurchaseRequest extends FormRequest
 
     public function content(): array
     {
-        return collect($this->validated())->except(['client_request_id', 'media'])->all();
+        return collect($this->validated())->except(['client_request_id', 'media', 'plan_id'])->all();
     }
 }

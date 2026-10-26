@@ -8,12 +8,14 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 
 ## Endpoints
 
-- GET /config: temas, preço em centavos, moeda, cupons públicos e disponibilidade da simulação. `payments` informa provider/configured/live, sem segredos. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
+- GET /config: temas, catálogo `plans`, `default_plan_id`, preço em centavos, moeda, relógio `server_time_ms` e disponibilidade da simulação. Cada plano inclui limites e cotação da promoção vigente; `coupons` permanece um objeto vazio por compatibilidade, sem divulgar códigos. `payments` informa provider/configured/live, sem segredos. `media_upload` indica `server` (disco local) ou `direct` (adapter externo opcional); `media_storage` informa `configured`, `mode` e limites por tipo, sem caminhos ou credenciais. Disco local em função Vercel retorna `configured=false`; uploads indisponíveis respondem `503 MEDIA_UNAVAILABLE`, mantendo o rascunho do navegador.
 - POST /auth/register (name,email,password), /auth/login (email,password), /auth/logout.
 - Novas senhas no cadastro e na redefinição exigem 8 caracteres, no máximo 128 caracteres e, com o bcrypt padrão, no máximo 72 bytes; acentos e emojis podem usar vários bytes. Bytes nulos são rejeitados com 422. A validação de login preserva compatibilidade com senhas existentes.
 - GET /auth/me: usuário sem hashes, tokens ou campos internos.
 - POST /auth/forgot-password (email); /auth/reset-password (email,token,password). Link descartável, com validade de 60 minutos; reset revoga sessões persistidas.
 - GET/POST /purchases, GET /purchases/{purchase}.
+- POST /purchases aceita `plan_id` UUID opcional; sem ele, usa o plano ativo principal. Benefícios e limites ficam registrados em `plan_snapshot`. O dono recebe `plan_id` e `plan` na projeção da compra; a projeção compartilhada não recebe cobrança.
+- POST /purchases/{purchase}/quote: `{cupom:null}` ou `{cupom:"CODIGO"}`; retorna `quote` com base/total em centavos, percentual, fonte e estado frozen. Somente o dono autorizado. Cupons são validados aqui, nunca pelo catálogo público.
 - POST /purchases/{purchase}/media/{asset}: corpo binário, MIME real validado; asset de 16 a 100 caracteres alfanuméricos, hífen ou sublinhado. Repetições do mesmo ID/tipo reutilizam a mídia existente.
 - Com `GET /config` indicando `media_upload=direct`, POST /purchases/{purchase}/media/{asset}/upload-url recebe mime/bytes e devolve upload_id/url/headers para PUT direto sem cookies; pode devolver complete=true para asset já concluído. POST /purchases/{purchase}/media/{asset}/complete-upload recebe upload_id e valida o objeto antes de liberar seu uso. Reservas contam na cota e expiram em 20 minutos; a URL de PUT vale 5 minutos. Uma nova tentativa começa solicitando upload-url novamente.
 - POST /purchases/{purchase}/update: conteúdo + media:{photos:[asset],videos:[asset],music:asset|null}. Só aceita mídias da própria compra; finaliza content_version=1.
@@ -27,6 +29,8 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 - GET /privacy/export: exportação autenticada JSON. Arquivos binários seguem disponíveis nos presentes da conta; não estão embutidos na exportação.
 - POST /privacy/delete: confirma password, desativa conta e links imediatamente; purga em até 30 dias.
 - Admin: GET /admin/summary, /clients, /clients/{user}, /purchases, /refunds, /tickets; POST /refunds/{refund}/decision (status approved/rejected,note), /tickets/{ticket}/reply (text). Para compras simuladas, reembolso e status mudam na mesma transação. Para Pix manual, aprovar reembolso exige refund_sent=true após devolver no banco. Para Mercado Pago, aprovar a solicitação retorna 409 até o provedor confirmar status refunded pelo webhook; depois disso, o admin pode concluir o atendimento sem efetuar uma nova devolução.
+- Admin: GET /admin/pricing; POST /admin/plans e /admin/plans/{uuid}; POST /admin/pricing/promotions/{uuid?} e /admin/pricing/coupons/{uuid?}. Sem ID cria; com ID edita. Campos e regras em [PRICING.md](PRICING.md). Preço em centavos e desconto inteiro de 1–95%; ofertas aceitam `plan_id:null` para todos os planos. Desative para encerrar sem apagar histórico.
+- POST /purchases/{purchase}/pay também aceita `expected_amount_cents`: divergência com a cotação do servidor retorna 409 antes de iniciar cobrança. O checkout guarda `pricing_details` e congela o total. Promoção e cupom não acumulam; aplica-se o maior desconto válido.
 
 ## Limites
 

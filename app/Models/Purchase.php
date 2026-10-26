@@ -17,7 +17,7 @@ class Purchase extends Model
 
     protected function casts(): array
     {
-        return ['content' => 'array', 'manifest' => 'array', 'paid_at' => 'datetime'];
+        return ['content' => 'array', 'manifest' => 'array', 'plan_snapshot' => 'array', 'paid_at' => 'datetime'];
     }
 
     public function assets()

@@ -18,6 +18,7 @@ return [
     ],
     'restricted_paths' => ['/admin/', '/api/', '/minha-conta.html', '/pagamento.html', '/resultado.html', '/ver.html', '/reset-password/'],
     'restricted_pages' => [
+        '/admin/planos.html' => ['title' => 'Planos e descontos — Administração Nosso Amor', 'description' => 'Área administrativa restrita para gerenciar planos, promoções e cupons.'],
         '/minha-conta.html' => ['title' => 'Minha conta — Nosso Amor', 'description' => 'Gerencie seus presentes, dados e preferências na área reservada da sua conta Nosso Amor.'],
         '/pagamento.html' => ['title' => 'Pagamento do presente — Nosso Amor', 'description' => 'Confira os dados do seu pedido na área reservada de pagamento do Nosso Amor.'],
         '/resultado.html' => ['title' => 'Seu presente digital — Nosso Amor', 'description' => 'Acesse o resultado do seu presente e as opções de compartilhamento da sua conta Nosso Amor.'],
