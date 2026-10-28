@@ -851,6 +851,9 @@ body.creator-v2 {
 }
 .preview-toolbar {
   display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
   justify-content:space-between;
   padding:18px 16px 12px
 }
@@ -2355,8 +2358,10 @@ body.creator-v2 {
   .creator-v2 .passo > .acoes .btn { min-height:46px; }
   .creator-v2 .passo > .acoes::before { display:none; }
   .creator-v2 .passo { padding-bottom:12px; }
+  .creator-v2 #nosso-amor-chat { --creator-chat-offset:80px; }
   .preview-btn { position:static; transform:none; margin:12px auto; }
   body.preview-open .preview-btn { display:none; }
   .creator-v2 input,.creator-v2 textarea,.creator-v2 select { scroll-margin-bottom:110px; }
 }
 @media(max-width:380px) { .section-state { white-space:normal; max-width:90px; text-align:center; } }
+body.creator-v2.preview-open #nosso-amor-chat { visibility:hidden; }
