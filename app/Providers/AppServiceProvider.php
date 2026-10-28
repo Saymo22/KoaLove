@@ -72,6 +72,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by('login-ip:'.$request->ip()),
             Limit::perMinute(5)->by('login-account:'.$accountKey($request)),
         ]);
+        RateLimiter::for('google-login', fn ($request) => Limit::perMinute(20)->by('google-login:'.$request->ip()));
         RateLimiter::for('recovery', fn ($request) => [
             Limit::perMinute(3)->by('recovery-ip:'.$request->ip()),
             $request->is('api/auth/forgot-password')

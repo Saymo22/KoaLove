@@ -64,7 +64,7 @@ class GoogleOidcIdentityProvider implements IdentityProvider
             || ! is_int($expires) || $expires <= now()->timestamp
             || ! is_string($claims['nonce'] ?? null) || ! hash_equals($nonce, $claims['nonce'])
             || ($claims['email_verified'] ?? false) !== true
-            || ! is_string($claims['sub'] ?? null) || strlen($claims['sub']) > 255
+            || ! is_string($claims['sub'] ?? null) || $claims['sub'] === '' || strlen($claims['sub']) > 255
             || ! is_string($claims['email'] ?? null) || strlen($claims['email']) > 254
             || ! filter_var($claims['email'], FILTER_VALIDATE_EMAIL)) {
             throw new RuntimeException('Google ID token claims failed validation.');
@@ -80,11 +80,13 @@ class GoogleOidcIdentityProvider implements IdentityProvider
             'email' => mb_strtolower(trim($claims['email'])),
             'name' => is_string($claims['name'] ?? null) ? mb_substr(trim($claims['name']), 0, 60) : '',
             'picture' => $picture,
+            'email_authoritative' => str_ends_with(mb_strtolower($claims['email']), '@gmail.com')
+                || (is_string($claims['hd'] ?? null) && $claims['hd'] !== ''),
         ];
     }
 
     /** @return array<string, mixed> */
-    public function verifiedClaims(string $jwt): array
+    public function verifiedClaims(string $jwt, bool $securityEvent = false): array
     {
         $parts = explode('.', $jwt);
         if (count($parts) !== 3 || strlen($jwt) > 12000) {
@@ -96,7 +98,7 @@ class GoogleOidcIdentityProvider implements IdentityProvider
         if (($header['alg'] ?? null) !== 'RS256' || ! is_string($header['kid'] ?? null)) {
             throw new RuntimeException('Unsupported Google JWT.');
         }
-        $key = $this->googleKey($header['kid']);
+        $key = $this->googleKey($header['kid'], $securityEvent);
         $signature = $this->decodeBase64Url($encodedSignature);
         if (openssl_verify($encodedHeader.'.'.$encodedClaims, $signature, $key, OPENSSL_ALGO_SHA256) !== 1) {
             throw new RuntimeException('Google JWT signature failed validation.');
@@ -105,9 +107,9 @@ class GoogleOidcIdentityProvider implements IdentityProvider
         return $claims;
     }
 
-    private function googleKey(string $kid): string
+    private function googleKey(string $kid, bool $securityEvent): string
     {
-        $jwksUri = Cache::remember('google-risc-jwks-uri', now()->addDay(), function () {
+        $jwksUri = $securityEvent ? Cache::remember('google-risc-jwks-uri', now()->addDay(), function () {
             try {
                 $response = Http::acceptJson()->timeout(5)->get(self::RISC_CONFIGURATION_URL);
             } catch (\Throwable $error) {
@@ -116,13 +118,13 @@ class GoogleOidcIdentityProvider implements IdentityProvider
             $configuration = $response->json();
             $uri = is_array($configuration) ? ($configuration['jwks_uri'] ?? null) : null;
             if (! $response->successful() || ! is_array($configuration)
-                || ! in_array($configuration['issuer'] ?? null, ['https://accounts.google.com/', 'accounts.google.com'], true)
+                || ! in_array($configuration['issuer'] ?? null, ['https://accounts.google.com', 'https://accounts.google.com/'], true)
                 || $uri !== self::JWKS_URL) {
                 throw new GoogleKeyDiscoveryUnavailable('Google signing key discovery failed.');
             }
 
             return $uri;
-        });
+        }) : self::JWKS_URL;
         $keys = Cache::remember('google-oidc-jwks', now()->addHour(), function () use ($jwksUri) {
             try {
                 $response = Http::acceptJson()->timeout(5)->get($jwksUri);
@@ -138,7 +140,7 @@ class GoogleOidcIdentityProvider implements IdentityProvider
         $key = collect($keys)->first(fn ($key) => ($key['kid'] ?? null) === $kid && ($key['kty'] ?? null) === 'RSA'
             && ($key['alg'] ?? 'RS256') === 'RS256' && ($key['use'] ?? 'sig') === 'sig'
             && (! isset($key['key_ops']) || in_array('verify', $key['key_ops'], true)));
-        if (! $key) {
+        if (! $key && Cache::add('google-jwks-refresh', true, 30)) {
             Cache::forget('google-oidc-jwks');
             $keys = Cache::remember('google-oidc-jwks', now()->addHour(), function () use ($jwksUri) {
                 try {
@@ -198,6 +200,9 @@ class GoogleOidcIdentityProvider implements IdentityProvider
 
     private function decodeBase64Url(string $value): string
     {
+        if ($value === '' || ! preg_match('/\A[A-Za-z0-9_-]+\z/', $value)) {
+            throw new RuntimeException('Malformed base64url value.');
+        }
         $decoded = base64_decode(strtr($value, '-_', '+/').str_repeat('=', (4 - strlen($value) % 4) % 4), true);
         if ($decoded === false) {
             throw new RuntimeException('Malformed base64url value.');

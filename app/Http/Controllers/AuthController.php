@@ -26,6 +26,7 @@ class AuthController extends ApiController
             abort(422, 'E-mail já cadastrado.');
         }
         Auth::login($user);
+        $request->session()->forget('google_session_version');
         $request->session()->regenerate();
 
         return $this->ok(['user' => $this->user($user)], 201);
@@ -38,6 +39,7 @@ class AuthController extends ApiController
         $valid = Hash::check($data['password'], $user?->password ?? config('gift.dummy_hash'));
         abort_unless($user && $valid && ! $user->deletion_requested_at, 401, 'E-mail ou senha incorretos.');
         Auth::login($user);
+        $request->session()->forget('google_session_version');
         $request->session()->regenerate();
 
         return $this->ok(['user' => $this->user($user)]);
@@ -77,7 +79,7 @@ class AuthController extends ApiController
             // Serialize token validation and consumption with account deletion and
             // concurrent resets. A failed token deletion must roll back the password.
             $account = User::where('email', $data['email'])->lockForUpdate()->first();
-            if (! $account || $account->deletion_requested_at) {
+            if (! $account || $account->deletion_requested_at || $account->google_signin_disabled_at) {
                 return Password::INVALID_TOKEN;
             }
 

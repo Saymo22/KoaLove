@@ -26,7 +26,7 @@ class GoogleAuthController extends Controller
             'expires' => now()->addMinutes(10)->timestamp,
         ]);
         $next = $request->query('next');
-        if (is_string($next) && preg_match('/\A\/(criar|minha-conta|pagamento|resultado)\.html\z/', $next)) {
+        if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(criar|minha-conta|pagamento|resultado)\.html(?:\?[^\s#\\\\]*)?\z/', $next)) {
             $request->session()->put('google_login_next', $next);
         } else {
             $request->session()->put('google_login_next', '/minha-conta.html');
@@ -61,6 +61,9 @@ class GoogleAuthController extends Controller
                 if ($user && $user->google_sub && ! hash_equals($user->google_sub, $identity['sub'])) {
                     throw new \RuntimeException('Google identity is already linked.');
                 }
+                if ($user && ! $user->google_sub && ($identity['email_authoritative'] ?? false) !== true) {
+                    throw new \RuntimeException('Existing accounts require an authoritative Google email.');
+                }
                 if (! $user) {
                     $user = User::create([
                         'name' => $identity['name'] !== '' ? $identity['name'] : 'Usuário Google',
@@ -84,6 +87,7 @@ class GoogleAuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->put('google_session_version', (int) $user->google_session_version);
 
         return redirect()->to($request->session()->pull('google_login_next', '/minha-conta.html'));
     }

@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/home.html');
 Route::post('/api/webhooks/mercadopago', PaymentWebhookController::class)->middleware('throttle:api');
 Route::post('/api/webhooks/google/security-events', GoogleSecurityEventController::class)->middleware('throttle:api');
-Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:login');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:login');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:google-login');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:google-login');
 Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
 Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
 foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
