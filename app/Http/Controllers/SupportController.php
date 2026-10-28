@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\User;
+use App\Support\PageUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,6 +18,12 @@ class SupportController extends ApiController
 
     public function start(Request $request)
     {
+        if (is_string($request->input('page'))) {
+            $canonical = PageUrls::canonicalPath($request->input('page'));
+            if ($canonical) {
+                $request->merge(['page' => $canonical]);
+            }
+        }
         $data = $request->validate([
             'text' => 'required|string|min:3|max:2000', 'message_id' => 'required|uuid',
             'category' => 'required|in:payment,media,account,refund,themes,creation,sharing,other',

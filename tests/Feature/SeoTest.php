@@ -45,12 +45,12 @@ class SeoTest extends TestCase
         }
         $this->get('/entrar')->assertHeader('X-Robots-Tag', 'noindex, follow');
         $this->get('/api/config')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
-        foreach (['/home.html', '/index.html', '/criar.html', '/teste/namoro.html', '/admin/planos.html', '/missing.html'] as $url) {
+        foreach (['/missing.html', '/criar-presente.html', '/teste/missing.html'] as $url) {
             $this->get($url)->assertNotFound()->assertHeader('X-Robots-Tag', 'noindex, nofollow');
         }
     }
 
-    public function test_only_clean_page_routes_are_registered_and_render_directly(): void
+    public function test_clean_page_routes_render_directly_and_known_legacy_routes_redirect(): void
     {
         foreach (['/', '/criar-presente', '/entrar', '/minha-conta', '/admin/planos', '/temas/namoro'] as $friendlyUrl) {
             $this->get($friendlyUrl)->assertOk();
@@ -60,8 +60,25 @@ class SeoTest extends TestCase
         foreach (['/', 'criar-presente', 'entrar', 'minha-conta', 'temas/namoro'] as $friendlyRoute) {
             $this->assertContains($friendlyRoute, $routes);
         }
-        $this->assertSame([], array_filter($routes, fn ($uri) => str_ends_with($uri, '.html')));
+        $this->assertContains('home.html', $routes);
         $this->assertNotContains('{legacyPath}', $routes);
+    }
+
+    public function test_every_legacy_page_redirects_once_without_changing_the_origin_or_query(): void
+    {
+        $pages = json_decode(file_get_contents(resource_path('assets.json')), true);
+        foreach ($pages as $page) {
+            foreach ($page['legacy_urls'] as $legacy) {
+                $query = 'token=synthetic-secret&resume=draft-123&retorno=1&next=%2Fcriar.html%3Fid%3Dtest';
+                $response = $this->withHeader('Host', 'preview.example.test')->get($legacy.'?'.$query)
+                    ->assertStatus(301)->assertHeader('Location', $page['url'].'?'.$query)
+                    ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+                $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+                $this->assertStringNotContainsString('synthetic-secret', $response->getContent());
+                $this->get($page['url'])->assertOk();
+            }
+        }
+        $this->assertDatabaseCount('purchases', 0);
     }
 
     public function test_sitemap_has_only_public_canonical_urls_and_ignores_request_host(): void

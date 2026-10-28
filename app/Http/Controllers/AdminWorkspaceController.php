@@ -243,7 +243,7 @@ class AdminWorkspaceController extends ApiController
     {
         abort_unless($request->hasValidSignature(), 403);
         if (! $request->user()) {
-            return redirect('/admin/entrar');
+            return redirect('/entrar');
         }
         $i = DB::table('admin_invitations')->where('id', $invitation)->first();
         abort_unless($i && $i->email === $request->user()->email && ! $i->accepted_at && ! $i->revoked_at && now()->lt($i->expires_at), 403);

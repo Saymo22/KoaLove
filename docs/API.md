@@ -54,7 +54,7 @@ Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recupera�
 
 Além do IP, login permite 5 tentativas/minuto por e-mail normalizado; solicitação de recuperação, 3/hora por e-mail; redefinição, 5/minuto por e-mail. As chaves do cache usam HMAC, sem o e-mail em texto aberto. Exclusão de conta exige a senha atual e permite 5 tentativas/minuto por usuário e IP. Não há bloqueio permanente de conta. Recuperação usa sempre APP_URL para o link; validação, troca de senha, revogação de sessões e consumo do token são atômicos.
 
-Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. As páginas são servidas em rotas Laravel sem extensão, registradas no catálogo Vite; caminhos `.html` não são rotas.
+Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. As páginas usam rotas Laravel sem extensão, registradas no catálogo Vite. URLs `.html` conhecidas respondem 301 para a rota nova na mesma origem, mantendo a query; URLs desconhecidas retornam 404. O suporte aceita páginas legadas conhecidas e registra o caminho canônico sem parâmetros. As rotas `/api`, os webhooks e o callback Google mantêm seus caminhos.
 
 ## Dashboard completo
 

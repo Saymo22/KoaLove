@@ -3,8 +3,10 @@ function destinoAposLogin() {
   const next = new URLSearchParams(location.search).get('next');
   try {
     const url = new URL(next || '/minha-conta', location.href);
-    if (url.origin === location.origin && /^\/(criar-presente|minha-conta|pagamento|resultado)$/.test(url.pathname)) {
-      return url.pathname + url.search;
+    const legacy={'/criar.html':'/criar-presente','/minha-conta.html':'/minha-conta','/pagamento.html':'/pagamento','/resultado.html':'/resultado'};
+    const path=legacy[url.pathname]||url.pathname;
+    if (url.origin === location.origin && /^\/(criar-presente|minha-conta|pagamento|resultado)$/.test(path)) {
+      return path + url.search;
     }
   } catch {}
   return '/minha-conta';
