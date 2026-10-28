@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Adapters\GoogleOidcIdentityProvider;
 use App\Adapters\MercadoPagoGateway;
 use App\Adapters\SimulatedPaymentGateway;
 use App\Contracts\CheckoutGateway;
+use App\Contracts\IdentityProvider;
 use App\Contracts\PaymentGateway;
 use App\Models\Purchase;
 use App\Policies\PurchasePolicy;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(PaymentGateway::class, SimulatedPaymentGateway::class);
         $this->app->bind(CheckoutGateway::class, MercadoPagoGateway::class);
+        $this->app->bind(IdentityProvider::class, GoogleOidcIdentityProvider::class);
     }
 
     /**
@@ -69,6 +72,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by('login-ip:'.$request->ip()),
             Limit::perMinute(5)->by('login-account:'.$accountKey($request)),
         ]);
+        RateLimiter::for('google-login', fn ($request) => Limit::perMinute(20)->by('google-login:'.$request->ip()));
         RateLimiter::for('recovery', fn ($request) => [
             Limit::perMinute(3)->by('recovery-ip:'.$request->ip()),
             $request->is('api/auth/forgot-password')
