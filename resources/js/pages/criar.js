@@ -108,7 +108,7 @@ function captureDraft(){
 
 const MAX_EVENTOS = 6;
 
-let draftReady=false,draftSuspended=false,draftTimer=null,draftQueue=Promise.resolve(),draftRevision=0;
+let draftReady=false,draftRestored=false,draftSuspended=false,draftTimer=null,draftQueue=Promise.resolve(),draftRevision=0;
 function scheduleDraftSave(){
   if(!draftReady||draftSuspended)return;
   const revision=++draftRevision;clearTimeout(draftTimer);
@@ -943,9 +943,10 @@ async function carregarPedidoParaEdicao() {
   pedidoAntigo = pedido;
   renderCreatorPlan();
 
-  document.querySelector(".criar-eyebrow").innerHTML = '<span class="dot"></span> Editando presente';
-  document.querySelector(".criar-titulo").innerHTML = 'Editando a <em>história</em>';
-  $("btnFinal").textContent = "Salvar alterações →";
+  document.querySelector(".criar-eyebrow").innerHTML = '<span class="dot"></span> '+(pedidoEditandoId?'Editando presente':'Retomando rascunho');
+  document.querySelector(".criar-titulo").innerHTML = pedidoEditandoId?'Editando a <em>história</em>':'Continue criando seu <em>presente.</em>';
+  $("btnFinal").textContent = pedidoEditandoId?'Salvar alterações →':'Ir para o pagamento →';
+  draftRestored=!!recovered;
 
   tema = pedido.tema;
   window.NAThemeEditor?.restore(pedido.themeData);
@@ -1039,6 +1040,6 @@ NA_CONFIG_READY.then(async () => {
   atualizarPreview();
   if(await carregarPedidoParaEdicao()===false)return;
   draftReady=true;$('form').inert=false;$('steps').inert=false;
-  $('draftSaveStatus').textContent=pedidoEditandoId?'Presente carregado · as próximas alterações serão salvas neste dispositivo':'Rascunho neste dispositivo · aguardando alterações';
+  $('draftSaveStatus').textContent=pedidoEditandoId?'Presente carregado · as próximas alterações serão salvas neste dispositivo':draftRestored?'Rascunho recuperado neste dispositivo':'Rascunho neste dispositivo · aguardando alterações';
   window.NACreatorWorkflow.updateProgress();
 });
