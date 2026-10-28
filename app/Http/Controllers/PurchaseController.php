@@ -91,6 +91,7 @@ class PurchaseController extends ApiController
         $purchase = DB::transaction(function () use ($request, $purchase, &$obsolete) {
             $p = Purchase::whereKey($purchase->id)->lockForUpdate()->firstOrFail();
             $this->editable($p, $request->routeIs('purchases.migrate'));
+            abort_if($request->validated('plan_id') && $request->validated('plan_id') !== $p->plan_id, 409, 'O plano deste presente não pode ser alterado. Crie um novo presente para escolher outro plano.');
             $manifest = $request->validated('media');
             abort_unless(is_array($manifest) && count($manifest['photos'] ?? []) > 0 && array_key_exists('videos', $manifest), 422, 'Informe as mídias do presente.');
             PlanLimits::assertManifest(PlanLimits::forPurchase($p), $manifest, $p->plan_snapshot['name'] ?? null);
@@ -128,6 +129,7 @@ class PurchaseController extends ApiController
         if ($purchase->status === 'paid') {
             return $this->ok(['purchase' => $this->project($purchase)]);
         }
+        PlanLimits::assertManifest(PlanLimits::forPurchase($purchase), $purchase->manifest ?? [], $purchase->plan_snapshot['name'] ?? null);
         if (in_array(config('payments.driver'), ['mercadopago', 'pix_manual'], true)) {
             $quote = app(Pricing::class)->quote($purchase, $data['cupom'] ?? null);
             abort_if(isset($data['expected_amount_cents']) && $data['expected_amount_cents'] !== $quote['amount_cents'], 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
@@ -147,6 +149,7 @@ class PurchaseController extends ApiController
             }
             $this->editable($p);
             abort_unless($p->content_version === 1 && count($p->manifest['photos'] ?? []) > 0, 409, 'Salve as fotos antes de pagar.');
+            PlanLimits::assertManifest(PlanLimits::forPurchase($p), $p->manifest, $p->plan_snapshot['name'] ?? null);
             $quote = app(Pricing::class)->quote($p, $data['cupom'] ?? null);
             abort_if(isset($data['expected_amount_cents']) && $data['expected_amount_cents'] !== $quote['amount_cents'], 409, 'O preço mudou. Confira o valor atualizado e tente novamente.');
             $coupon = $quote['coupon'] ?? '';
