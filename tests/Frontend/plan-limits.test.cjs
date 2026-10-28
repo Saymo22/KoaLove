@@ -50,7 +50,7 @@ test('Criador usa o formato normalizado nos textos, no bloqueio e no rascunho se
   const source=fs.readFileSync('resources/js/pages/criar.js','utf8');
   const creator=source.slice(source.indexOf('function creatorPlan(){'),source.indexOf('function currentMediaCounts(){'));
   const capture=source.slice(source.indexOf('function captureDraft(){'),source.indexOf('const MAX_EVENTOS'));
-  const window={NAPlanLimits:limits,NA_PRICING:{plans:[{id:'one',photos_limit:1,videos_limit:0,music_limit:0}],default_plan_id:'one'},NACreatorWorkflow:{current:8,profile:()=>({namesOnly:false})}};
+  const window={NAPlanLimits:limits,NA_PRICING:{plans:[{id:'one',photos_limit:1,videos_limit:0,music_limit:0}],default_plan_id:'one'},NACreatorWorkflow:{current:6,profile:()=>({namesOnly:false})}};
   const scope=vm.createContext({window,pedidoAntigo:null,selectedPlanId:'one',draftKey:'fixture',requestId:'fixture-request',pedidoEditandoId:null,tema:'namoro',fotoFiles:['first','second'],photoIds:['first-id','second-id'],videoFiles:[],videoIds:[],musicId:null,
     $:()=>({value:'',checked:false,files:[]}),document:{querySelectorAll:()=>[]},NAGift:{prepare:p=>p}});
   vm.runInContext(creator+'\n'+capture,scope);

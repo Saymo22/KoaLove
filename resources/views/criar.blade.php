@@ -35,79 +35,41 @@
           <button type="button" id="resumeDraft">Retomar rascunho</button>
           <button type="button" id="discardDraft">Descartar cópia local</button>
         </section>
-        <section class="creator-plan" aria-label="Plano do presente">
-          <label for="creatorPlan">Plano do presente</label>
-          <select id="creatorPlan"></select>
-          <p id="creatorPlanDetails"></p>
-          <p id="creatorPlanError" class="erro" role="alert" hidden></p>
-        </section>
+        <p id="draftSaveStatus" class="draft-save-status" role="status" aria-live="polite">Carregando seu ateliê e verificando os rascunhos…</p>
+        <button class="preview-btn" id="previewBtn" type="button">◉ Ver meu presente</button>
+        <p id="creatorPlanSummary" class="creator-plan-summary"></p>
         <nav class="wizard-nav" aria-label="Etapas do presente">
           <div class="wizard-progress">
-            <span id="wizardProgressText" aria-live="polite">Etapa 1 de 8</span>
+            <span id="wizardProgressText" aria-live="polite">Etapa 1 de 6</span>
             <span id="wizardThemeName">Seu presente começa aqui</span>
           </div>
-          <div class="steps" id="steps">
-            <button type="button" class="step-item on" data-step="1" aria-label="Etapa 1: Tema" aria-current="step">
-              <span class="step-num">
-                <span>1</span>
-              </span>
-              <span class="step-label">Tema</span>
-            </button>
-            <button type="button" class="step-item " data-step="2" aria-label="Etapa 2: Capa" >
-              <span class="step-num">
-                <span>2</span>
-              </span>
-              <span class="step-label">Capa</span>
-            </button>
-            <button type="button" class="step-item " data-step="3" aria-label="Etapa 3: Fotos e vídeos" >
-              <span class="step-num">
-                <span>3</span>
-              </span>
-              <span class="step-label">Fotos e vídeos</span>
-            </button>
-            <button type="button" class="step-item " data-step="4" aria-label="Etapa 4: Momentos" >
-              <span class="step-num">
-                <span>4</span>
-              </span>
-              <span class="step-label">Momentos</span>
-            </button>
-            <button type="button" class="step-item " data-step="5" aria-label="Etapa 5: Seu tema" >
-              <span class="step-num">
-                <span>5</span>
-              </span>
-              <span class="step-label">Seu tema</span>
-            </button>
-            <button type="button" class="step-item " data-step="6" aria-label="Etapa 6: Mensagem" >
-              <span class="step-num">
-                <span>6</span>
-              </span>
-              <span class="step-label">Mensagem</span>
-            </button>
-            <button type="button" class="step-item " data-step="7" aria-label="Etapa 7: Música" >
-              <span class="step-num">
-                <span>7</span>
-              </span>
-              <span class="step-label">Música</span>
-            </button>
-            <button type="button" class="step-item " data-step="8" aria-label="Etapa 8: Revisão" >
-              <span class="step-num">
-                <span>8</span>
-              </span>
-              <span class="step-label">Revisão</span>
-            </button>
+          <div class="steps" id="steps" inert>
+            <button type="button" class="step-item on" data-step="1" aria-label="Etapa 1: Plano e tema" aria-current="step"><span class="step-num"><span>1</span></span><span class="step-label">Plano e tema</span></button>
+            <button type="button" class="step-item" data-step="2" aria-label="Etapa 2: Capa"><span class="step-num"><span>2</span></span><span class="step-label">Capa</span></button>
+            <button type="button" class="step-item" data-step="3" aria-label="Etapa 3: Fotos e vídeos"><span class="step-num"><span>3</span></span><span class="step-label">Fotos e vídeos</span></button>
+            <button type="button" class="step-item" data-step="4" aria-label="Etapa 4: Personalização"><span class="step-num"><span>4</span></span><span class="step-label">Personalização</span></button>
+            <button type="button" class="step-item" data-step="5" aria-label="Etapa 5: Música e abertura"><span class="step-num"><span>5</span></span><span class="step-label">Música e abertura</span></button>
+            <button type="button" class="step-item" data-step="6" aria-label="Etapa 6: Revisão"><span class="step-num"><span>6</span></span><span class="step-label">Revisão</span></button>
           </div>
           <div class="wizard-track">
             <span id="wizardProgressBar">
             </span>
           </div>
         </nav>
-        <form id="form" novalidate>
+        <form id="form" novalidate inert>
           <div class="passo ativo" data-passo="1" id="passo1" >
             <div class="passo-header">
               <span class="step-kicker">ETAPA 01</span>
-              <h2 tabindex="-1">Escolha o cenário</h2>
+              <h2 tabindex="-1">Escolha seu plano e cenário</h2>
               <p>Cada tema tem uma experiência e campos próprios. Você pode trocar e comparar.</p>
             </div>
+        <section class="creator-plan" aria-label="Plano do presente">
+          <label for="creatorPlan">Plano do presente</label>
+          <select id="creatorPlan"></select>
+          <p id="creatorPlanDetails"></p>
+          <p id="creatorPlanError" class="erro" role="alert" hidden></p>
+        </section>
+
             <div class="temas-grupo">
               <h3>Clássicos</h3>
               <div class="temas" id="temasClassicos">
@@ -204,8 +166,7 @@
                 <span class="upload-icon">↗</span>
                 <b>Escolher fotos</b>
                 <span id="fotosHint">Carregando limites do plano…</span>
-                <span class="qtd" id="qtdFotos">
-                </span>
+                <span class="qtd" id="qtdFotos">0 fotos</span>
               </label>
               <div class="erro-campo-msg" data-msg="fotos">Adicione pelo menos uma foto.</div>
             </div>
@@ -221,10 +182,9 @@
                 <span class="upload-icon">▷</span>
                 <b>Adicionar vídeos</b>
                 <span id="videosHint">Carregando limites do plano…</span>
-                <span class="qtd" id="qtdVideos">
-                </span>
+                <span class="qtd" id="qtdVideos">0 vídeos</span>
               </label>
-              <div class="erro-campo-msg" data-msg="videos">Adicione pelo menos uma foto.</div>
+              <div class="erro-campo-msg" data-msg="videos">Escolha vídeos compatíveis com o plano.</div>
             </div>
             <div id="videosGrid" class="videos-grid"></div>
             <p class="nota" id="mediaHint">
@@ -236,12 +196,8 @@
               <button type="button" class="btn ouro" data-ir="4">Continuar →</button>
             </div>
           </div>
-          <div class="passo " data-passo="4" id="passo4" hidden>
-            <div class="passo-header">
-              <span class="step-kicker">ETAPA 04</span>
-              <h2 tabindex="-1">Conte os seus momentos</h2>
-              <p>Adicione apenas os capítulos que você quer contar. Esta etapa é opcional.</p>
-            </div>
+          <div class="passo " data-passo="4" id="passo4" hidden><div class="passo-header"><span class="step-kicker">ETAPA 04</span><h2 tabindex="-1">Dê seu toque ao presente</h2><p>Abra uma seção por vez. A mensagem é obrigatória; os demais detalhes são opcionais.</p></div>
+            <details class="creator-section" id="personalMoments"><summary><span>Momentos e detalhes</span><span class="section-state" data-section-state="personalMoments">Opcional</span></summary><div class="creator-section-body">
             <div class="section-note" id="momentsHint">
             </div>
             <div id="eventos">
@@ -263,31 +219,15 @@
                 <input id="reason3" type="text" class="amo" maxlength="30" placeholder="Uma pequena coisa especial">
               </div>
             </div>
-            <div class="acoes">
-              <button type="button" class="btn sec" data-ir="3">← Voltar</button>
-              <button type="button" class="btn ouro" data-ir="5">Continuar →</button>
-            </div>
-          </div>
-          <div class="passo " data-passo="5" id="passo5" hidden>
-            <div class="passo-header">
-              <span class="step-kicker">ETAPA 05</span>
-              <h2 tabindex="-1">O toque do seu tema</h2>
-              <p>Personalize as interações e as seções do modelo escolhido.</p>
-            </div>
+
+</div></details>
+            <details class="creator-section" id="personalTheme"><summary><span>Recursos do tema</span><span class="section-state" data-section-state="personalTheme">Opcional</span></summary><div class="creator-section-body"><h3 id="themeSectionTitle">Seu tema</h3>
             <section id="themeDetails" class="theme-details">
               <p class="nota">Escolha um tema para ver os campos dele.</p>
             </section>
-            <div class="acoes">
-              <button type="button" class="btn sec" data-ir="4">← Voltar</button>
-              <button type="button" class="btn ouro" data-ir="6">Continuar →</button>
-            </div>
-          </div>
-          <div class="passo " data-passo="6" id="passo6" hidden>
-            <div class="passo-header">
-              <span class="step-kicker">ETAPA 06</span>
-              <h2 tabindex="-1">Palavras que ficam</h2>
-              <p>Escreva a mensagem que será revelada no seu presente.</p>
-            </div>
+
+</div></details>
+            <details class="creator-section" id="personalMessage" open><summary><span>Mensagem e encerramento</span><span class="section-state" data-section-state="personalMessage">Pendente</span></summary><div class="creator-section-body">
             <div class="campo" data-campo="carta">
               <label for="carta">Sua mensagem</label>
               <textarea id="carta" aria-required="true"  maxlength="2000" placeholder="O que você gostaria de dizer?">
@@ -301,20 +241,14 @@
               <input id="rodapeCustom" type="text" maxlength="80" placeholder="Feito com carinho, para você">
               <div class="erro-campo-msg" data-msg="rodapeCustom">Preencha este campo para continuar.</div>
             </div>
-            <label class="toggle-field">
-              <input type="checkbox" id="usarIntro" checked>
-              <span>Mostrar a abertura do tema antes do presente</span>
-            </label>
-            <p class="nota">Na prévia, a abertura é pulada para facilitar a edição.</p>
-            <div class="acoes">
-              <button type="button" class="btn sec" data-ir="5">← Voltar</button>
-              <button type="button" class="btn ouro" data-ir="7">Continuar →</button>
-            </div>
+
+</div></details>
+            <div class="acoes"><button type="button" class="btn sec" data-ir="3">← Voltar</button><button type="button" class="btn ouro" data-ir="5">Continuar →</button></div>
           </div>
-          <div class="passo " data-passo="7" id="passo7" hidden>
+          <div class="passo " data-passo="5" id="passo5" hidden>
             <div class="passo-header">
-              <span class="step-kicker">ETAPA 07</span>
-              <h2 tabindex="-1">A trilha dessa história</h2>
+              <span class="step-kicker">ETAPA 05</span>
+              <h2 tabindex="-1">Música e abertura</h2>
               <p>Escolha um arquivo de áudio para acompanhar a experiência. É opcional.</p>
             </div>
             <div class="campo" data-campo="musica">
@@ -326,7 +260,7 @@
                 <span class="qtd" id="qtdMusica">
                 </span>
               </label>
-              <div class="erro-campo-msg" data-msg="musica">Adicione pelo menos uma foto.</div>
+              <div class="erro-campo-msg" data-msg="musica">Escolha um arquivo de áudio válido.</div>
               <button type="button" id="removerMusica" class="btn-sec">Remover música</button>
             </div>
             <div class="campo" id="musicaPreviewWrap" hidden>
@@ -353,14 +287,19 @@
               <span>Tentar iniciar a música ao abrir o presente</span>
             </label>
             <p class="nota">Alguns navegadores pedem um toque para iniciar o áudio.</p>
+            <label class="toggle-field">
+              <input type="checkbox" id="usarIntro" checked>
+              <span>Mostrar a abertura do tema antes do presente</span>
+            </label>
+            <p class="nota">Na prévia de edição, a abertura é pulada. Na revisão, teste a experiência completa.</p>
             <div class="acoes">
-              <button type="button" class="btn sec" data-ir="6">← Voltar</button>
-              <button type="button" class="btn ouro" data-ir="8">Continuar →</button>
+              <button type="button" class="btn sec" data-ir="4">← Voltar</button>
+              <button type="button" class="btn ouro" data-ir="6">Continuar →</button>
             </div>
           </div>
-          <div class="passo " data-passo="8" id="passo8" hidden>
+          <div class="passo " data-passo="6" id="passo6" hidden>
             <div class="passo-header">
-              <span class="step-kicker">ETAPA 08</span>
+              <span class="step-kicker">ETAPA 06</span>
               <h2 tabindex="-1">Tudo pronto para emocionar?</h2>
               <p>Confira o conteúdo e experimente os botões na prévia antes de continuar.</p>
             </div>
@@ -370,13 +309,14 @@
                 <small>Volte a qualquer etapa para ajustar os detalhes.</small>
               </p>
             </div>
+            <p id="reviewReadiness" role="status"></p><p class="nota">Você poderá conferir o valor e as condições antes de pagar.</p>
             <div id="reviewSummary" class="review-summary">
             </div>
-            <button type="button" class="btn sec review-preview" id="reviewPreview">Experimentar a prévia</button>
+            <button type="button" class="btn sec review-preview" id="reviewPreview">Testar como quem recebe</button>
             <div class="erro" id="erro3" role="alert">
             </div>
             <div class="acoes">
-              <button type="button" class="btn sec" data-ir="7">← Voltar</button>
+              <button type="button" class="btn sec" data-ir="5">← Voltar</button>
               <button type="submit" class="btn ouro" id="btnFinal">Ir para o pagamento →</button>
             </div>
           </div>
@@ -394,6 +334,7 @@
               </span> Ao vivo</span>
             </div>
             <div class="preview-toolbar">
+              <span id="previewModeLabel">Prévia de edição</span>
               <button type="button" id="previewHome">↑ Início</button>
               <button type="button" id="previewExpand" aria-pressed="false">Ampliar ↗</button>
             </div>
@@ -425,7 +366,6 @@
           <button class="preview-close" id="previewClose" type="button" aria-label="Fechar prévia">Fechar prévia ✕</button>
         </aside>
       </div>
-      <button class="preview-btn" id="previewBtn" type="button">◉ Ver meu presente</button>
 
 
 

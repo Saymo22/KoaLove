@@ -39,7 +39,7 @@ test('Armazenamento indisponível preserva o rascunho e não inicia upload',asyn
   await assert.rejects(scope.window.ApiPurchases.upload('purchase','asset',{type:'image/png'}),e=>e.code==='MEDIA_UNAVAILABLE'&&e.message.includes('rascunho'));
   assert.equal(contacted,false);
 });
-test('Oito etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
+test('Seis etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
 test('Checkout envia card, redireciona sem aprovar e aguarda confirmação do servidor',require('./payment-flow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));
 test('Todas as páginas e os 13 temas carregam assets separados pelo Vite',()=>{
