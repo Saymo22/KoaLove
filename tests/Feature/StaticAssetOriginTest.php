@@ -42,7 +42,7 @@ class StaticAssetOriginTest extends TestCase
 
         foreach ($pages as $name => $page) {
             $html = $this->withServerVariables(['HTTP_HOST' => 'www.koalove.site', 'SERVER_NAME' => 'www.koalove.site'])
-                ->get($page['url'])
+                ->followingRedirects()->get($page['url'])
                 ->assertOk()
                 ->getContent();
 
@@ -65,7 +65,7 @@ class StaticAssetOriginTest extends TestCase
     {
         $this->pinUrlGeneratorToAnotherHost();
 
-        $csp = $this->get('/home.html')->assertOk()->headers->get('Content-Security-Policy');
+        $csp = $this->followingRedirects()->get('/home.html')->assertOk()->headers->get('Content-Security-Policy');
 
         $this->assertStringContainsString("default-src 'self'", $csp);
         $this->assertStringContainsString("script-src 'self'", $csp);

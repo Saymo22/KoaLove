@@ -93,7 +93,7 @@ class SecurityReviewTest extends TestCase
 
     public function test_html_forms_are_restricted_to_the_same_origin(): void
     {
-        $response = $this->get('/home.html')->assertOk();
+        $response = $this->followingRedirects()->get('/home.html')->assertOk();
         $this->assertStringContainsString("form-action 'self'", $response->headers->get('Content-Security-Policy'));
     }
 

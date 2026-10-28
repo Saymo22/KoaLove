@@ -20,7 +20,7 @@ class SeoTest extends TestCase
     {
         $pages = json_decode(file_get_contents(resource_path('assets.json')), true);
         foreach ($pages as $page) {
-            $response = $this->get($page['url'])->assertOk();
+            $response = $this->followingRedirects()->get($page['url'])->assertOk();
             $html = $response->getContent();
             $this->assertSame(1, preg_match_all('/<meta\b[^>]*\bname="description"/i', $html), $page['url']);
             $this->assertSame(1, substr_count($html, 'name="robots"'), $page['url']);
@@ -35,14 +35,30 @@ class SeoTest extends TestCase
 
     public function test_public_pages_are_indexable_but_private_and_parameterized_pages_are_not(): void
     {
-        $this->get('/home.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/home.html"', false);
-        $this->get('/teste/namoro.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
-        foreach (['/ver.html?token=synthetic-secret', '/teste/namoro.html?embed=1', '/minha-conta.html', '/admin/dashboard.html', '/pagamento.html', '/resultado.html'] as $url) {
+        $this->get('/')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/"', false);
+        $this->followingRedirects()->get('/home.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/"', false);
+        $this->get('/criar-presente')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/criar-presente"', false);
+        $this->get('/temas/namoro')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
+        $this->followingRedirects()->get('/teste/namoro.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/temas/namoro"', false);
+        foreach (['/presente?token=synthetic-secret', '/temas/namoro?embed=1', '/minha-conta', '/admin/painel', '/pagamento', '/resultado'] as $url) {
             $this->get($url)->assertHeader('X-Robots-Tag', 'noindex, nofollow')->assertSee('name="robots" content="noindex, nofollow"', false);
         }
-        $this->get('/login.html')->assertHeader('X-Robots-Tag', 'noindex, follow');
+        $this->get('/entrar')->assertHeader('X-Robots-Tag', 'noindex, follow');
         $this->get('/api/config')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
         $this->get('/missing.html')->assertNotFound()->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+    }
+
+    public function test_legacy_html_urls_remain_available_and_friendly_page_routes_are_named(): void
+    {
+        foreach (['/home.html' => '/', '/criar.html' => '/criar-presente', '/minha-conta.html' => '/minha-conta', '/admin/planos.html' => '/admin/planos', '/teste/namoro.html' => '/temas/namoro'] as $legacyUrl => $friendlyUrl) {
+            $this->get($legacyUrl)->assertRedirect($friendlyUrl);
+        }
+
+        $routes = collect(app('router')->getRoutes())->map(fn ($route) => $route->uri())->all();
+        foreach (['/', 'criar-presente', 'entrar', 'minha-conta', 'temas/namoro', '{legacyPath}'] as $friendlyRoute) {
+            $this->assertContains($friendlyRoute, $routes);
+        }
+        $this->assertSame([], array_filter($routes, fn ($uri) => str_ends_with($uri, '.html')));
     }
 
     public function test_sitemap_has_only_public_canonical_urls_and_ignores_request_host(): void
@@ -52,11 +68,12 @@ class SeoTest extends TestCase
         $this->assertNotFalse($xml);
         $urls = array_map(fn ($url) => (string) $url->loc, iterator_to_array($xml->url, false));
         $this->assertCount(18, $urls);
-        $this->assertContains('https://site.example.test/home.html', $urls);
-        $this->assertContains('https://site.example.test/teste/vinil.html', $urls);
-        $this->assertNotContains('https://site.example.test/login.html', $urls);
+        $this->assertContains('https://site.example.test/', $urls);
+        $this->assertContains('https://site.example.test/temas/vinil', $urls);
+        $this->assertNotContains('https://site.example.test/entrar', $urls);
         foreach ($urls as $url) {
             $this->assertStringStartsWith('https://site.example.test/', $url);
+            $this->assertStringNotContainsString('.html', $url);
             $this->assertStringNotContainsString('?', $url);
             $this->get(parse_url($url, PHP_URL_PATH))->assertOk()->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
         }

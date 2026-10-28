@@ -45,7 +45,7 @@ class MercadoPagoGateway implements CheckoutGateway
             return $this->request('put', '/checkout/preferences/'.rawurlencode($items[0]['id']), $expiration);
         }
         $base = rtrim(config('app.url'), '/');
-        $return = $base.'/pagamento.html?id='.rawurlencode($checkout->purchase_id).'&retorno=1';
+        $return = $base.'/pagamento?id='.rawurlencode($checkout->purchase_id).'&retorno=1';
         $excluded = ['ticket', 'atm', 'digital_currency'];
         $preferred = $checkout->method === 'pix' ? ['default_payment_method_id' => 'pix'] : ['default_payment_type_id' => 'credit_card'];
 

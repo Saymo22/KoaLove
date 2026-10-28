@@ -26,10 +26,10 @@ class GoogleAuthController extends Controller
             'expires' => now()->addMinutes(10)->timestamp,
         ]);
         $next = $request->query('next');
-        if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(criar|minha-conta|pagamento|resultado)\.html(?:\?[^\s#\\\\]*)?\z/', $next)) {
+        if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(?:criar-presente|minha-conta|pagamento|resultado|criar|minha-conta|pagamento|resultado)(?:\.html)?(?:\?[^\s#\\\\]*)?\z/', $next)) {
             $request->session()->put('google_login_next', $next);
         } else {
-            $request->session()->put('google_login_next', '/minha-conta.html');
+            $request->session()->put('google_login_next', '/minha-conta');
         }
         $challenge = rtrim(strtr(base64_encode(hash('sha256', $verifier, true)), '+/', '-_'), '=');
 

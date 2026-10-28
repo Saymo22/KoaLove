@@ -33,7 +33,7 @@ class GoogleAuthenticationTest extends TestCase
         $this->get('/auth/google/redirect')->assertRedirect('https://accounts.google.test/authorize');
         $flow = $this->app['session.store']->get('google_oidc');
         $this->get('/auth/google/callback?state='.$flow['state'].'&code=one-time-code')
-            ->assertRedirect('/minha-conta.html');
+            ->assertRedirect('/minha-conta');
 
         $this->assertAuthenticatedAs($user->fresh());
         $this->assertSame('google-sub-1', $user->fresh()->google_sub);
@@ -201,6 +201,6 @@ class GoogleAuthenticationTest extends TestCase
         $this->sendSecurityEvent()->assertStatus(400);
         $this->assertDatabaseCount('google_security_events', 0);
         $this->googleFlow(['sub' => 'unused'], '//external.example.test/path');
-        $this->assertSame('/minha-conta.html', session('google_login_next'));
+        $this->assertSame('/minha-conta', session('google_login_next'));
     }
 }
