@@ -62,7 +62,7 @@ class AuthController extends ApiController
         $data = $request->validate(['email' => 'required|email:rfc|max:254']);
         abort_if(app()->isProduction() && config('mail.default') === 'log', 503, 'Recuperação por e-mail não configurada.');
         // Keep unknown/inactive accounts inside the broker's timebox too.
-        Password::sendResetLink(['email' => strtolower($data['email']), 'deletion_requested_at' => null]);
+        Password::sendResetLink(['email' => strtolower($data['email']), 'deletion_requested_at' => null, 'google_signin_disabled_at' => null]);
 
         return $this->ok(['message' => 'Se existir uma conta com esse e-mail, você receberá um link para redefinir a senha.']);
     }
@@ -111,6 +111,6 @@ class AuthController extends ApiController
 
     private function user(User $user): array
     {
-        return ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role, 'created_at' => $user->created_at?->getTimestampMs()];
+        return ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role, 'avatar_url' => $user->google_avatar_url, 'created_at' => $user->created_at?->getTimestampMs()];
     }
 }

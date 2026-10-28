@@ -4,6 +4,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminWorkspaceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CloudUploadController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\GoogleSecurityEventController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MediaSelectionController;
 use App\Http\Controllers\PaymentWebhookController;
@@ -24,6 +26,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/home.html');
 Route::post('/api/webhooks/mercadopago', PaymentWebhookController::class)->middleware('throttle:api');
+Route::post('/api/webhooks/google/security-events', GoogleSecurityEventController::class)->middleware('throttle:api');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:login');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:login');
 Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
 Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
 foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
@@ -31,7 +36,7 @@ foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
 Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {
-    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'plan_limits' => PlanLimits::caps(), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
+    Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'plan_limits' => PlanLimits::caps(), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'google_login' => filled(config('services.google.client_id')) && filled(config('services.google.client_secret')), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
         $secret = config('gift.cron_secret');
         abort_unless(is_string($secret) && strlen($secret) >= 32 && hash_equals($secret, (string) $request->bearerToken()), 404);

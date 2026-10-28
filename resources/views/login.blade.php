@@ -131,7 +131,7 @@
                 </div>
 
                 <div class="glass-socials">
-                    <button type="button" class="g-social" id="btnGoogle" aria-label="Google — indisponível" disabled aria-describedby="socialStatus">
+                    <button type="button" class="g-social" id="btnGoogle" aria-label="Entrar com Google — verificando disponibilidade" disabled aria-describedby="socialStatus">
                         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.077c1.83 0 3.477.635 4.773 1.69l3.486-3.486C18.218.998 15.318 0 12 0 7.355 0 3.318 2.664 1.345 6.555l3.92 3.21z"/><path fill="currentColor" d="M23.909 12.273c0-.818-.068-1.609-.195-2.373H12v4.582h6.691a5.724 5.724 0 0 1-2.482 3.755v3.118h4.018c2.35-2.164 3.682-5.345 3.682-9.082z"/><path fill="currentColor" d="M5.266 14.235a7.077 7.077 0 0 1 0-4.47L1.345 6.555A11.99 11.99 0 0 0 0 12c0 1.936.464 3.764 1.345 5.445l3.92-3.21z"/><path fill="currentColor" d="M12 24c3.318 0 6.109-1.09 8.145-2.973l-4.018-3.118c-1.118.75-2.545 1.2-4.127 1.2-3.164 0-5.845-2.136-6.8-5.009L1.28 17.31C3.245 21.273 7.318 24 12 24z"/></svg>
                     </button>
                     <button type="button" class="g-social" id="btnApple" aria-label="Apple — indisponível" disabled aria-describedby="socialStatus">
@@ -139,7 +139,7 @@
                     </button>
                 </div>
 
-                <p class="social-status" id="socialStatus">Google e Apple ainda não estão disponíveis. Use seu e-mail e senha.</p>
+                <p class="social-status" id="socialStatus">Verificando disponibilidade do login Google. Apple ainda não está disponível.</p>
 
                 </div>
                 <footer class="glass-footer">

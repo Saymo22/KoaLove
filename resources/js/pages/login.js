@@ -128,6 +128,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   let mode = "login";
   const fieldPass=$("#fieldPass"),fieldEmail=$("#fieldEmail"),fieldConfirm=$("#fieldConfirm"),confirmPass=$("#confirmPass");
   const forgot=$("#forgotPassword"),back=$("#recoveryBack");
+  const googleButton=$("#btnGoogle"),socialStatus=$("#socialStatus");
+  if (new URLSearchParams(location.search).get('google') === 'failed') {
+    showError('Não foi possível validar a conta Google. Tente novamente ou entre com e-mail e senha.');
+  }
+  window.ApiClient.get('/config').then(config=>{
+    if (!config.google_login || !googleButton) {
+      if (socialStatus) socialStatus.textContent='Login Google indisponível no momento. Apple ainda não está disponível.';
+      return;
+    }
+    googleButton.disabled=false;
+    googleButton.setAttribute('aria-label','Entrar com Google');
+    if (socialStatus) socialStatus.textContent='Entre com Google ou use seu e-mail e senha. Apple ainda não está disponível.';
+    googleButton.addEventListener('click',()=>{
+      if (mode === 'login') location.assign('/auth/google/redirect?next='+encodeURIComponent(destinoAposLogin()));
+      else showError('O login Google está disponível no modo Entrar.');
+    });
+  }).catch(()=>{});
 
   function setMode(newMode) {
     if(newMode===mode)return;

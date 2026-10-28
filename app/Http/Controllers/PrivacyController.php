@@ -16,7 +16,7 @@ class PrivacyController extends ApiController
     public function export(Request $request)
     {
         $user = $request->user();
-        $data = ['account' => $user->only(['id', 'name', 'email', 'created_at']),
+        $data = ['account' => $user->only(['id', 'name', 'email', 'google_avatar_url', 'created_at']),
             'purchases' => Purchase::withTrashed()->where('user_id', $user->id)->get()->makeHidden(['share_token']),
             'refunds' => Refund::where('user_id', $user->id)->get(), 'tickets' => Ticket::where('user_id', $user->id)->get()];
         $data['payments'] = DB::table('payment_checkouts as c')->join('purchases as p', 'p.id', '=', 'c.purchase_id')->where('p.user_id', $user->id)

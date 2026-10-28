@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token', 'admin_note', 'admin_preferences'])]
+#[Hidden(['password', 'remember_token', 'admin_note', 'admin_preferences', 'google_sub', 'google_avatar_url', 'google_signin_disabled_at'])]
 class User extends Authenticatable
 {
     protected $attributes = ['role' => 'user'];
@@ -28,6 +28,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'google_signin_disabled_at' => 'datetime',
             'admin_preferences' => 'array',
             'password' => 'hashed',
         ];
