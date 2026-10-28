@@ -33,7 +33,7 @@ function currentMediaCounts(){
   return {photos:fotoFiles.length,videos:videoURLs.length,music:!!(musicId||musicaPreviewURL)};
 }
 function midiaLabel(count,limit,one,many){
-  if(!count)return '';
+  if(!count)return `0 de ${limit??'…'} ${many}`;
   return limit?count+' de '+limit+' '+(limit===1?one:many):count+' '+(count===1?one:many);
 }
 function atualizarQtdMidia(plan){
@@ -70,6 +70,7 @@ function renderCreatorPlan(){
  const plan=creatorPlan();
  const summary=plan?window.NAPlanLimits?.summary?.(plan):null;
  $('creatorPlanDetails').textContent=summary?`Até ${summary}. O preço final é conferido antes do pagamento.`:PLAN_RELOAD_MESSAGE;
+ const planSummary=$('creatorPlanSummary');if(planSummary)planSummary.textContent=summary?`${select.selectedOptions?.[0]?.textContent||'Plano do presente'} · ${summary}`:PLAN_RELOAD_MESSAGE;
  renderMediaLimits(plan);
 }
 function clearPlanError(){const error=$('creatorPlanError');if(error){error.hidden=true;error.textContent='';}}
@@ -94,7 +95,7 @@ let draftKey='__draft_'+requestId;
 const mediaURL=NAGift.url;
 function preservePhotoRefs(){window.NAThemeEditor?.restore(NAGift.refs(window.NAThemeEditor.getData(),photoIds));}
 function captureDraft(){
- const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
+ const p={id:draftKey,updated_at:Date.now(),client_request_id:requestId,serverId:pedidoEditandoId,plan_id:pedidoAntigo?.plan_id||selectedPlanId||undefined,tema,step:window.NACreatorWorkflow.current,workflowVersion:2,photoIds:[...photoIds],videoIds:[...videoIds],musicId,
  fotos:[...fotoFiles],videos:[...videoFiles],musica:$('musica').files[0]||pedidoAntigo?.musica||null,
  themeData:window.NAThemeEditor?.getData()||{},legendas:[...document.querySelectorAll('.legenda-input')].map(el=>el.value.trim()),fotoCapa:Number($('fotoCapa').value)||0,
  usarIntro:$('usarIntro').checked,autoplay:$('autoplay').checked,
@@ -106,6 +107,21 @@ function captureDraft(){
 }
 
 const MAX_EVENTOS = 6;
+
+let draftReady=false,draftSuspended=false,draftTimer=null,draftQueue=Promise.resolve(),draftRevision=0;
+function scheduleDraftSave(){
+  if(!draftReady||draftSuspended)return;
+  const revision=++draftRevision;clearTimeout(draftTimer);
+  $('draftSaveStatus').textContent='Salvando rascunho neste dispositivo…';
+  draftTimer=setTimeout(()=>{
+    let snapshot;
+    try{snapshot=captureDraft();}catch{$('draftSaveStatus').textContent='Não foi possível preparar o rascunho. Mantenha esta página aberta e tente novamente.';return;}
+    draftQueue=draftQueue.catch(()=>{}).then(()=>salvarPedido(snapshot)).then(()=>{
+      if(revision===draftRevision)$('draftSaveStatus').textContent=pedidoEditandoId?'Rascunho salvo neste dispositivo · alterações ainda não enviadas ao servidor':'Rascunho salvo neste dispositivo';
+    }).catch(()=>{if(revision===draftRevision)$('draftSaveStatus').textContent='Não foi possível salvar neste dispositivo. Mantenha esta página aberta e tente novamente.';});
+  },800);
+}
+async function suspendDraftAutosave(){draftSuspended=true;++draftRevision;clearTimeout(draftTimer);await draftQueue.catch(()=>{});}
 
 const AMOSTRA = {
   namoro: { titulo: "Nós dois", chip: "Uma história que continua...", cont: [["2", "Anos"], ["34", "Meses"], ["952", "Dias"]] },
@@ -177,6 +193,7 @@ setInterval(updatePhoneTime, 30000);
 function marcarErro(campoNome) {
   const campo = document.querySelector(`[data-campo="${campoNome}"]`);
   if (!campo) return;
+  const section=campo.closest('details');if(section)section.open=true;
   campo.classList.remove("campo-erro");
   void campo.offsetWidth;
   campo.classList.add("campo-erro");
@@ -189,10 +206,6 @@ function marcarErro(campoNome) {
       try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
     }, 350);
   }
-  setTimeout(() => {
-    campo.classList.remove("campo-erro");
-    if (msg) msg.classList.remove("on");
-  }, 3000);
 }
 
 function limparErro(n) {
@@ -282,6 +295,7 @@ function criarCardTema(chave, t) {
     if (!fraseEditada) $("frase").value = t.sufixo;
     $("erro1").textContent = "";
     atualizarPreview();
+    scheduleDraftSave();
   }
 
   el.addEventListener("click", selecionar);
@@ -318,7 +332,7 @@ function revelarCards() {
 /* Temas vêm de GET /api/config (nada hardcoded) */
 NA_CONFIG_READY.then(() => {
   if (!Object.keys(THEMES).length) {
-    $("erro1").textContent = "Não foi possível carregar os temas. Verifique se o servidor está rodando (node server/index.js).";
+    $("erro1").textContent = "Não foi possível carregar os temas. Recarregue a página para tentar novamente.";
     return;
   }
   Object.entries(THEMES).forEach(([chave, t]) => {
@@ -384,6 +398,7 @@ function atualizarPreview() {
 // O mesmo HTML usado em ver.html, isolado dos estilos do formulário.
 let themePreviewFrame = null;
 let temaPreviewKey = null;
+let previewExperience = false;
 function atualizarPreviewTema(chave) {
   const ativo = !!window.NA_THEME_FILES?.[chave];
   $("previewScroll").classList.toggle("preview-tema", ativo);
@@ -404,7 +419,7 @@ function atualizarPreviewTema(chave) {
     themePreviewFrame = document.createElement("iframe");
     themePreviewFrame.className = "preview-tema-frame";
     themePreviewFrame.title = "Prévia do tema " + (THEMES[chave]?.nome || chave);
-    themePreviewFrame.src = window.NA_THEME_FILES[chave] + "?embed=1";
+    themePreviewFrame.src = window.NA_THEME_FILES[chave] + (previewExperience?'?preview=1':'?embed=1');
     if(chave === 'aniversario') themePreviewFrame.setAttribute('allow', 'microphone');
     themePreviewFrame.addEventListener("load", enviarPreviewTema);
     $("previewScroll").append(themePreviewFrame);
@@ -618,9 +633,12 @@ function atualizarPainelPersonalizacao() {
 let inputDebounce = null;
 function agendarAtualizacao() {
   clearTimeout(inputDebounce);
-  inputDebounce = setTimeout(atualizarPreview, 80);
+  inputDebounce = setTimeout(()=>{atualizarPreview();window.NACreatorWorkflow.updateProgress();},80);
+  scheduleDraftSave();
 }
 $("form").addEventListener("input", agendarAtualizacao);
+$("form").addEventListener("change",agendarAtualizacao);
+$("form").addEventListener('click',event=>{if(event.target.closest('button')){scheduleDraftSave();setTimeout(()=>window.NACreatorWorkflow.updateProgress(),0);}});
 $("form").addEventListener("change", agendarAtualizacao);
 $("frase").addEventListener("input", () => { fraseEditada = true; });
 
@@ -660,20 +678,23 @@ function ir(n) {
   document.querySelectorAll('.passo').forEach(el=>{el.hidden=el!==destino;el.classList.toggle('ativo',el===destino);});
   atualizarStepsVisual(n);window.scrollTo({top:0,behavior:'auto'});
   destino.querySelector('h2')?.focus({preventScroll:true});
+  scheduleDraftSave();
 }
 
 function validar(destino) {
   limparTodosErros();
-  if(destino>=2&&!tema){ir(1);$('erro1').textContent='Escolha um tema para continuar.';return false;}
   const current=window.NACreatorWorkflow.current;
+  if(destino<=current)return true;
+  if(destino>=2&&!tema){ir(1);$('erro1').textContent='Escolha um tema para continuar.';return false;}
+  if(destino>=2&&!creatorPlan()){ir(1);$('creatorPlanError').hidden=false;$('creatorPlanError').textContent=PLAN_RELOAD_MESSAGE;$('creatorPlan').focus();return false;}
   const fail=(step,field)=>{ir(step);marcarErro(field);return false;};
-  if((destino>current||destino===9)&&destino>=3){if(!$('de').value.trim())return fail(2,'de');if(!$('para').value.trim())return fail(2,'para');}
-  if((destino>current||destino===9)&&destino>=4&&!fotoFiles.length)return fail(3,'fotos');
-  if((destino>current||destino===9)&&destino>=4){
+  if(destino>=3){if(!$('de').value.trim())return fail(2,'de');if(!$('para').value.trim())return fail(2,'para');}
+  if(destino>=4&&!fotoFiles.length)return fail(3,'fotos');
+  if(destino>=4){
     const plan=creatorPlan();
     if(!plan||window.NAPlanLimits?.overLimit?.(plan,currentMediaCounts())){ir(3);$('erroMedia').textContent=plan?window.NAPlanLimits.failureMessage(plan):PLAN_RELOAD_MESSAGE;return false;}
   }
-  if((destino>current||destino===9)&&destino>=7&&!$('carta').value.trim())return fail(6,'carta');
+  if(destino>=5&&!$('carta').value.trim()){$('personalMessage').open=true;return fail(4,'carta');}
   return true;
 }
 
@@ -810,10 +831,10 @@ async function gerarPreviewThumb() {
 
 $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (window.NACreatorWorkflow.current !== 8) {
+  if (window.NACreatorWorkflow.current !== 6) {
     const next=window.NACreatorWorkflow.current+1;if(validar(next))ir(next);return;
   }
-  if (!validar(9)) return;
+  if (!validar(7)) return;
 
   const btn=$('btnFinal');btn.disabled=true;btn.textContent='Enviando presente…';
   const plan=creatorPlan();
@@ -834,6 +855,7 @@ $("form").addEventListener("submit", async (e) => {
   photoIds=draft.photoIds;videoIds=draft.videoIds;musicId=draft.musicId;
   let recoverable=false;
   try {
+    await suspendDraftAutosave();
     await salvarPedido(draft).then(()=>{recoverable=true;}).catch(()=>{});
     let purchase;
     if(!pedidoEditandoId){
@@ -850,6 +872,8 @@ $("form").addEventListener("submit", async (e) => {
     try{sessionStorage.removeItem('na_creator_request');}catch{}
     location.href='pagamento.html?id='+encodeURIComponent(purchase.id);
   } catch(err) {
+    draftSuspended=false;
+    $('draftSaveStatus').textContent=recoverable?'Rascunho salvo neste dispositivo · envio ao servidor não concluído':'Não foi possível salvar a cópia local. Mantenha esta página aberta.';
     if(err?.status===401){
       if(recoverable){location.href='login.html?next='+encodeURIComponent('criar.html?resume='+requestId);return;}
       $('erroMedia').textContent='Não foi possível guardar o rascunho neste navegador. Abra o login em outra aba, entre e tente salvar novamente sem fechar esta página.';
@@ -859,9 +883,14 @@ $("form").addEventListener("submit", async (e) => {
 });
 
 function abrirPrevia(expanded=false){if(!document.body.classList.contains('preview-open'))previewReturnFocus=document.activeElement;$('previewCol').classList.add('mobile-open');$('previewCol').classList.toggle('expanded',expanded);document.body.classList.add('preview-open');$('previewCol').setAttribute('role','dialog');$('previewCol').setAttribute('aria-modal','true');document.querySelector('.app-wrap').inert=true;$('navbar').inert=true;$('previewExpand').setAttribute('aria-pressed',String(expanded));$('previewClose').focus();}
-function fecharPrevia(){$('previewCol').classList.remove('mobile-open','expanded');document.body.classList.remove('preview-open');$('previewCol').removeAttribute('role');$('previewCol').removeAttribute('aria-modal');document.querySelector('.app-wrap').inert=false;$('navbar').inert=false;$('previewExpand').setAttribute('aria-pressed','false');(previewReturnFocus||$('previewBtn')).focus();}
+function setPreviewExperience(value){
+  if(previewExperience===value)return;
+  previewExperience=value;$('previewModeLabel').textContent=value?'Experiência de quem recebe':'Prévia de edição';
+  themePreviewFrame?.remove();themePreviewFrame=null;temaPreviewKey=null;atualizarPreview();
+}
+function fecharPrevia(){$('previewCol').classList.remove('mobile-open','expanded');document.body.classList.remove('preview-open');$('previewCol').removeAttribute('role');$('previewCol').removeAttribute('aria-modal');document.querySelector('.app-wrap').inert=false;$('navbar').inert=false;$('previewExpand').setAttribute('aria-pressed','false');setPreviewExperience(false);(previewReturnFocus||$('previewBtn')).focus();}
 $('previewBtn').addEventListener('click',()=>abrirPrevia());
-$('reviewPreview').addEventListener('click',()=>abrirPrevia(true));
+$('reviewPreview').addEventListener('click',()=>{setPreviewExperience(true);abrirPrevia(true);});
 $('previewClose').addEventListener('click',fecharPrevia);
 $('previewExpand').addEventListener('click',()=>{if($('previewCol').classList.contains('expanded'))fecharPrevia();else abrirPrevia(true);});
 $('previewHome').addEventListener('click',()=>{try{themePreviewFrame?.contentWindow.scrollTo({top:0,behavior:'smooth'});}catch{}});
@@ -871,6 +900,7 @@ document.addEventListener('keydown',event=>{
   if(event.key==='Tab'){const controls=[$('previewHome'),$('previewExpand'),themePreviewFrame,$('previewClose')].filter(Boolean);if(event.shiftKey&&document.activeElement===controls[0]){event.preventDefault();controls.at(-1).focus();}else if(!event.shiftKey&&document.activeElement===controls.at(-1)){event.preventDefault();controls[0].focus();}}
 });
 window.NACreatorMedia={videos:()=>videoURLs};
+window.NACreatorState=()=>({theme:tema,plan:creatorPlan(),planId:selectedPlanId,saved:!!pedidoEditandoId,...currentMediaCounts()});
 
 async function carregarPedidoParaEdicao() {
   const id = parametro("id");
@@ -878,7 +908,9 @@ async function carregarPedidoParaEdicao() {
   let recovered=null;
   if(resume && /^[\w-]{16,100}$/.test(resume))recovered=await buscarPedido('__draft_'+resume).catch(()=>null);
   if(!recovered) {
-    const candidate = await NA.db.buscarRascunho({serverId:id||null,requestId}).catch(()=>null);
+    let candidate;
+    try{candidate=await NA.db.buscarRascunho({serverId:id||null,requestId});}
+    catch{$('draftSaveStatus').textContent='Não foi possível verificar os rascunhos deste dispositivo. Recarregue a página antes de editar.';return false;}
     if(candidate) recovered = await escolherRascunho(candidate);
   }
   if(!id&&!recovered)return;
@@ -893,7 +925,7 @@ async function carregarPedidoParaEdicao() {
     if(serverId)({ purchase: apiPedido } = await window.ApiPurchases.getOne(serverId));
   } catch (err) {
     if (err && err.code === "NOT_AUTHENTICATED") { location.href = 'login.html?next='+encodeURIComponent(recovered?'criar.html?resume='+recovered.client_request_id:'criar.html?id='+id); return; }
-    $('erroMedia').textContent=err.message||'Não foi possível carregar.';ir(3);return;
+    $('erroMedia').textContent=err.message||'Não foi possível carregar.';ir(3);$('draftSaveStatus').textContent='Não foi possível recuperar o presente. Recarregue a página antes de editar.';return false;
 
   }
 
@@ -976,7 +1008,8 @@ async function carregarPedidoParaEdicao() {
   atualizarQtdMidia(planLoaded);
   renderMediaLimits(planLoaded);
   fraseEditada = true;
-  setTimeout(()=>{atualizarPreview();if(recovered)ir(Math.max(1,Math.min(8,recovered.step||1)));},150);
+  await new Promise(resolve=>setTimeout(resolve,150));
+  atualizarPreview();if(recovered)ir(window.NACreatorWorkflow.restoreStep(recovered));
 }
 
 function escolherRascunho(candidate) {
@@ -999,10 +1032,13 @@ function escolherRascunho(candidate) {
 }
 
 /* Boot aguarda o GET /api/config (temas e cores) */
-NA_CONFIG_READY.then(() => {
+NA_CONFIG_READY.then(async () => {
   renderCreatorPlan();
   addEvento();
   addEvento();
   atualizarPreview();
-  carregarPedidoParaEdicao();
+  if(await carregarPedidoParaEdicao()===false)return;
+  draftReady=true;$('form').inert=false;$('steps').inert=false;
+  $('draftSaveStatus').textContent=pedidoEditandoId?'Presente carregado · as próximas alterações serão salvas neste dispositivo':'Rascunho neste dispositivo · aguardando alterações';
+  window.NACreatorWorkflow.updateProgress();
 });

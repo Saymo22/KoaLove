@@ -36,7 +36,11 @@ Nenhum usuário/admin com senha padrão é criado. Registre uma conta pela tela 
 - composer validate --strict; composer audit; npm audit.
 - npm run test:http: integração HTTP real, cookies/CSRF, upload, retries simultâneos, compartilhamento e Range. Execute após migrations em banco vazio de testes, com CACHE_STORE=database, SESSION_DRIVER=database, DB_DATABASE=projeto_na_test e SIMULATED_PAYMENTS=true. O script exige HTTP_TEST_ALLOW=1 e cria somente fixtures sintéticas; a CI usa PostgreSQL descartável.
 
-Os testes recusam bancos sem sufixo _test (exceto SQLite em memória). A CI executa as duas suítes, integração HTTP, build e formatação. Não faça merge em caso de falha. Para revisão manual: cadastro/login, oito etapas, envio de mídias, pagamento simulado, link/QR, conta e admin; verifique 390/768/1440px e os 13 temas. Testes automatizados não substituem validar um dispositivo móvel real.
+Os testes recusam bancos sem sufixo _test (exceto SQLite em memória). A CI executa as duas suítes, integração HTTP, build e formatação. Não faça merge em caso de falha. Para revisão manual: cadastro/login, seis etapas, envio de mídias, pagamento simulado, link/QR, conta e admin; verifique 390/768/1440px e os 13 temas. Testes automatizados não substituem validar um dispositivo móvel real.
+
+O criador reúne plano/tema, capa, mídias, personalização, música/abertura e revisão. A etapa de personalização mantém momentos, recursos próprios do tema e mensagem em grupos expansíveis. A conclusão do progresso considera os campos e cotas, não só a posição visitada. A revisão inclui atalhos de edição e uma experiência completa em iframe com `?preview=1`; a prévia de edição usa `?embed=1`. Esses modos só recebem o conteúdo local pela ponte de mensagens com origem e janela verificadas: não abrem o link compartilhado, não registram abertura pública e não aprovam pagamentos.
+
+Rascunhos locais novos usam `workflowVersion:2`. Os anteriores convertem as antigas etapas 4/5/6 para personalização (4), 7 para música (5) e 8 para revisão (6), sem alterar o conteúdo. O autosave em IndexedDB é serializado e aguarda a decisão de recuperação antes de gravar. A interface distingue cópia local de envio ao servidor e anuncia falhas de quota/persistência. Antes do envio final, cancela o debounce e aguarda gravações pendentes para não recriar um rascunho já concluído. Nenhuma alteração de schema ou contrato de compra é necessária.
 
 ## Produção
 

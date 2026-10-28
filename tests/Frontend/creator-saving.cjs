@@ -7,11 +7,11 @@ module.exports=async()=>{
  for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/login.html']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'minha-conta.html');}
  const source=fs.readFileSync(path.join(__dirname,'../../resources/js/pages/criar.js'),'utf8');
  const submit=source.slice(source.indexOf('$("form").addEventListener("submit"'),source.indexOf('function abrirPrevia'));
- let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{},erro3:{}};
+ let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{},erro3:{},draftSaveStatus:{}};
  const draft={id:'__draft_stable',client_request_id:'stable-request',videos:[],fotos:[{name:'test.png'}],photoIds:['stable-photo'],videoIds:[],musicId:null,tema:'namoro'};
  const context=vm.createContext({
   $:id=>id==='form'?{addEventListener:(_name,fn)=>saveHandler=fn}:controls[id],
-  window:{NACreatorWorkflow:{current:8}},validar:()=>true,ir:()=>{},renderCreatorPlan(){},creatorPlan:()=>({photos_limit:12,videos_limit:4,music_limit:1}),captureDraft:()=>({...draft}),photoIds:[],videoIds:[],musicId:null,
+  window:{NACreatorWorkflow:{current:6}},validar:()=>true,ir:()=>{},renderCreatorPlan(){},suspendDraftAutosave:async()=>{},draftSuspended:false,creatorPlan:()=>({photos_limit:12,videos_limit:4,music_limit:1}),captureDraft:()=>({...draft}),photoIds:[],videoIds:[],musicId:null,
   pedidoEditandoId:null,pedidoAntigo:null,requestId:'stable-request',draftKey:'__draft_stable',location:{href:''},
   salvarPedido:async()=>{throw new Error('QuotaExceeded');},excluirPedidoDB:async()=>{},gerarPreviewThumb:async()=>null,sessionStorage:{removeItem(){}},
   ApiPurchases:{create:async()=>{creates++;return {purchase:{id:'same-purchase'}};}},
