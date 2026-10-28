@@ -122,6 +122,30 @@ function scheduleDraftSave(){
   },800);
 }
 async function suspendDraftAutosave(){draftSuspended=true;++draftRevision;clearTimeout(draftTimer);await draftQueue.catch(()=>{});}
+let mediaStage=Promise.resolve();
+function stageSelectedMedia(){
+  // Serialize staging with the final save and with later selections. A failed
+  // background attempt leaves the local draft available for the final retry.
+  mediaStage=mediaStage.catch(()=>{}).then(async()=>{
+    if(!draftReady||draftSuspended)return;
+    const draft=captureDraft();
+    await salvarPedido(draft);
+    $('draftSaveStatus').textContent='Enviando mídias ao servidor em segundo plano…';
+    if(!pedidoEditandoId){
+      const {purchase}=await ApiPurchases.create(draft);
+      pedidoEditandoId=purchase.id;
+      pedidoAntigo={...pedidoAntigo,...purchase,musica:draft.musica};
+      renderCreatorPlan();
+      await salvarPedido({...draft,serverId:purchase.id});
+    }
+    await NAGift.stage(draft,pedidoEditandoId);
+    $('draftSaveStatus').textContent='Mídias enviadas · rascunho salvo neste dispositivo';
+  }).catch(err=>{
+    $('draftSaveStatus').textContent='Envio das mídias pendente · '+(err?.message||'tente novamente ao finalizar');
+    throw err;
+  });
+  return mediaStage;
+}
 
 const AMOSTRA = {
   namoro: { titulo: "Nós dois", chip: "Uma história que continua...", cont: [["2", "Anos"], ["34", "Meses"], ["952", "Dias"]] },
@@ -674,11 +698,13 @@ $("btnAddEv").addEventListener("click", addEvento);
 function atualizarStepsVisual(n) { window.NACreatorWorkflow.updateProgress(n); }
 
 function ir(n) {
+  const previous=window.NACreatorWorkflow.current;
   const destino=document.querySelector('.passo[data-passo="'+n+'"]');if(!destino)return;
   document.querySelectorAll('.passo').forEach(el=>{el.hidden=el!==destino;el.classList.toggle('ativo',el===destino);});
   atualizarStepsVisual(n);window.scrollTo({top:0,behavior:'auto'});
   destino.querySelector('h2')?.focus({preventScroll:true});
   scheduleDraftSave();
+  if(previous===3&&n>3)stageSelectedMedia().catch(()=>{});
 }
 
 function validar(destino) {
@@ -856,6 +882,7 @@ $("form").addEventListener("submit", async (e) => {
   let recoverable=false;
   try {
     await suspendDraftAutosave();
+    if(typeof mediaStage!=='undefined')await mediaStage.catch(()=>{});
     await salvarPedido(draft).then(()=>{recoverable=true;}).catch(()=>{});
     let purchase;
     if(!pedidoEditandoId){
