@@ -91,10 +91,12 @@ class MercadoPagoTest extends TestCase
         $this->assertDatabaseHas('purchases', ['id' => $p->id, 'status' => 'pending', 'paid_at' => null]);
         Http::assertSentCount(2); // Own merchant lookup and a single preference creation.
         Http::assertSent(fn ($r) => $r->method() === 'POST' && $r['items'][0]['unit_price'] === 19.9
-            && $r['back_urls']['success'] === 'https://gift.example.test/pagamento.html?id='.$p->id.'&retorno=1'
+            && $r['back_urls']['success'] === 'https://gift.example.test/pagamento?id='.$p->id.'&retorno=1'
             && $r['notification_url'] === 'https://gift.example.test/api/webhooks/mercadopago');
         $this->getJson('/api/shared/'.$p->share_token)->assertNotFound();
-        $this->get('/pagamento.html?id='.$p->id.'&status=approved&payment_id=789')->assertOk();
+        $this->get('/pagamento?id='.$p->id.'&status=approved&payment_id=789')->assertOk();
+        $this->get('/pagamento.html?id='.$p->id.'&status=approved&payment_id=789')->assertStatus(301)
+            ->assertHeader('Location', '/pagamento?id='.$p->id.'&status=approved&payment_id=789');
         $this->assertSame('pending', $p->fresh()->status);
     }
 

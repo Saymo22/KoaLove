@@ -24,17 +24,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/home.html');
 Route::post('/api/webhooks/mercadopago', PaymentWebhookController::class)->middleware('throttle:api');
 Route::post('/api/webhooks/google/security-events', GoogleSecurityEventController::class)->middleware('throttle:api');
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:google-login');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:google-login');
 Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
 Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
-foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
-    Route::view($page['url'], $page['view'])->middleware('throttle:pages');
+foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $key => $page) {
+    $name = $key === 'home' ? 'pages.home' : 'pages.'.str_replace('/', '.', $key);
+    Route::view($page['url'], $page['view'])->name($name)->middleware('throttle:pages');
+    foreach ($page['legacy_urls'] ?? [] as $legacy) {
+        Route::get($legacy, function (Request $request) use ($page) {
+            $query = $request->server('QUERY_STRING');
+            $target = $page['url'].(is_string($query) && $query !== '' ? '?'.$query : '');
+
+            // Relative Location preserves preview/alias origins and browser fragments.
+            // Do not cache links containing share tokens or payment identifiers.
+            return response('', 301, ['Location' => $target, 'Cache-Control' => 'private, no-store']);
+        })->middleware('throttle:pages');
+    }
 }
-Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
+Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha'))->name('password.reset');
 Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {
     Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'plan_limits' => PlanLimits::caps(), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'google_login' => filled(config('services.google.client_id')) && filled(config('services.google.client_secret')), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {

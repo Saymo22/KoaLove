@@ -13,7 +13,7 @@
     <main class="split-layout">
         <section class="brand-side" aria-label="KoaLove Administração">
             <div class="brand-content">
-                <a href="../home.html"><img class="brand-wordmark" src="/branding/koalove-logo-admin.svg" width="210" height="74" alt="KoaLove"></a>
+                <a href="/"><img class="brand-wordmark" src="/branding/koalove-logo-admin.svg" width="210" height="74" alt="KoaLove"></a>
                 <p class="brand-eyebrow">Administração premium</p>
                 <h1 class="brand-title">Sua jornada<br>começa aqui.</h1>
                 <p class="brand-desc">Gerencie seus planos, acompanhe resultados e cuide de cada história em um espaço pensado para você.</p>
@@ -22,7 +22,7 @@
         </section>
         <section class="form-side" aria-label="Acesso ao painel">
             <div class="form-container">
-                <a class="form-logo" href="../home.html" aria-label="KoaLove — voltar ao site"><img src="/branding/koalove-simbolo-principal.svg" width="58" height="58" alt=""></a>
+                <a class="form-logo" href="/" aria-label="KoaLove — voltar ao site"><img src="/branding/koalove-simbolo-principal.svg" width="58" height="58" alt=""></a>
                 <div id="loginPane" class="pane active">
                     <h2 class="form-title" id="loginTitle">Bem-vindo de volta.</h2>
                     <p class="form-sub">Entre com sua conta de administrador para continuar.</p>
@@ -44,7 +44,7 @@
                     </form>
                     <div class="form-footer"><button id="backToLogin" type="button">← Voltar para o login</button></div>
                 </div>
-                <div class="form-footer"><a href="../home.html">← Voltar para o site</a><small>Acesso exclusivo a administradores autorizados.<br>KoaLove · Cada história merece cuidado.</small></div>
+                <div class="form-footer"><a href="/">← Voltar para o site</a><small>Acesso exclusivo a administradores autorizados.<br>KoaLove · Cada história merece cuidado.</small></div>
             </div>
         </section>
     </main>

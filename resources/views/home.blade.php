@@ -42,7 +42,7 @@
                 </h1>
                 <p class="lead stagger">Reúna fotos, vídeos, música e uma carta em uma página só dela, dele ou deles. Pronto em poucos minutos, entregue por link ou QR Code.</p>
                 <div class="hero-cta stagger">
-                    <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
+                    <a href="/criar-presente" class="b ouro magnetic">Criar meu presente</a>
                     <a href="#temas" class="b sec magnetic">Ver os temas</a>
                 </div>
                 <div class="hero-nota stagger">Crie sua conta para salvar o presente e acompanhar o pagamento.</div>
@@ -189,12 +189,12 @@
                 </div>
 
                 <div class="preview-viewport" id="previewViewport">
-                    <iframe id="previewIframe" src="ver.html?demo=1&tema=namoro" title="Prévia do presente"></iframe>
+                    <iframe id="previewIframe" src="/presente?demo=1&tema=namoro" title="Prévia do presente"></iframe>
                 </div>
             </div>
 
             <p class="migrated-home-6 exemplo-link reveal">
-                Quer ver uma página completa? <a href="ver.html?demo=1&tema=namoro" target="_blank">Abra um exemplo pronto</a>.
+                Quer ver uma página completa? <a href="/presente?demo=1&tema=namoro" target="_blank">Abra um exemplo pronto</a>.
             </p>
         </div>
     </section>
@@ -296,7 +296,7 @@
                     <div class="promo-countdown" id="promoCountdown" hidden>
                         <span>Oferta termina em</span><strong id="promoClock" aria-label="Tempo restante da promoção"></strong>
                     </div>
-                    <a href="criar.html" id="promoLink" class="b ouro magnetic">Criar meu presente</a>
+                    <a href="/criar-presente" id="promoLink" class="b ouro magnetic">Criar meu presente</a>
                 </div>
             </div>
         </div>
@@ -328,8 +328,8 @@
                         <li>Link para compartilhar e QR Code para imprimir</li>
                         <li>Suporte humano por WhatsApp</li>
                     </ul>
-                    <a href="criar.html" class="b ouro magnetic">Criar meu presente</a>
-                    <a href="reembolso.html" class="preco-garantia">Garantia comercial de 3 dias · antes de abrir o link</a>
+                    <a href="/criar-presente" class="b ouro magnetic">Criar meu presente</a>
+                    <a href="/politica-de-reembolso" class="preco-garantia">Garantia comercial de 3 dias · antes de abrir o link</a>
                 </div>
             </div>
         </div>
@@ -408,7 +408,7 @@
     <section class="cta-final" id="ctaFinal">
         <h2>Pronto para <em>emocionar alguém?</em></h2>
         <p>Leva poucos minutos e fica guardado para sempre.</p>
-        <a href="criar.html" class="b magnetic">Criar meu presente</a>
+        <a href="/criar-presente" class="b magnetic">Criar meu presente</a>
     </section>
 
     <!-- RODAPÉ -->
@@ -434,19 +434,19 @@
             </div>
             <div class="rodape-col">
                 <h4>Temas</h4>
-                <a href="criar.html?tema=namoro">Namoro</a>
-                <a href="criar.html?tema=casamento">Casamento</a>
-                <a href="criar.html?tema=netflix">Netflix</a>
-                <a href="criar.html?tema=spotify">Spotify</a>
-                <a href="criar.html?tema=vinil">Vinil</a>
+                <a href="/criar-presente?tema=namoro">Namoro</a>
+                <a href="/criar-presente?tema=casamento">Casamento</a>
+                <a href="/criar-presente?tema=netflix">Netflix</a>
+                <a href="/criar-presente?tema=spotify">Spotify</a>
+                <a href="/criar-presente?tema=vinil">Vinil</a>
             </div>
             <div class="rodape-col">
                 <h4>Suporte</h4>
                 <a href="#" data-support-chat="help">Central de ajuda</a>
                 <a href="#" data-support-chat="human">Fale conosco</a>
-                <a href="termos.html">Termos de uso</a> <!-- ✅ Atualizado -->
-                <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->
-                <a href="reembolso.html">Reembolso</a> <!-- ✅ Atualizado -->
+                <a href="/termos-de-uso">Termos de uso</a> <!-- ✅ Atualizado -->
+                <a href="/politica-de-privacidade">Privacidade</a> <!-- ✅ Atualizado -->
+                <a href="/politica-de-reembolso">Reembolso</a> <!-- ✅ Atualizado -->
             </div>
         </div>
 
@@ -461,8 +461,8 @@
         <div class="rodape-base">
             <div>© <span id="anoAtual"></span> <b id="siteStoreName">KoaLove</b> — feito com carinho para quem quer eternizar momentos.</div>
             <div class="rodape-base-links">
-                <a href="termos.html">Termos</a> <!-- ✅ Atualizado -->
-                <a href="privacidade.html">Privacidade</a> <!-- ✅ Atualizado -->
+                <a href="/termos-de-uso">Termos</a> <!-- ✅ Atualizado -->
+                <a href="/politica-de-privacidade">Privacidade</a> <!-- ✅ Atualizado -->
                 <a href="#">Cookies</a>
             </div>
         </div>

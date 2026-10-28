@@ -626,5 +626,5 @@ normalizeWorkspace();renderAll();renderUser();renderBanner();applyTheme();nav(lo
 document.body.classList.remove("workspace-pending");document.getElementById("app").inert=false;document.getElementById("workspaceLoading").remove();
 window.addEventListener('hashchange',()=>nav(location.hash.slice(1)));
 setInterval(tickCountdowns,1000);
-setInterval(async()=>{if(document.hidden||Date.now()-lastActivity>60000)return;try{await reloadWorkspace();if(activeChat&&$('#chatMsgs')&&$('#overlay').classList.contains('open')){const t=db.tickets.find(t=>t.id===activeChat);if(t)$('#chatMsgs').innerHTML=t.msgs.map(msgHTML).join('');}}catch(error){if(error.status===401)window.location.href='login.html';}},15000);
+setInterval(async()=>{if(document.hidden||Date.now()-lastActivity>60000)return;try{await reloadWorkspace();if(activeChat&&$('#chatMsgs')&&$('#overlay').classList.contains('open')){const t=db.tickets.find(t=>t.id===activeChat);if(t)$('#chatMsgs').innerHTML=t.msgs.map(msgHTML).join('');}}catch(error){if(error.status===401)window.location.href='/admin/entrar';}},15000);
 })();

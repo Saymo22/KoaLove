@@ -35,8 +35,8 @@
             <a href="#privacidade">5. Privacidade</a>
             <a href="#responsabilidade">6. Responsabilidade</a>
             <div class="sidebar-divider"></div>
-            <a href="privacidade.html">Política de Privacidade →</a>
-            <a href="reembolso.html">Política de Reembolso →</a>
+            <a href="/politica-de-privacidade">Política de Privacidade →</a>
+            <a href="/politica-de-reembolso">Política de Reembolso →</a>
         </aside>
 
         <!-- Texto -->
@@ -58,10 +58,10 @@
 
             <h2 id="pagamentos">4. Pagamentos e Entrega</h2>
             <p>O pagamento é feito em ambiente seguro e libera o acesso imediato ao link do presente. Após a confirmação do pagamento, você receberá um link exclusivo e um QR Code para compartilhar com quem desejar.</p>
-            <p>A garantia comercial vale por 3 dias (72 horas) após a confirmação do pagamento e antes da primeira abertura do link compartilhado. Os direitos legais obrigatórios permanecem preservados, com canal próprio de análise em Minha Conta. Consulte as condições na <a href="reembolso.html">Política de Reembolso</a>.</p>
+            <p>A garantia comercial vale por 3 dias (72 horas) após a confirmação do pagamento e antes da primeira abertura do link compartilhado. Os direitos legais obrigatórios permanecem preservados, com canal próprio de análise em Minha Conta. Consulte as condições na <a href="/politica-de-reembolso">Política de Reembolso</a>.</p>
 
             <h2 id="privacidade">5. Privacidade e Dados</h2>
-            <p>O tratamento de seus dados pessoais e do conteúdo enviado é regido pela nossa <a href="privacidade.html">Política de Privacidade</a>.</p>
+            <p>O tratamento de seus dados pessoais e do conteúdo enviado é regido pela nossa <a href="/politica-de-privacidade">Política de Privacidade</a>.</p>
 
             <h2 id="responsabilidade">6. Isenção de Responsabilidade</h2>
             <p>O KoaLove se esforça para manter a plataforma no ar 24/7, mas não garante que o serviço será ininterrupto ou livre de erros. Não nos responsabilizamos por problemas de conexão à internet do usuário ou de quem recebe o presente.</p>
@@ -83,25 +83,25 @@
             </div>
             <div class="rodape-col">
                 <h4>Navegar</h4>
-                <a href="home.html#como">Como funciona</a>
-                <a href="home.html#temas">Temas</a>
-                <a href="home.html#depoimentos">Depoimentos</a>
-                <a href="home.html#preco">Preço</a>
-                <a href="home.html#duvidas">Dúvidas</a>
+                <a href="/#como">Como funciona</a>
+                <a href="/#temas">Temas</a>
+                <a href="/#depoimentos">Depoimentos</a>
+                <a href="/#preco">Preço</a>
+                <a href="/#duvidas">Dúvidas</a>
             </div>
             <div class="rodape-col">
                 <h4>Temas</h4>
-                <a href="criar.html?tema=namoro">Namoro</a>
-                <a href="criar.html?tema=casamento">Casamento</a>
-                <a href="criar.html?tema=netflix">Netflix</a>
-                <a href="criar.html?tema=spotify">Spotify</a>
-                <a href="criar.html?tema=vinil">Vinil</a>
+                <a href="/criar-presente?tema=namoro">Namoro</a>
+                <a href="/criar-presente?tema=casamento">Casamento</a>
+                <a href="/criar-presente?tema=netflix">Netflix</a>
+                <a href="/criar-presente?tema=spotify">Spotify</a>
+                <a href="/criar-presente?tema=vinil">Vinil</a>
             </div>
             <div class="rodape-col">
                 <h4>Suporte</h4>
-                <a href="termos.html">Termos de uso</a>
-                <a href="privacidade.html">Privacidade</a>
-                <a href="reembolso.html">Reembolso</a>
+                <a href="/termos-de-uso">Termos de uso</a>
+                <a href="/politica-de-privacidade">Privacidade</a>
+                <a href="/politica-de-reembolso">Reembolso</a>
             </div>
         </div>
 
@@ -115,8 +115,8 @@
         <div class="rodape-base">
             <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho.</div>
             <div class="rodape-base-links">
-                <a href="termos.html">Termos</a>
-                <a href="privacidade.html">Privacidade</a>
+                <a href="/termos-de-uso">Termos</a>
+                <a href="/politica-de-privacidade">Privacidade</a>
                 <a href="#">Cookies</a>
             </div>
         </div>

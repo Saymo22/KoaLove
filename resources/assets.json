@@ -1,6 +1,6 @@
 {
   "admin/planos": {
-    "url": "/admin/planos.html",
+    "url": "/admin/planos",
     "view": "admin.planos",
     "styles": [
       "resources/css/base.css",
@@ -18,10 +18,13 @@
       "resources/js/app.js",
       "resources/js/admin/planos.js"
     ],
-    "entry": "resources/js/entries/admin-planos.js"
+    "entry": "resources/js/entries/admin-planos.js",
+    "legacy_urls": [
+      "/admin/planos.html"
+    ]
   },
   "admin/clientes": {
-    "url": "/admin/clientes.html",
+    "url": "/admin/clientes",
     "view": "admin.clientes",
     "styles": [
       "resources/css/base.css",
@@ -39,10 +42,13 @@
       "resources/js/admin/header.js",
       "resources/js/admin/clientes.js"
     ],
-    "entry": "resources/js/entries/admin-clientes.js"
+    "entry": "resources/js/entries/admin-clientes.js",
+    "legacy_urls": [
+      "/admin/clientes.html"
+    ]
   },
   "admin/dashboard": {
-    "url": "/admin/dashboard.html",
+    "url": "/admin/painel",
     "view": "admin.dashboard",
     "styles": [
       "resources/css/admin-workspace.css",
@@ -55,10 +61,13 @@
       "resources/js/admin/auth.js",
       "resources/js/admin/workspace.js"
     ],
-    "entry": "resources/js/entries/admin-dashboard.js"
+    "entry": "resources/js/entries/admin-dashboard.js",
+    "legacy_urls": [
+      "/admin/dashboard.html"
+    ]
   },
   "admin/login": {
-    "url": "/admin/login.html",
+    "url": "/admin/entrar",
     "view": "admin.login",
     "styles": [
       "resources/css/admin-login-premium.css",
@@ -71,10 +80,13 @@
       "resources/js/admin/auth.js",
       "resources/js/admin/login.js"
     ],
-    "entry": "resources/js/entries/admin-login.js"
+    "entry": "resources/js/entries/admin-login.js",
+    "legacy_urls": [
+      "/admin/login.html"
+    ]
   },
   "admin/reembolsos": {
-    "url": "/admin/reembolsos.html",
+    "url": "/admin/reembolsos",
     "view": "admin.reembolsos",
     "styles": [
       "resources/css/base.css",
@@ -91,10 +103,13 @@
       "resources/js/admin/header.js",
       "resources/js/admin/reembolsos.js"
     ],
-    "entry": "resources/js/entries/admin-reembolsos.js"
+    "entry": "resources/js/entries/admin-reembolsos.js",
+    "legacy_urls": [
+      "/admin/reembolsos.html"
+    ]
   },
   "admin/suporte": {
-    "url": "/admin/suporte.html",
+    "url": "/admin/suporte",
     "view": "admin.suporte",
     "styles": [
       "resources/css/base.css",
@@ -111,10 +126,13 @@
       "resources/js/admin/header.js",
       "resources/js/admin/support-conversation.js"
     ],
-    "entry": "resources/js/entries/admin-suporte.js"
+    "entry": "resources/js/entries/admin-suporte.js",
+    "legacy_urls": [
+      "/admin/suporte.html"
+    ]
   },
   "criar": {
-    "url": "/criar.html",
+    "url": "/criar-presente",
     "view": "criar",
     "styles": [
       "resources/css/base.css",
@@ -135,10 +153,13 @@
       "resources/js/pages/creator-workflow.js",
       "resources/js/pages/criar.js"
     ],
-    "entry": "resources/js/entries/criar.js"
+    "entry": "resources/js/entries/criar.js",
+    "legacy_urls": [
+      "/criar.html"
+    ]
   },
   "home": {
-    "url": "/home.html",
+    "url": "/",
     "view": "home",
     "styles": [
       "resources/css/base.css",
@@ -156,22 +177,14 @@
       "resources/js/pages/home.js",
       "resources/js/pages/home-pricing.js"
     ],
-    "entry": "resources/js/entries/home.js"
-  },
-  "index": {
-    "url": "/index.html",
-    "view": "index",
-    "styles": [
-      "resources/css/pages/index-extracted.css",
-      "resources/css/accessibility.css"
-    ],
-    "scripts": [
-      "resources/js/pages/extracted/index-0.js"
-    ],
-    "entry": "resources/js/entries/index.js"
+    "entry": "resources/js/entries/home.js",
+    "legacy_urls": [
+      "/home.html",
+      "/index.html"
+    ]
   },
   "login": {
-    "url": "/login.html",
+    "url": "/entrar",
     "view": "login",
     "styles": [
       "resources/css/base.css",
@@ -186,10 +199,13 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/login.js"
     ],
-    "entry": "resources/js/entries/login.js"
+    "entry": "resources/js/entries/login.js",
+    "legacy_urls": [
+      "/login.html"
+    ]
   },
   "minha-conta": {
-    "url": "/minha-conta.html",
+    "url": "/minha-conta",
     "view": "minha-conta",
     "styles": [
       "resources/css/base.css",
@@ -208,10 +224,13 @@
       "resources/js/pages/extracted/minha-conta-0.js",
       "resources/js/pages/privacy.js"
     ],
-    "entry": "resources/js/entries/minha-conta.js"
+    "entry": "resources/js/entries/minha-conta.js",
+    "legacy_urls": [
+      "/minha-conta.html"
+    ]
   },
   "pagamento": {
-    "url": "/pagamento.html",
+    "url": "/pagamento",
     "view": "pagamento",
     "styles": [
       "resources/css/base.css",
@@ -227,10 +246,13 @@
       "resources/js/vendor/qrcode.js",
       "resources/js/pages/pagamento.js"
     ],
-    "entry": "resources/js/entries/pagamento.js"
+    "entry": "resources/js/entries/pagamento.js",
+    "legacy_urls": [
+      "/pagamento.html"
+    ]
   },
   "privacidade": {
-    "url": "/privacidade.html",
+    "url": "/politica-de-privacidade",
     "view": "privacidade",
     "styles": [
       "resources/css/base.css",
@@ -244,10 +266,13 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/privacidade-0.js"
     ],
-    "entry": "resources/js/entries/privacidade.js"
+    "entry": "resources/js/entries/privacidade.js",
+    "legacy_urls": [
+      "/privacidade.html"
+    ]
   },
   "recuperar-senha": {
-    "url": "/recuperar-senha.html",
+    "url": "/recuperar-senha",
     "view": "recuperar-senha",
     "styles": [
       "resources/css/base.css",
@@ -259,10 +284,13 @@
       "resources/js/api/client.js",
       "resources/js/pages/recuperar-senha.js"
     ],
-    "entry": "resources/js/entries/recuperar-senha.js"
+    "entry": "resources/js/entries/recuperar-senha.js",
+    "legacy_urls": [
+      "/recuperar-senha.html"
+    ]
   },
   "reembolso": {
-    "url": "/reembolso.html",
+    "url": "/politica-de-reembolso",
     "view": "reembolso",
     "styles": [
       "resources/css/base.css",
@@ -276,10 +304,13 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/reembolso-0.js"
     ],
-    "entry": "resources/js/entries/reembolso.js"
+    "entry": "resources/js/entries/reembolso.js",
+    "legacy_urls": [
+      "/reembolso.html"
+    ]
   },
   "resultado": {
-    "url": "/resultado.html",
+    "url": "/resultado",
     "view": "resultado",
     "styles": [
       "resources/css/base.css",
@@ -297,10 +328,13 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/resultado.js"
     ],
-    "entry": "resources/js/entries/resultado.js"
+    "entry": "resources/js/entries/resultado.js",
+    "legacy_urls": [
+      "/resultado.html"
+    ]
   },
   "termos": {
-    "url": "/termos.html",
+    "url": "/termos-de-uso",
     "view": "termos",
     "styles": [
       "resources/css/base.css",
@@ -314,10 +348,13 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/termos-0.js"
     ],
-    "entry": "resources/js/entries/termos.js"
+    "entry": "resources/js/entries/termos.js",
+    "legacy_urls": [
+      "/termos.html"
+    ]
   },
   "themes/amizade": {
-    "url": "/teste/amizade.html",
+    "url": "/temas/amizade",
     "view": "themes.amizade",
     "styles": [
       "resources/css/themes/amizade.css",
@@ -327,10 +364,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/amizade.js"
     ],
-    "entry": "resources/js/entries/themes-amizade.js"
+    "entry": "resources/js/entries/themes-amizade.js",
+    "legacy_urls": [
+      "/teste/amizade.html"
+    ]
   },
   "themes/aniversario": {
-    "url": "/teste/aniversario.html",
+    "url": "/temas/aniversario",
     "view": "themes.aniversario",
     "styles": [
       "resources/css/themes/aniversario.css",
@@ -340,10 +380,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/aniversario.js"
     ],
-    "entry": "resources/js/entries/themes-aniversario.js"
+    "entry": "resources/js/entries/themes-aniversario.js",
+    "legacy_urls": [
+      "/teste/aniversario.html"
+    ]
   },
   "themes/carta-antiga": {
-    "url": "/teste/carta-antiga.html",
+    "url": "/temas/carta-antiga",
     "view": "themes.carta-antiga",
     "styles": [
       "resources/css/themes/carta-antiga.css",
@@ -353,10 +396,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/carta-antiga.js"
     ],
-    "entry": "resources/js/entries/themes-carta-antiga.js"
+    "entry": "resources/js/entries/themes-carta-antiga.js",
+    "legacy_urls": [
+      "/teste/carta-antiga.html"
+    ]
   },
   "themes/casamento": {
-    "url": "/teste/casamento.html",
+    "url": "/temas/casamento",
     "view": "themes.casamento",
     "styles": [
       "resources/css/themes/casamento.css",
@@ -366,10 +412,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/casamento.js"
     ],
-    "entry": "resources/js/entries/themes-casamento.js"
+    "entry": "resources/js/entries/themes-casamento.js",
+    "legacy_urls": [
+      "/teste/casamento.html"
+    ]
   },
   "themes/cinema": {
-    "url": "/teste/cinema.html",
+    "url": "/temas/cinema",
     "view": "themes.cinema",
     "styles": [
       "resources/css/themes/cinema.css",
@@ -380,10 +429,13 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/cinema.js"
     ],
-    "entry": "resources/js/entries/themes-cinema.js"
+    "entry": "resources/js/entries/themes-cinema.js",
+    "legacy_urls": [
+      "/teste/cinema.html"
+    ]
   },
   "themes/familia": {
-    "url": "/teste/familia.html",
+    "url": "/temas/familia",
     "view": "themes.familia",
     "styles": [
       "resources/css/themes/familia.css",
@@ -393,10 +445,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/familia.js"
     ],
-    "entry": "resources/js/entries/themes-familia.js"
+    "entry": "resources/js/entries/themes-familia.js",
+    "legacy_urls": [
+      "/teste/familia.html"
+    ]
   },
   "themes/jardim": {
-    "url": "/teste/jardim.html",
+    "url": "/temas/jardim",
     "view": "themes.jardim",
     "styles": [
       "resources/css/themes/jardim.css",
@@ -406,10 +461,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/jardim.js"
     ],
-    "entry": "resources/js/entries/themes-jardim.js"
+    "entry": "resources/js/entries/themes-jardim.js",
+    "legacy_urls": [
+      "/teste/jardim.html"
+    ]
   },
   "themes/namoro": {
-    "url": "/teste/namoro.html",
+    "url": "/temas/namoro",
     "view": "themes.namoro",
     "styles": [
       "resources/css/themes/namoro.css",
@@ -420,10 +478,13 @@
       "resources/js/pages/extracted/themes-namoro-0.js",
       "resources/js/themes/namoro.js"
     ],
-    "entry": "resources/js/entries/themes-namoro.js"
+    "entry": "resources/js/entries/themes-namoro.js",
+    "legacy_urls": [
+      "/teste/namoro.html"
+    ]
   },
   "themes/netflix": {
-    "url": "/teste/netflix.html",
+    "url": "/temas/netflix",
     "view": "themes.netflix",
     "styles": [
       "resources/css/themes/netflix.css",
@@ -434,10 +495,13 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/netflix.js"
     ],
-    "entry": "resources/js/entries/themes-netflix.js"
+    "entry": "resources/js/entries/themes-netflix.js",
+    "legacy_urls": [
+      "/teste/netflix.html"
+    ]
   },
   "themes/retro": {
-    "url": "/teste/retro.html",
+    "url": "/temas/retro",
     "view": "themes.retro",
     "styles": [
       "resources/css/themes/retro.css",
@@ -448,10 +512,13 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/retro.js"
     ],
-    "entry": "resources/js/entries/themes-retro.js"
+    "entry": "resources/js/entries/themes-retro.js",
+    "legacy_urls": [
+      "/teste/retro.html"
+    ]
   },
   "themes/scrapbook": {
-    "url": "/teste/scrapbook.html",
+    "url": "/temas/scrapbook",
     "view": "themes.scrapbook",
     "styles": [
       "resources/css/themes/scrapbook.css",
@@ -461,10 +528,13 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/scrapbook.js"
     ],
-    "entry": "resources/js/entries/themes-scrapbook.js"
+    "entry": "resources/js/entries/themes-scrapbook.js",
+    "legacy_urls": [
+      "/teste/scrapbook.html"
+    ]
   },
   "themes/spotify": {
-    "url": "/teste/spotify.html",
+    "url": "/temas/spotify",
     "view": "themes.spotify",
     "styles": [
       "resources/css/themes/spotify.css",
@@ -475,10 +545,13 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/spotify.js"
     ],
-    "entry": "resources/js/entries/themes-spotify.js"
+    "entry": "resources/js/entries/themes-spotify.js",
+    "legacy_urls": [
+      "/teste/spotify.html"
+    ]
   },
   "themes/vinil": {
-    "url": "/teste/vinil.html",
+    "url": "/temas/vinil",
     "view": "themes.vinil",
     "styles": [
       "resources/css/themes/vinil.css",
@@ -489,10 +562,13 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/vinil.js"
     ],
-    "entry": "resources/js/entries/themes-vinil.js"
+    "entry": "resources/js/entries/themes-vinil.js",
+    "legacy_urls": [
+      "/teste/vinil.html"
+    ]
   },
   "ver": {
-    "url": "/ver.html",
+    "url": "/presente",
     "view": "ver",
     "styles": [
       "resources/css/ver.css",
@@ -503,6 +579,9 @@
       "resources/js/core/theme-catalog.js",
       "resources/js/pages/ver.js"
     ],
-    "entry": "resources/js/entries/ver.js"
+    "entry": "resources/js/entries/ver.js",
+    "legacy_urls": [
+      "/ver.html"
+    ]
   }
 }

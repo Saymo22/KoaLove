@@ -16,22 +16,22 @@ export function answer(text,catalog,origin){
     const suggestions=['Falar com suporte','Como funciona?'];
     let reply;
     switch(category){
-        case 'refund': reply='A garantia comercial é de **3 dias (72 horas)** após a confirmação do pagamento, enquanto o link compartilhado não tiver sido aberto. A prévia privada não conta. Em Minha Conta você pode solicitar reembolso ou análise dos seus direitos legais, inclusive após o prazo comercial ou a abertura. O envio inicia uma análise e não executa um estorno. '+link('Consultar política','/reembolso.html'); break;
-        case 'account': reply='Use o mesmo e-mail do cadastro para entrar. Se esqueceu a senha, abra “Esqueceu a senha?” na tela de login. Nunca envie senha, código de verificação ou dados de cartão neste chat. '+link('Entrar na conta','/login.html'); break;
+        case 'refund': reply='A garantia comercial é de **3 dias (72 horas)** após a confirmação do pagamento, enquanto o link compartilhado não tiver sido aberto. A prévia privada não conta. Em Minha Conta você pode solicitar reembolso ou análise dos seus direitos legais, inclusive após o prazo comercial ou a abertura. O envio inicia uma análise e não executa um estorno. '+link('Consultar política','/politica-de-reembolso'); break;
+        case 'account': reply='Use o mesmo e-mail do cadastro para entrar. Se esqueceu a senha, abra “Esqueceu a senha?” na tela de login. Nunca envie senha, código de verificação ou dados de cartão neste chat. '+link('Entrar na conta','/entrar'); break;
         case 'payment': {
             const plans=catalog?.plans;
             const prices=plans?.length?plans.map(p=>`${p.name}: ${new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(p.price_cents/100)}`).join('; '):null;
             reply=(prices?`Preços de tabela atuais: **${prices}**. Promoções e cupons válidos podem alterar o total; confira o valor final antes de pagar. `:'Consulte os valores atualizados na seção de preços da home. ')
-                +'O pagamento é único. Pix e cartão são oferecidos pelo Mercado Pago quando disponíveis no checkout. O presente é liberado após a confirmação verificada do pagamento; o retorno ao site, sozinho, não aprova a compra. Se já pagou e continua pendente, informe ao suporte o ID do pedido, sem dados bancários. '+link('Ver preços','/home.html#preco'); break;
+                +'O pagamento é único. Pix e cartão são oferecidos pelo Mercado Pago quando disponíveis no checkout. O presente é liberado após a confirmação verificada do pagamento; o retorno ao site, sozinho, não aprova a compra. Se já pagou e continua pendente, informe ao suporte o ID do pedido, sem dados bancários. '+link('Ver preços','/#preco'); break;
         }
-        case 'media': reply='O plano escolhido define quantas fotos, vídeos e músicas você pode incluir. Os limites de tamanho aparecem no formulário. Aguarde o envio terminar antes de avançar e mantenha uma cópia dos arquivos. Se falhar, diga o tipo e o tamanho do arquivo e a mensagem exibida, sem enviar mídias pessoais ao chat. '+link('Criar presente','/criar.html'); break;
-        case 'sharing': reply='Depois da confirmação do pagamento, você encontra o presente, o link e o QR Code na sua conta. Compartilhe só com quem deve ver: quem tem o link pode acessar o presente. Abrir o link público conta para a regra da garantia comercial; consulte sua prévia privada pela conta. '+link('Minha Conta','/minha-conta.html'); break;
+        case 'media': reply='O plano escolhido define quantas fotos, vídeos e músicas você pode incluir. Os limites de tamanho aparecem no formulário. Aguarde o envio terminar antes de avançar e mantenha uma cópia dos arquivos. Se falhar, diga o tipo e o tamanho do arquivo e a mensagem exibida, sem enviar mídias pessoais ao chat. '+link('Criar presente','/criar-presente'); break;
+        case 'sharing': reply='Depois da confirmação do pagamento, você encontra o presente, o link e o QR Code na sua conta. Compartilhe só com quem deve ver: quem tem o link pode acessar o presente. Abrir o link público conta para a regra da garantia comercial; consulte sua prévia privada pela conta. '+link('Minha Conta','/minha-conta'); break;
         case 'themes': {
             const themes=Object.values(catalog?.themes||{}).map(t=>t.nome).filter(Boolean);
             reply=(themes.length?'Os temas disponíveis são: **'+themes.join(', ')+'**. ':'Veja os temas disponíveis na home. ')
-                +'Cada tema tem campos e recursos próprios. Escolha um e use a prévia para conferir o resultado. '+link('Explorar temas','/home.html#temas'); break;
+                +'Cada tema tem campos e recursos próprios. Escolha um e use a prévia para conferir o resultado. '+link('Explorar temas','/#temas'); break;
         }
-        case 'creation': reply='Para criar seu presente:\n- Escolha o plano e o tema.\n- Preencha as etapas com os textos e as mídias desejadas.\n- Confira a prévia.\n- Finalize o pagamento.\n- Compartilhe o link ou QR Code após a confirmação.\n'+link('Começar a criar','/criar.html'); break;
+        case 'creation': reply='Para criar seu presente:\n- Escolha o plano e o tema.\n- Preencha as etapas com os textos e as mídias desejadas.\n- Confira a prévia.\n- Finalize o pagamento.\n- Compartilhe o link ou QR Code após a confirmação.\n'+link('Começar a criar','/criar-presente'); break;
         default: reply='Quero entender melhor: sua dúvida é sobre criar o presente, fotos e vídeos, pagamento, conta, link ou reembolso? Se apareceu um erro, diga em qual etapa e copie apenas a mensagem, sem senhas ou dados bancários.'; suggestions.unshift('Fotos e vídeos','Pagamento pendente');
     }
     return {text:reply,suggestions:suggestions.slice(0,4),category};

@@ -33,7 +33,7 @@
                 <h1>Olá, <em id="greetingName">Usuário</em>.</h1>
                 <p class="subtitle">Aqui estão todas as histórias que você já eternizou.</p>
             </div>
-            <a href="criar.html" class="btn-create-hero">
+            <a href="/criar-presente" class="btn-create-hero">
                 <span>✦</span> Criar novo presente
             </a>
         </header>
@@ -98,7 +98,7 @@
                     <div class="empty-icon">💌</div>
                     <h3>Sua coleção está vazia</h3>
                     <p>Você ainda não criou nenhum presente. Que tal começar agora?</p>
-                    <a href="criar.html" class="btn-primary">Criar meu primeiro presente</a>
+                    <a href="/criar-presente" class="btn-primary">Criar meu primeiro presente</a>
                 </div>
 
                 <div id="noResults" class="migrated-minha-conta-2 empty-state">
@@ -134,7 +134,7 @@
             <label for="refundReason">Motivo da solicitação</label>
             <textarea id="refundReason" minlength="5" maxlength="1000" rows="4" required placeholder="Como podemos ajudar?"></textarea>
             <p class="refund-note">O envio inicia a análise; o estorno depende da confirmação do reembolso.</p>
-            <a class="refund-policy" href="reembolso.html" target="_blank" rel="noopener">Consultar política de reembolso ↗</a>
+            <a class="refund-policy" href="/politica-de-reembolso" target="_blank" rel="noopener">Consultar política de reembolso ↗</a>
             <p id="refundError" role="alert"></p>
             <div class="refund-dialog-actions"><button type="button" id="cancelRefund">Cancelar</button><button type="submit" id="submitRefund">Enviar solicitação</button></div>
         </form>

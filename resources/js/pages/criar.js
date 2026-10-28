@@ -395,7 +395,7 @@ function atualizarPreview() {
   pulsarPreview();
 }
 
-// O mesmo HTML usado em ver.html, isolado dos estilos do formulário.
+// O mesmo HTML usado em /presente, isolado dos estilos do formulário.
 let themePreviewFrame = null;
 let temaPreviewKey = null;
 let previewExperience = false;
@@ -870,12 +870,12 @@ $("form").addEventListener("submit", async (e) => {
     await salvarPedido({...draft,...purchase,id:purchase.id}).catch(()=>{});
     await excluirPedidoDB(draftKey).catch(()=>{});
     try{sessionStorage.removeItem('na_creator_request');}catch{}
-    location.href='pagamento.html?id='+encodeURIComponent(purchase.id);
+    location.href='/pagamento?id='+encodeURIComponent(purchase.id);
   } catch(err) {
     draftSuspended=false;
     $('draftSaveStatus').textContent=recoverable?'Rascunho salvo neste dispositivo · envio ao servidor não concluído':'Não foi possível salvar a cópia local. Mantenha esta página aberta.';
     if(err?.status===401){
-      if(recoverable){location.href='login.html?next='+encodeURIComponent('criar.html?resume='+requestId);return;}
+      if(recoverable){location.href='/entrar?next='+encodeURIComponent('/criar-presente?resume='+requestId);return;}
       $('erroMedia').textContent='Não foi possível guardar o rascunho neste navegador. Abra o login em outra aba, entre e tente salvar novamente sem fechar esta página.';
     }else $('erroMedia').textContent=err?.message||'Não foi possível salvar. Tente novamente.';
     ir(3);btn.disabled=false;btn.textContent='Tentar salvar novamente →';
@@ -924,7 +924,7 @@ async function carregarPedidoParaEdicao() {
     const serverId = id || recovered?.serverId;
     if(serverId)({ purchase: apiPedido } = await window.ApiPurchases.getOne(serverId));
   } catch (err) {
-    if (err && err.code === "NOT_AUTHENTICATED") { location.href = 'login.html?next='+encodeURIComponent(recovered?'criar.html?resume='+recovered.client_request_id:'criar.html?id='+id); return; }
+    if (err && err.code === "NOT_AUTHENTICATED") { location.href = '/entrar?next='+encodeURIComponent(recovered?'/criar-presente?resume='+recovered.client_request_id:'/criar-presente?id='+id); return; }
     $('erroMedia').textContent=err.message||'Não foi possível carregar.';ir(3);$('draftSaveStatus').textContent='Não foi possível recuperar o presente. Recarregue a página antes de editar.';return false;
 
   }
@@ -933,7 +933,7 @@ async function carregarPedidoParaEdicao() {
   const pedido = recovered ? { ...(apiPedido || {}), ...recovered } : { ...(local || {}), ...(apiPedido || {}) };
   if(apiPedido&&apiPedido.content_version!==1&&local){pedido.fotos=local.fotos||[];pedido.videos=local.videos||[];pedido.musica=local.musica||null;}
   if (!apiPedido && !local) return;
-  if (apiPedido && apiPedido.status !== 'pending') { location.href = apiPedido.status === 'paid' ? 'resultado.html?id='+apiPedido.id : 'minha-conta.html'; return; }
+  if (apiPedido && apiPedido.status !== 'pending') { location.href = apiPedido.status === 'paid' ? '/resultado?id='+apiPedido.id : '/minha-conta'; return; }
 
   pedidoEditandoId = recovered ? recovered.serverId || null : pedido.id;
   if(recovered){requestId=recovered.client_request_id;draftKey='__draft_'+requestId;try{sessionStorage.setItem('na_creator_request',requestId);}catch{}}

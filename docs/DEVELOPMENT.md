@@ -29,7 +29,7 @@ Nenhum usuário/admin com senha padrão é criado. Registre uma conta pela tela 
 ## Testes
 
 - npm test: runtime dos temas, referências estáveis, etapas, retomada/salvamento, CSRF no cliente e assets.
-- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo admin/planos.html.
+- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo /admin/planos.
 - php vendor/bin/phpunit: suíte HTTP Laravel em SQLite :memory:.
 - php vendor/bin/phpunit -c phpunit.pgsql.xml: mesma suíte no banco projeto_na_test. DB_HOST, DB_PORT, DB_USERNAME e DB_PASSWORD vêm do ambiente. Nunca apontar para o banco de uso.
 - php vendor/bin/pint --test: convenções PHP Laravel.
@@ -55,3 +55,5 @@ Execute composer install --no-dev --optimize-autoloader, npm ci, npm run build, 
 O admin usa `resources/css/admin.css` e o shell em `resources/js/admin/header.js`: menu lateral, breadcrumb, ícones SVG, notificações e diálogo acessível de atendimento. Em telas de até 760px, o menu vira uma gaveta com fechamento por Escape e navegação por teclado; tabelas rolam dentro do próprio painel. `admin-pricing.css` trata os formulários do catálogo. Preserve os IDs consumidos pelos scripts das seis páginas administrativas; o redesign não altera os contratos de autorização ou de pagamento. Para conferir visualmente, use dados sintéticos em um banco isolado, nunca contas/pedidos de produção.
 
 resources/assets.json é o catálogo de entradas; cada página possui um bundle que preserva o escopo legado. O plugin classic-page-boundaries em vite.config.js concatena fontes existentes sem duplicá-las. A separação futura em ES modules/componentes Blade exige testes dos consumidores e mantém os scripts fora das views. O QR é gerado localmente pelo adapter resources/js/adapters/qr-code.js; o gateway implementa App/Contracts/PaymentGateway.
+
+As rotas principais de páginas usam caminhos legíveis e nomes Laravel (por exemplo, `/criar-presente`, `/minha-conta` e `/temas/namoro`). `resources/assets.json` registra esses caminhos e os `legacy_urls` explícitos. As URLs `.html` já publicadas redirecionam em um único salto para a página correspondente, preservando query strings e a origem da requisição; fragmentos de recuperação continuam no navegador. Não use fallback genérico para caminhos desconhecidos: eles retornam 404. Sitemap e canonical usam somente os caminhos novos. Redirecionamentos legados têm corpo vazio e `private, no-store`, para não armazenar tokens ou identificadores. Retornos de login antigos são normalizados sem permitir destinos externos. Não converta navegação GET para POST como ajuste de SEO.

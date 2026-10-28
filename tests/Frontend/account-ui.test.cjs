@@ -21,6 +21,6 @@ test('Falha de recuperação não simula sucesso e libera nova tentativa',async(
  const s=await recoveryScope();s.setMode('recovery');s.inputEmail.value='fixture@example.test';s.ApiClient.post=async()=>{throw Error('Serviço indisponível.');};await s.handleRecovery();assert.equal(s.feedback,'Serviço indisponível.');assert.equal(s.btn.disabled,false);assert.equal(s.mode,'recovery');
 });
 test('Chat fica fora do visualizador e dos treze temas, inclusive em iframe',async()=>{
- const {chatAllowed}=await import('../../resources/js/chat/page-policy.js');const pages=Object.values(JSON.parse(fs.readFileSync('resources/assets.json','utf8'))).filter(p=>p.url.startsWith('/teste/'));
- assert.equal(pages.length,13);for(const page of pages)assert.equal(chatAllowed(page.url),false,page.url);assert.equal(chatAllowed('/ver.html'),false);assert.equal(chatAllowed('/minha-conta.html'),true);assert.equal(chatAllowed('/criar.html'),true);assert.equal(chatAllowed('/login.html'),true);assert.equal(chatAllowed('/home.html',true),false);
+ const {chatAllowed}=await import('../../resources/js/chat/page-policy.js');const pages=Object.values(JSON.parse(fs.readFileSync('resources/assets.json','utf8'))).filter(p=>p.url.startsWith('/temas/'));
+ assert.equal(pages.length,13);for(const page of pages)assert.equal(chatAllowed(page.url),false,page.url);assert.equal(chatAllowed('/presente'),false);assert.equal(chatAllowed('/minha-conta'),true);assert.equal(chatAllowed('/criar-presente'),true);assert.equal(chatAllowed('/entrar'),true);assert.equal(chatAllowed('/',true),false);
 });

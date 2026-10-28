@@ -20,6 +20,7 @@ class SeoTest extends TestCase
     {
         $pages = json_decode(file_get_contents(resource_path('assets.json')), true);
         foreach ($pages as $page) {
+            $this->assertStringNotContainsString('.html', $page['url']);
             $response = $this->get($page['url'])->assertOk();
             $html = $response->getContent();
             $this->assertSame(1, preg_match_all('/<meta\b[^>]*\bname="description"/i', $html), $page['url']);
@@ -35,14 +36,49 @@ class SeoTest extends TestCase
 
     public function test_public_pages_are_indexable_but_private_and_parameterized_pages_are_not(): void
     {
-        $this->get('/home.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/home.html"', false);
-        $this->get('/teste/namoro.html')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
-        foreach (['/ver.html?token=synthetic-secret', '/teste/namoro.html?embed=1', '/minha-conta.html', '/admin/dashboard.html', '/pagamento.html', '/resultado.html'] as $url) {
+        $this->get('/')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/"', false);
+        $this->get('/criar-presente')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large')->assertSee('href="https://site.example.test/criar-presente"', false);
+        $this->get('/temas/namoro')->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
+        $this->get('/temas/namoro')->assertSee('href="https://site.example.test/temas/namoro"', false);
+        foreach (['/presente?token=synthetic-secret', '/temas/namoro?embed=1', '/minha-conta', '/admin/painel', '/pagamento', '/resultado'] as $url) {
             $this->get($url)->assertHeader('X-Robots-Tag', 'noindex, nofollow')->assertSee('name="robots" content="noindex, nofollow"', false);
         }
-        $this->get('/login.html')->assertHeader('X-Robots-Tag', 'noindex, follow');
+        $this->get('/entrar')->assertHeader('X-Robots-Tag', 'noindex, follow');
         $this->get('/api/config')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
-        $this->get('/missing.html')->assertNotFound()->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        foreach (['/missing.html', '/criar-presente.html', '/teste/missing.html'] as $url) {
+            $this->get($url)->assertNotFound()->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        }
+    }
+
+    public function test_clean_page_routes_render_directly_and_known_legacy_routes_redirect(): void
+    {
+        foreach (['/', '/criar-presente', '/entrar', '/minha-conta', '/admin/planos', '/temas/namoro'] as $friendlyUrl) {
+            $this->get($friendlyUrl)->assertOk();
+        }
+
+        $routes = collect(app('router')->getRoutes())->map(fn ($route) => $route->uri())->all();
+        foreach (['/', 'criar-presente', 'entrar', 'minha-conta', 'temas/namoro'] as $friendlyRoute) {
+            $this->assertContains($friendlyRoute, $routes);
+        }
+        $this->assertContains('home.html', $routes);
+        $this->assertNotContains('{legacyPath}', $routes);
+    }
+
+    public function test_every_legacy_page_redirects_once_without_changing_the_origin_or_query(): void
+    {
+        $pages = json_decode(file_get_contents(resource_path('assets.json')), true);
+        foreach ($pages as $page) {
+            foreach ($page['legacy_urls'] as $legacy) {
+                $query = 'token=synthetic-secret&resume=draft-123&retorno=1&next=%2Fcriar.html%3Fid%3Dtest';
+                $response = $this->withHeader('Host', 'preview.example.test')->get($legacy.'?'.$query)
+                    ->assertStatus(301)->assertHeader('Location', $page['url'].'?'.$query)
+                    ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+                $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+                $this->assertStringNotContainsString('synthetic-secret', $response->getContent());
+                $this->get($page['url'])->assertOk();
+            }
+        }
+        $this->assertDatabaseCount('purchases', 0);
     }
 
     public function test_sitemap_has_only_public_canonical_urls_and_ignores_request_host(): void
@@ -52,11 +88,12 @@ class SeoTest extends TestCase
         $this->assertNotFalse($xml);
         $urls = array_map(fn ($url) => (string) $url->loc, iterator_to_array($xml->url, false));
         $this->assertCount(18, $urls);
-        $this->assertContains('https://site.example.test/home.html', $urls);
-        $this->assertContains('https://site.example.test/teste/vinil.html', $urls);
-        $this->assertNotContains('https://site.example.test/login.html', $urls);
+        $this->assertContains('https://site.example.test/', $urls);
+        $this->assertContains('https://site.example.test/temas/vinil', $urls);
+        $this->assertNotContains('https://site.example.test/entrar', $urls);
         foreach ($urls as $url) {
             $this->assertStringStartsWith('https://site.example.test/', $url);
+            $this->assertStringNotContainsString('.html', $url);
             $this->assertStringNotContainsString('?', $url);
             $this->get(parse_url($url, PHP_URL_PATH))->assertOk()->assertHeader('X-Robots-Tag', 'index, follow, max-image-preview:large');
         }
@@ -64,7 +101,7 @@ class SeoTest extends TestCase
 
     public function test_sitemap_xml_declaration_works_with_php_short_tags_enabled(): void
     {
-        $script = 'require '.var_export(base_path('vendor/autoload.php'), true).'; $app=require '.var_export(base_path('bootstrap/app.php'), true).'; $app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap(); echo view("sitemap",["urls"=>["https://site.example.test/home.html"]])->render();';
+        $script = 'require '.var_export(base_path('vendor/autoload.php'), true).'; $app=require '.var_export(base_path('bootstrap/app.php'), true).'; $app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap(); echo view("sitemap",["urls"=>["https://site.example.test/"]])->render();';
         $process = new Process([PHP_BINARY, '-d', 'short_open_tag=1', '-r', $script], base_path());
         $process->mustRun();
         $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $process->getOutput());
@@ -85,7 +122,7 @@ class SeoTest extends TestCase
     public function test_disabling_indexing_blocks_all_crawlers_and_empties_sitemap(): void
     {
         config(['seo.indexing_enabled' => false]);
-        $this->get('/home.html')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        $this->get('/')->assertHeader('X-Robots-Tag', 'noindex, nofollow');
         $this->assertSame("User-agent: *\nDisallow: /\n", $this->get('/robots.txt')->getContent());
         $xml = simplexml_load_string($this->get('/sitemap.xml')->getContent());
         $this->assertCount(0, $xml->url);

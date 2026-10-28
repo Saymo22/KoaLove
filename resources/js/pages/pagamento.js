@@ -37,22 +37,22 @@ async function refreshQuote(coupon = null) {
    BOOT (aguarda config da API)
 ===================================================== */
 NA_CONFIG_READY.then(async () => {
-    if (!id) { location.href = "criar.html"; return; }
-    $('editarRascunho').href='criar.html?id='+encodeURIComponent(id);
+    if (!id) { location.href = "/criar-presente"; return; }
+    $('editarRascunho').href='/criar-presente?id='+encodeURIComponent(id);
 
     // Contrato: GET /api/purchases/:id (dono ou admin)
     try {
         ({ purchase: pedido } = await window.ApiPurchases.getOne(id));
     } catch (err) {
         if (err && (err.code === "NOT_AUTHENTICATED" || err.status === 401)) {
-            location.href = 'login.html?next='+encodeURIComponent('pagamento.html?id='+id);
+            location.href = '/entrar?next='+encodeURIComponent('/pagamento?id='+id);
             return;
         }
-        location.href = "criar.html";
+        location.href = "/criar-presente";
         return;
     }
 
-    if (pedido.status === "paid") { location.href = "resultado.html?id=" + id; return; }
+    if (pedido.status === "paid") { location.href = "/resultado?id=" + id; return; }
     if (pedido.status === 'refunded') { $('erro').textContent = 'Este pedido foi reembolsado. Entre em contato com o suporte.'; $('btnPagar').disabled = true; return; }
 
     // Mídia local (fotos/vídeos/música) — blobs ficam no IndexedDB
@@ -115,7 +115,7 @@ NA_CONFIG_READY.then(async () => {
     $("btnPagarTxt").textContent = CONFIG.modoTeste ? "✨ Simular pagamento aprovado" : disponivel ? manual ? 'Gerar Pix' : "🔒 Continuar no Mercado Pago" : "Pagamento indisponível";
     if (!disponivel) $("erro").textContent = "O pagamento ainda não foi habilitado. Tente novamente mais tarde.";
     if (pedido.checkout) {
-        $('editarRascunho').href = 'minha-conta.html';
+        $('editarRascunho').href = '/minha-conta';
         $('editarRascunho').textContent = 'Ver meus presentes';
         metodoSelecionado = pedido.checkout.method;
         document.querySelectorAll('.pg-metodo').forEach(m => m.classList.toggle('sel', m.dataset.metodo === metodoSelecionado));
@@ -131,7 +131,7 @@ NA_CONFIG_READY.then(async () => {
 async function verificarRetorno(tentativa = 0) {
     try {
         const {purchase} = await window.ApiPurchases.getOne(id);
-        if (purchase.status === 'paid') { location.href = 'resultado.html?id=' + encodeURIComponent(id); return; }
+        if (purchase.status === 'paid') { location.href = '/resultado?id=' + encodeURIComponent(id); return; }
         const status = purchase.checkout?.status;
         if (purchase.checkout?.provider === 'pix_manual') {
             $('erro').textContent = purchase.status === 'refunded' ? 'O pagamento foi reembolsado. Entre em contato com o suporte.' : 'Aguardando conferência manual do Pix. O presente será liberado após confirmar o recebimento.';
@@ -158,7 +158,7 @@ async function mostrarPix(checkout) {
     $('btnPagarTxt').textContent = 'Verificar liberação do presente';
     $('btnPagar').disabled = false;
     $('pgCupom').disabled = $('pgCupomBtn').disabled = true;
-    $('editarRascunho').href = 'minha-conta.html';
+    $('editarRascunho').href = '/minha-conta';
     $('editarRascunho').textContent = 'Ver meus presentes';
     $('erro').textContent = 'Aguardando pagamento e conferência manual. Se já pagou, aguarde a liberação.';
     try {
@@ -277,7 +277,7 @@ $("btnPagar").addEventListener("click", async (e) => {
 
         txt.textContent = "✓ Pagamento aprovado!";
         setTimeout(() => {
-            location.href = "resultado.html?id=" + id;
+            location.href = "/resultado?id=" + id;
         }, 900);
     } catch (err) {
         if ((err.status===409 || err.status===422) && !pedido?.checkout) {

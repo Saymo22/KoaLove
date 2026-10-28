@@ -76,7 +76,7 @@ function criarTemaCard(chave, t) {
         mockCont.appendChild(d);
     });
 
-    el.querySelector("a.b").href = "criar.html?tema=" + chave;
+    el.querySelector("a.b").href = "/criar-presente?tema=" + chave;
 
     const fav = el.querySelector(".tema-fav");
     fav.addEventListener("click", (e) => {
@@ -87,7 +87,7 @@ function criarTemaCard(chave, t) {
     });
 
     // Tracking do mouse → apenas para o glow radial.
-    // O tilt 3D fica por conta do CSS (:hover), igual ao criar.html.
+    // O tilt 3D fica por conta do CSS (:hover), igual ao /criar-presente.
     if (!window.matchMedia("(pointer: coarse)").matches) {
         el.addEventListener("mousemove", (e) => {
             const rect = el.getBoundingClientRect();
@@ -215,7 +215,7 @@ document.querySelectorAll(".filtro").forEach(btn => {
             tab.classList.add("on");
 
             const tema = tab.dataset.preview;
-            iframe.src = "ver.html?demo=1&tema=" + tema;
+            iframe.src = "/presente?demo=1&tema=" + tema;
         });
     });
 })();

@@ -15,15 +15,16 @@ function adminIcon(name){return `<svg class="admin-icon" viewBox="0 0 24 24" ari
 function renderAdminHeader(activeTab) {
     const header=document.getElementById('adminHeader');if(!header)return;
     const tabs=[['dashboard','Visão geral'],['clientes','Clientes'],['planos','Planos e descontos'],['reembolsos','Reembolsos'],['suporte','Atendimento']];
+    const paths={dashboard:'/admin/painel',clientes:'/admin/clientes',planos:'/admin/planos',reembolsos:'/admin/reembolsos',suporte:'/admin/suporte'};
     const title=tabs.find(([id])=>id===activeTab)?.[1]||'Administração';
     header.innerHTML=`
       <button class="admin-nav-backdrop" type="button" aria-label="Fechar menu"></button>
       <aside class="admin-sidebar" id="adminSidebar" aria-label="Menu administrativo">
-        <a href="dashboard.html" class="admin-logo"><img class="admin-brand-image" src="/branding/koalove-logo-admin.svg" width="184" height="64" alt="KoaLove"><span class="admin-brand-caption">Painel premium</span></a>
+        <a href="/admin/painel" class="admin-logo"><img class="admin-brand-image" src="/branding/koalove-logo-admin.svg" width="184" height="64" alt="KoaLove"><span class="admin-brand-caption">Painel premium</span></a>
         <p class="admin-nav-label">Administração</p>
-        <nav class="admin-tabs" aria-label="Navegação do painel">${tabs.map(([id,label])=>`<a href="${id}.html" class="admin-tab ${id===activeTab?'active':''}"${id===activeTab?' aria-current="page"':''}>${adminIcon(id)}<span>${label}</span></a>`).join('')}</nav>
+        <nav class="admin-tabs" aria-label="Navegação do painel">${tabs.map(([id,label])=>`<a href="${paths[id]}" class="admin-tab ${id===activeTab?'active':''}"${id===activeTab?' aria-current="page"':''}>${adminIcon(id)}<span>${label}</span></a>`).join('')}</nav>
         <div class="admin-sidebar-footer">
-          <a class="admin-site-link" href="../home.html">Visitar o site <span aria-hidden="true">↗</span></a>
+          <a class="admin-site-link" href="/">Visitar o site <span aria-hidden="true">↗</span></a>
           <div class="admin-user-chip"><img src="/branding/koalove-simbolo-sobre-rose.svg" width="44" height="44" alt=""><div><strong id="adminUserName"></strong><span>Administrador</span></div></div>
           <button class="btn-logout-admin" type="button">${adminIcon('logout')}Sair do painel</button>
         </div>

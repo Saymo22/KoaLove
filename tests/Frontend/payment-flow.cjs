@@ -21,7 +21,7 @@ module.exports=async()=>{
   assert(!s.get('btnPagarTxt').textContent.includes('aprovado'));
   const r=setup(true);await r.boot();await new Promise(setImmediate);
   assert.equal(r.scope.location.href,undefined);assert.match(r.get('erro').textContent,/Aguardando/);
-  r.setStatus('paid');await r.timers.find(t=>t.delay===5000).fn();assert.equal(r.scope.location.href,'resultado.html?id=p_fixture');
+  r.setStatus('paid');await r.timers.find(t=>t.delay===5000).fn();assert.equal(r.scope.location.href,'/resultado?id=p_fixture');
   const unavailable=setup(false,false);await unavailable.boot();assert.equal(unavailable.get('btnPagar').disabled,true);
   const manual=setup(false,true,true);await manual.boot();
   assert.equal(manual.methods[1].hidden,true);
@@ -32,5 +32,5 @@ module.exports=async()=>{
   await manual.get('pixCopy').listeners.click();assert.equal(manual.get('copied').value,'synthetic-pix-payload');
   await manual.get('btnPagar').listeners.click();assert.equal(manual.scope.location.href,undefined);
   manual.setStatus('paid');await manual.get('btnPagar').listeners.click();
-  assert.equal(manual.scope.location.href,'resultado.html?id=p_fixture');
+  assert.equal(manual.scope.location.href,'/resultado?id=p_fixture');
 };

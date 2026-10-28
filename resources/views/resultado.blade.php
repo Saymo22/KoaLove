@@ -112,7 +112,7 @@
         </div>
 
         <div class="rs-outro">
-            <a href="criar.html">Criar outro presente</a>
+            <a href="/criar-presente">Criar outro presente</a>
         </div>
 
     </main>

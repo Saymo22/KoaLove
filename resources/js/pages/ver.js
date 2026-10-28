@@ -463,7 +463,7 @@ async function getPurchase(id){
  if(remote?.content_version!==1&&!token)throw new Error('Este presente antigo precisa ser sincronizado pelo criador antes do compartilhamento.');
  return remote;
 }
-function fail(err){console.error('[KoaLove / experiências]',err);$('loading').hidden=true;$('error').hidden=false;$('error').innerHTML=`<span>✦</span><h1>Não conseguimos abrir sua surpresa.</h1><p>${E(err.message||String(err))}</p><a href="home.html">Voltar ao início ↗</a>`;}
+function fail(err){console.error('[KoaLove / experiências]',err);$('loading').hidden=true;$('error').hidden=false;$('error').innerHTML=`<span>✦</span><h1>Não conseguimos abrir sua surpresa.</h1><p>${E(err.message||String(err))}</p><a href="/">Voltar ao início ↗</a>`;}
 async function init(){
  try{
   if(!DEMO&&window.NA_CONFIG_READY)await window.NA_CONFIG_READY.catch(()=>null);

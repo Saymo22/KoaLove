@@ -1,10 +1,11 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 module.exports=async()=>{
  const login=fs.readFileSync(path.join(__dirname,'../../resources/js/pages/login.js'),'utf8');
- const scope=vm.createContext({location:{href:'https://example.test/login.html',origin:'https://example.test',search:'?next='+encodeURIComponent('criar.html?resume=stable-request')},URL,URLSearchParams});
+ const scope=vm.createContext({location:{href:'https://example.test/entrar',origin:'https://example.test',search:'?next='+encodeURIComponent('/criar-presente?resume=stable-request')},URL,URLSearchParams});
  vm.runInContext(login.slice(0,login.indexOf('document.addEventListener')),scope);
- assert.equal(vm.runInContext('destinoAposLogin()',scope),'/criar.html?resume=stable-request');
- for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/login.html']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'minha-conta.html');}
+ assert.equal(vm.runInContext('destinoAposLogin()',scope),'/criar-presente?resume=stable-request');
+ for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/entrar']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'/minha-conta');}
+ for(const [next,expected] of [['/criar.html?resume=stable-request','/criar-presente?resume=stable-request'],['/pagamento.html?id=p_fixture','/pagamento?id=p_fixture'],['https://outside.test/criar.html','/minha-conta']]){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),expected);}
  const source=fs.readFileSync(path.join(__dirname,'../../resources/js/pages/criar.js'),'utf8');
  const submit=source.slice(source.indexOf('$("form").addEventListener("submit"'),source.indexOf('function abrirPrevia'));
  let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{},erro3:{},draftSaveStatus:{}};
@@ -19,10 +20,10 @@ module.exports=async()=>{
  });
  vm.runInContext(fs.readFileSync(path.join(__dirname,'../../resources/js/core/plan-limits.js'),'utf8'),context);
  vm.runInContext(submit,context);await saveHandler({preventDefault(){}});assert.equal(controls.erroMedia.textContent,'Conexão interrompida no envio');
- await saveHandler({preventDefault(){}});assert.equal(creates,1,'Retry atualiza o pedido criado');assert.equal(syncs,2);assert.equal(context.location.href,'pagamento.html?id=same-purchase','Falha no cache não impede salvamento confirmado');
+ await saveHandler({preventDefault(){}});assert.equal(creates,1,'Retry atualiza o pedido criado');assert.equal(syncs,2);assert.equal(context.location.href,'/pagamento?id=same-purchase','Falha no cache não impede salvamento confirmado');
  context.pedidoEditandoId=null;context.location.href='';let preserved;
  context.salvarPedido=async p=>{preserved=p;};context.ApiPurchases.create=async()=>{throw Object.assign(new Error('Sessão expirada'),{status:401});};
- await saveHandler({preventDefault(){}});assert.equal(preserved.fotos[0].name,'test.png');assert.equal(context.location.href,'login.html?next='+encodeURIComponent('criar.html?resume=stable-request'));
+ await saveHandler({preventDefault(){}});assert.equal(preserved.fotos[0].name,'test.png');assert.equal(context.location.href,'/entrar?next='+encodeURIComponent('/criar-presente?resume=stable-request'));
  context.location.href='';context.salvarPedido=async()=>{throw new Error('QuotaExceeded');};
  await saveHandler({preventDefault(){}});assert.equal(context.location.href,'','Sem cópia recuperável, não redireciona e não descarta arquivos');
  context.creatorPlan=()=>({photos:1,videos:0,music:0});context.fotoFiles=[{name:'one.png'},{name:'two.png'}];

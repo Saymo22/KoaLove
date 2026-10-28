@@ -33,7 +33,7 @@ class GoogleAuthenticationTest extends TestCase
         $this->get('/auth/google/redirect')->assertRedirect('https://accounts.google.test/authorize');
         $flow = $this->app['session.store']->get('google_oidc');
         $this->get('/auth/google/callback?state='.$flow['state'].'&code=one-time-code')
-            ->assertRedirect('/minha-conta.html');
+            ->assertRedirect('/minha-conta');
 
         $this->assertAuthenticatedAs($user->fresh());
         $this->assertSame('google-sub-1', $user->fresh()->google_sub);
@@ -51,7 +51,7 @@ class GoogleAuthenticationTest extends TestCase
 
         $this->get('/auth/google/redirect');
         $this->get('/auth/google/callback?state=attacker-state&code=one-time-code')
-            ->assertRedirect('/login.html?google=failed');
+            ->assertRedirect('/entrar?google=failed');
         $this->assertDatabaseCount('users', 0);
     }
 
@@ -92,7 +92,7 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertDatabaseCount('google_security_events', 1);
     }
 
-    private function googleFlow(array $identity, string $next = '/minha-conta.html'): array
+    private function googleFlow(array $identity, string $next = '/minha-conta'): array
     {
         config(['services.google.client_id' => 'test-client', 'services.google.client_secret' => 'test-secret']);
         $provider = Mockery::mock(IdentityProvider::class);
@@ -109,7 +109,7 @@ class GoogleAuthenticationTest extends TestCase
         $user = User::factory()->create(['email' => 'synthetic@example.test']);
         $flow = $this->googleFlow(['sub' => 'external-sub', 'email' => $user->email,
             'name' => 'Synthetic', 'picture' => null, 'email_authoritative' => false]);
-        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/login.html?google=failed');
+        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/entrar?google=failed');
         $this->assertGuest();
         $this->assertNull($user->fresh()->google_sub);
     }
@@ -118,10 +118,10 @@ class GoogleAuthenticationTest extends TestCase
     {
         $flow = $this->googleFlow(['sub' => 'new-sub', 'email' => 'synthetic@example.test',
             'name' => 'Synthetic', 'picture' => null, 'email_authoritative' => false], '/criar.html?resume=synthetic-draft-123');
-        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/criar.html?resume=synthetic-draft-123');
+        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/criar-presente?resume=synthetic-draft-123');
         $this->assertAuthenticated();
         $this->assertSame(0, session('google_session_version'));
-        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/login.html?google=failed');
+        $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/entrar?google=failed');
         $this->assertDatabaseCount('users', 1);
     }
 
@@ -201,6 +201,6 @@ class GoogleAuthenticationTest extends TestCase
         $this->sendSecurityEvent()->assertStatus(400);
         $this->assertDatabaseCount('google_security_events', 0);
         $this->googleFlow(['sub' => 'unused'], '//external.example.test/path');
-        $this->assertSame('/minha-conta.html', session('google_login_next'));
+        $this->assertSame('/minha-conta', session('google_login_next'));
     }
 }

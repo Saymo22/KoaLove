@@ -1,1 +1,0 @@
-import 'virtual:page:index';

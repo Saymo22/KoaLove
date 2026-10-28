@@ -608,7 +608,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* Integração com criar.html e ver.html; interações originais preservadas. */
+/* Integração com /criar-presente e /presente; interações originais preservadas. */
 function naChange(target, value, render){if(value===undefined||JSON.stringify(target)===JSON.stringify(value))return;NATheme.replaceArray(target,value);render?.();}
 function naMarquee(values){const track=document.getElementById('marqueeTrack');if(track){track.replaceChildren();[...values,...values].forEach(text=>{const span=document.createElement('span');span.textContent=text;track.append(span);const sep=document.createElement('span');sep.className='sep';sep.textContent='◆';track.append(sep);});}}
 NATheme.connect({key:"casamento",names: '.hero-names', phrase: '.hero-script', letters: ['.vow-reveal'],

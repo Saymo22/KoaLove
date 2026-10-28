@@ -1,6 +1,6 @@
 # Planos, promoções e cupons
 
-O administrador gerencia os preços em `/admin/planos.html`, pelo menu **Planos e descontos**. Apenas contas com role `admin` acessam a API de edição. A instalação mantém um único plano, **Presente completo**, de **R$ 19,90**; os outros são cadastrados pelo administrador.
+O administrador gerencia os preços em `/admin/planos`, pelo menu **Planos e descontos**. Apenas contas com role `admin` acessam a API de edição. A instalação mantém um único plano, **Presente completo**, de **R$ 19,90**; os outros são cadastrados pelo administrador.
 
 ## Cadastro
 

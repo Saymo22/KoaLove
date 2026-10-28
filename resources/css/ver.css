@@ -1,6 +1,6 @@
 /* KOALOVE — 13 experiências imersivas V3.
    Correção: @import anterior removido porque invalidava toda a folha de estilos.
-   As fontes já são carregadas no <head> de ver.html. */
+   As fontes já são carregadas no <head> da página de presente. */
 
 :root{
   --ease:cubic-bezier(.22,1,.36,1);

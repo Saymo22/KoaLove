@@ -87,6 +87,6 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(10)->by('support-account:'.($request->user()?->id ?? 'guest:'.$request->ip())),
             Limit::perMinute(30)->by('support-ip:'.$request->ip()),
         ]);
-        ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').'/recuperar-senha.html#token='.rawurlencode($token).'&email='.rawurlencode($user->email));
+        ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').'/recuperar-senha#token='.rawurlencode($token).'&email='.rawurlencode($user->email));
     }
 }

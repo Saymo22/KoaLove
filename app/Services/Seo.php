@@ -11,7 +11,7 @@ class Seo
         $pages = config('seo.pages');
         foreach (config('gift.themes') as $key => $theme) {
             $name = $theme['nome'] ?? $theme['name'] ?? ucfirst($key);
-            $pages['/teste/'.$key.'.html'] ??= ['title' => 'Tema '.$name.' — KoaLove', 'description' => 'Conheça a demonstração do tema '.$name.' para presentes digitais do KoaLove. Personalize sua história com fotos, vídeos, música e mensagens.'];
+            $pages['/temas/'.$key] ??= ['title' => 'Tema '.$name.' — KoaLove', 'description' => 'Conheça a demonstração do tema '.$name.' para presentes digitais do KoaLove. Personalize sua história com fotos, vídeos, música e mensagens.'];
         }
 
         return $pages;
@@ -19,7 +19,7 @@ class Seo
 
     public function metadata(Request $request): array
     {
-        $path = '/'.$request->path();
+        $path = '/'.trim($request->path(), '/');
         $public = $this->publicPages();
         $utilities = config('seo.utility_pages');
         $data = $public[$path] ?? $utilities[$path] ?? config('seo.restricted_pages')[$path] ?? ['title' => 'Área reservada — KoaLove', 'description' => 'Área reservada do KoaLove para acessar sua conta e gerenciar presentes digitais.'];

@@ -22,7 +22,7 @@ Não há promessa de resposta instantânea ou prazo de atendimento: a equipe pre
 
 - Rotas na mesma origem com sessão Laravel; mutações exigem CSRF. Leitura privada recebe `Cache-Control: private, no-store`.
 - A consulta seleciona apenas o atendimento da conta autenticada; nunca recebe um ID de dono pela URL. Contas em exclusão são recusadas. O backend não utiliza `auth.users` ou Data API pública do Supabase.
-- Limite de 10 envios/minuto por conta e 30/minuto por IP, além do limite geral da API. Mensagens até 2.000 caracteres; triagem até três textos de 500 caracteres. Caminho da página limitado a `.html`, sem query ou fragmento.
+- Limite de 10 envios/minuto por conta e 30/minuto por IP, além do limite geral da API. Mensagens até 2.000 caracteres; triagem até três textos de 500 caracteres. Caminho da página não contém extensão, query ou fragmento.
 - Até 498 registros do cliente/contexto por atendimento, reservando duas respostas da equipe. No limite, o cliente volta ao assistente e inicia outro atendimento; o histórico anterior permanece para o admin e na exportação privada.
 - Conversas não são gravadas em localStorage/sessionStorage. Mudanças de conta ou perda da sessão limpam a exibição privada. Dados persistentes seguem o ciclo existente de exportação e exclusão de tickets da conta. Mensagens em texto não devem conter senhas, códigos ou dados bancários; a interface avisa isso.
 - Sem alteração de esquema ou migração neste recurso. A implantação usa a tabela privada `app_private.tickets` existente no mesmo banco Laravel.
