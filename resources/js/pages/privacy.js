@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         request.onsuccess=()=>{const db=request.result;const tx=db.transaction('pedidos','readwrite');tx.objectStore('pedidos').clear();tx.oncomplete=tx.onerror=()=>{db.close();resolve();};};
       });
       document.getElementById('deleteAccountForm').reset();
-      location.href='/login.html';
+      location.href='/entrar';
     } catch(error) { message.textContent=error.message; }
   });
 });

@@ -18,7 +18,7 @@ async function fazerLogoutAdmin() {
   await window.ApiClient.post('/auth/logout', {});
   window.ApiClient.setCachedUser(null);
   adminSessionUser = null;
-  window.location.href = "login.html";
+  window.location.href = "/admin/entrar";
 }
 
 async function estaLogadoAdmin() {
@@ -31,6 +31,6 @@ async function estaLogadoAdmin() {
 
 async function protegerRotaAdmin() {
   const ok = await estaLogadoAdmin();
-  if (!ok) { window.location.href = "login.html"; return false; }
+  if (!ok) { window.location.href = "/admin/entrar"; return false; }
   return true;
 }

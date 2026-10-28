@@ -9,7 +9,7 @@
         element.textContent = text;
         element.className = 'msg-box ' + (success ? 'success' : 'error');
     };
-    estaLogadoAdmin().then(ok => { if (ok) window.location.href = 'dashboard.html'; });
+    estaLogadoAdmin().then(ok => { if (ok) window.location.href = '/admin/painel'; });
     $('togglePassword').addEventListener('click', () => {
         const visible = $('senha').type === 'password';
         $('senha').type = visible ? 'text' : 'password';
@@ -23,7 +23,7 @@
         busy(button, true); $('erro').textContent = '';
         try {
             const result = await fazerLoginAdmin($('email').value.trim(), $('senha').value);
-            if (result.ok) { window.location.href = 'dashboard.html'; return; }
+            if (result.ok) { window.location.href = '/admin/painel'; return; }
             message($('erro'), result.error || 'Não foi possível entrar. Tente novamente.');
         } catch { message($('erro'), 'Não foi possível conectar. Tente novamente.'); }
         finally { busy(button, false); }

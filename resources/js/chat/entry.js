@@ -49,7 +49,7 @@ if(chatAllowed(location.pathname,window.self!==window.top)){
         if(humanIntent(text)){
             // Verifica a sessão no servidor, sem confiar em cache local de identidade.
             try{const data=await request('/support');identity=data.user_id;adopt(data.ticket);}
-            catch(error){if(error.status!==401)throw error;return {text:`Para conversar com a equipe e receber a resposta neste chat, entre na sua conta: [Entrar](${location.origin}/login.html). Suas dúvidas gerais podem continuar por aqui. Não envie senhas ou códigos.`,suggestions:quickHelp.filter(s=>s!=='Falar com suporte')};}
+            catch(error){if(error.status!==401)throw error;return {text:`Para conversar com a equipe e receber a resposta neste chat, entre na sua conta: [Entrar](${location.origin}/entrar). Suas dúvidas gerais podem continuar por aqui. Não envie senhas ou códigos.`,suggestions:quickHelp.filter(s=>s!=='Falar com suporte')};}
             if(thread&&thread.messages.length<498){mode='human';return {text:'Você está no atendimento com a equipe KoaLove. Conte o que precisa e envie sua mensagem por aqui. A resposta aparecerá neste chat quando estiver disponível; você também pode voltar depois pela mesma conta.',suggestions:['Voltar ao assistente']};}
             awaitingIssue=true;
             return {text:'Vou encaminhar você ao suporte KoaLove. 💛 Para preparar o atendimento, descreva o que aconteceu e em qual etapa. Ao enviar, sua descrição, até três perguntas anteriores e o nome desta página serão compartilhados com a equipe. A resposta chegará neste chat; não é preciso ficar com a página aberta. Não envie senhas, códigos ou dados de cartão.',suggestions:[]};
@@ -62,7 +62,7 @@ if(chatAllowed(location.pathname,window.self!==window.top)){
             try{
                 const sendingAs=identity;
                 const data=await request(starting?'/support/start':'/support/messages',{text,message_id:pending.id,
-                    ...(starting?{category:identify(text)==='other'?identify(context.join(' ')):identify(text),page:/^\/[a-zA-Z0-9_/-]+\.html$/.test(location.pathname)?location.pathname:'/home.html',context}:{})});
+                    ...(starting?{category:identify(text)==='other'?identify(context.join(' ')):identify(text),page:/^\/[a-zA-Z0-9_/-]*$/.test(location.pathname)?location.pathname:'/',context}:{})});
                 if(identity!==sendingAs||data.user_id!==sendingAs)throw new Error('A sessão mudou. Reabra o chat para continuar.');
                 // O texto que acabou de ser enviado já está visível; respostas concorrentes não são descartadas.
                 const own=data.ticket.messages.findIndex(m=>m.id===pending.id);

@@ -97,7 +97,7 @@ class RefundRequestTest extends TestCase
         $this->getJson('/api/purchases/'.$p->id)->assertOk()->assertJsonPath('data.purchase.refund_eligibility.eligible', true);
         $this->head('/api/shared/'.$p->share_token)->assertOk();
         $this->assertNull($p->fresh()->first_shared_opened_at);
-        $this->followingRedirects()->get('/ver.html?demo=1&tema=namoro')->assertOk();
+        $this->get('/presente?demo=1&tema=namoro')->assertOk();
         $this->assertNull($p->fresh()->first_shared_opened_at);
         $this->travel(10)->seconds();
         $response = $this->getJson('/api/shared/'.$p->share_token)->assertOk()->assertJsonMissingPath('data.purchase.refund_eligibility')->assertJsonMissingPath('data.purchase.first_shared_opened_at');

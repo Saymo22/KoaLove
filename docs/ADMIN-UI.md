@@ -1,6 +1,6 @@
 # Dashboard administrativo completo
 
-A página `/admin/dashboard.html` usa o HTML e o sistema visual do modelo fornecido, com CSS e JavaScript externos. A logo é KoaLove e o símbolo sobre rosé acompanha o nome e a função da sessão real. Nenhum banco de demonstração, senha padrão ou dado de cliente é criado pelo frontend.
+A página `/admin/painel` usa o HTML e o sistema visual do modelo fornecido, com CSS e JavaScript externos. A logo é KoaLove e o símbolo sobre rosé acompanha o nome e a função da sessão real. Nenhum banco de demonstração, senha padrão ou dado de cliente é criado pelo frontend.
 
 ## Mapa das funções
 

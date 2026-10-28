@@ -43,7 +43,7 @@ class SecurityReviewTest extends TestCase
             ->postJson('/api/auth/forgot-password', ['email' => $user->email])->assertOk();
         URL::setRequest(Request::create('https://attacker.example.test/api/auth/forgot-password'));
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $this->assertStringStartsWith('https://site.example.test/recuperar-senha.html#token=', $notification->toMail($user)->actionUrl);
+            $this->assertStringStartsWith('https://site.example.test/recuperar-senha#token=', $notification->toMail($user)->actionUrl);
 
             return true;
         });
@@ -93,7 +93,7 @@ class SecurityReviewTest extends TestCase
 
     public function test_html_forms_are_restricted_to_the_same_origin(): void
     {
-        $response = $this->followingRedirects()->get('/home.html')->assertOk();
+        $response = $this->get('/')->assertOk();
         $this->assertStringContainsString("form-action 'self'", $response->headers->get('Content-Security-Policy'));
     }
 

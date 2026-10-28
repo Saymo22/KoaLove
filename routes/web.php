@@ -30,22 +30,11 @@ Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:google-login');
 Route::get('/robots.txt', fn (Seo $seo) => response($seo->robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->middleware('throttle:pages');
 Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' => config('seo.indexing_enabled') ? array_map(fn ($path) => $seo->baseUrl().$path, array_keys($seo->publicPages())) : []], 200, ['Content-Type' => 'application/xml; charset=UTF-8']))->middleware('throttle:pages');
-$legacyPages = [];
-foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
-    $legacyPath = $page['url'];
-    $legacyPages[$legacyPath] = $page['view'];
-    $friendlyPath = config('seo.friendly_paths')[$legacyPath] ?? null;
-    if (! $friendlyPath && preg_match('#^/teste/([a-z0-9-]+)\.html$#', $legacyPath, $matches)) {
-        $friendlyPath = '/temas/'.$matches[1];
-    }
-
-    if ($legacyPath === '/home.html') {
-        Route::view('/', $page['view'])->name('pages.home')->middleware('throttle:pages');
-    } elseif ($friendlyPath && $friendlyPath !== $legacyPath && $friendlyPath !== '/') {
-        Route::view($friendlyPath, $page['view'])->name('pages.'.str_replace('/', '.', trim($friendlyPath, '/')))->middleware('throttle:pages');
-    }
+foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $key => $page) {
+    $name = $key === 'home' ? 'pages.home' : 'pages.'.str_replace('/', '.', $key);
+    Route::view($page['url'], $page['view'])->name($name)->middleware('throttle:pages');
 }
-Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha.html'))->name('password.reset');
+Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha'))->name('password.reset');
 Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {
     Route::get('config', fn (MediaStorage $storage, Pricing $pricing) => response()->json(['ok' => true, 'data' => [...$pricing->catalog(), 'site' => array_intersect_key(app(AdminConfiguration::class)->all(), array_flip(['storeName', 'supportEmail', 'whatsapp'])), 'themes' => app(AdminConfiguration::class)->themes(), 'theme_metadata' => config('gift.themes'), 'currency' => 'BRL', 'coupons' => (object) [], 'plan_limits' => PlanLimits::caps(), 'media_upload' => $storage->status()['mode'], 'media_storage' => $storage->status(), 'payments' => app(PaymentSettings::class)->status(), 'google_login' => filled(config('services.google.client_id')) && filled(config('services.google.client_secret')), 'simulation' => config('gift.simulated_payments') && ! app()->isProduction()]]));
     Route::get('internal/prune', function (Request $request) {
@@ -118,19 +107,3 @@ Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(f
 Route::get('/admin/invitations/{invitation}', [AdminWorkspaceController::class, 'acceptInvitation'])->name('admin.invitation')->middleware('throttle:pages');
 
 Route::post('/admin/invitations/{invitation}/accept', [AdminWorkspaceController::class, 'accept'])->middleware(['api.auth', 'throttle:admin']);
-
-// Compatibilidade com endereços antigos sem poluir a lista principal de rotas.
-Route::get('/{legacyPath}', function (Request $request, string $legacyPath) use ($legacyPages) {
-    $path = '/'.$legacyPath;
-    abort_unless(isset($legacyPages[$path]), 404);
-
-    $target = config('seo.friendly_paths')[$path] ?? null;
-    if (! $target && preg_match('#^/teste/([a-z0-9-]+)\.html$#', $path, $matches)) {
-        $target = '/temas/'.$matches[1];
-    }
-    abort_unless(is_string($target), 404);
-
-    $query = $request->getQueryString();
-
-    return redirect()->to($target.($query ? '?'.$query : ''), 301);
-})->where('legacyPath', '[A-Za-z0-9_/-]+\.html')->name('legacy.page')->middleware('throttle:pages');

@@ -144,7 +144,7 @@
                 </div>
                 <footer class="glass-footer">
                     <p class="glass-footer__quote">"O amor é a única loucura digna de ser vivida."</p>
-                    <p>Ao continuar, você concorda com nossos <a href="termos.html">Termos</a> e <a href="privacidade.html">Privacidade</a>.</p>
+                    <p>Ao continuar, você concorda com nossos <a href="/termos-de-uso">Termos</a> e <a href="/politica-de-privacidade">Privacidade</a>.</p>
                 </footer>
             </article>
         </section>

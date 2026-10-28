@@ -19,7 +19,7 @@ Abrir novamente o checkout devolve o mesmo payload/referência. Os dados do rece
 
 ## Administrador
 
-No [painel](https://projetona.vercel.app/admin/dashboard.html), abra **Pix aguardando conferência**. Confira no aplicativo bancário o crédito real, valor, data, pagador e referência do pedido. O comprovante enviado pelo cliente sozinho não comprova recebimento. Se a referência não aparecer no extrato, concilie o identificador bancário com o cliente antes de liberar. Não aprove só por coincidência de valor.
+No [painel](https://projetona.vercel.app/admin/painel), abra **Pix aguardando conferência**. Confira no aplicativo bancário o crédito real, valor, data, pagador e referência do pedido. O comprovante enviado pelo cliente sozinho não comprova recebimento. Se a referência não aparecer no extrato, concilie o identificador bancário com o cliente antes de liberar. Não aprove só por coincidência de valor.
 
 Preencha o **ID da transação recebida (EndToEndId)** e clique em **Confirmar recebimento e liberar**. A confirmação exige conta admin, sessão/CSRF, valor exato e uma referência bancária ainda não usada. O servidor grava admin/data/ID bancário e aprova em transação. Repetir a mesma confirmação não altera a data; outro pagamento/referência não sobrescreve uma compra já aprovada. Pedidos excluídos/contas desativadas não são reativados. A aplicação registra a declaração do operador; não consulta o saldo nem verifica o crédito no banco automaticamente.
 

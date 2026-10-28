@@ -126,7 +126,7 @@ class AdminWorkspaceTest extends TestCase
         $url = URL::temporarySignedRoute('admin.invitation', now()->addDay(), ['invitation' => $i->id]);
         $this->actingAs($admin)->get($url)->assertForbidden();
         $this->actingAs($client)->get($url)->assertOk();
-        $this->post('/admin/invitations/'.$i->id.'/accept', ['confirmed' => true])->assertRedirect('/admin/dashboard.html');
+        $this->post('/admin/invitations/'.$i->id.'/accept', ['confirmed' => true])->assertRedirect('/admin/painel');
         $this->assertSame('support', $client->fresh()->admin_level);
         $this->post('/admin/invitations/'.$i->id.'/accept', ['confirmed' => true])->assertForbidden();
         $this->actingAs($admin)->postJson('/api/admin/administrators/'.$client->id.'/remove', ['confirmed' => true])->assertOk();

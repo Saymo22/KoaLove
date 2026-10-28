@@ -193,7 +193,7 @@ class GiftFlowTest extends TestCase
     public function test_all_blade_pages_render_and_private_files_are_not_public(): void
     {
         foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $page) {
-            $this->followingRedirects()->get($page['url'])->assertOk();
+            $this->get($page['url'])->assertOk();
         }
         foreach (['/server/data/users.json', '/.env', '/storage/app/private/test', '/server/index.js'] as $url) {
             $this->assertContains($this->get($url)->status(), [403, 404]);

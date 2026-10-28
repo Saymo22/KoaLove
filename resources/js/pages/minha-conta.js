@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const banner=document.createElement('div');banner.className='account-error';banner.textContent='Muitas tentativas. Aguarde '+(Number(err.retryAfter)||60)+'s e recarregue a página.';document.body.prepend(banner);
             return;
         }
-        window.location.href = "login.html";
+        window.location.href = "/entrar";
         return;
     }
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Logout via API
     $("btnLogout").addEventListener("click", async () => {
         await window.ApiAuth.logout();
-        window.location.href = "login.html";
+        window.location.href = "/entrar";
     });
 
     // ================= ESTADO GLOBAL =================
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             skeleton.style.display = "none";
             grid.style.display = "none";
             if (err && err.code === "NOT_AUTHENTICATED") {
-                window.location.href = "login.html";
+                window.location.href = "/entrar";
                 return;
             }
             empty.style.display = "block";
@@ -183,10 +183,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             to.append(document.createTextNode('Para '),node('b','',pedido.para||'Alguém'),document.createTextNode(' • '+new Date(pedido.created_at).toLocaleDateString('pt-BR')));
             const actions=node('div','gift-actions');
             const pago=isPago(pedido),pending=pedido.status==='pending';
-            if(pago){const view=node('a','btn-view','Ver ↗');view.href=(pedido.content_version===1?'ver':'resultado')+'.html?id='+encodeURIComponent(pedido.id);view.target='_blank';view.rel='noopener';actions.append(view);}
+            if(pago){const view=node('a','btn-view','Ver ↗');view.href=(pedido.content_version===1?'/presente':'/resultado')+'?id='+encodeURIComponent(pedido.id);view.target='_blank';view.rel='noopener';actions.append(view);}
             else {const view=button('btn-view',pedido.status==='refunded'?'Reembolsado':'Ver');view.disabled=true;actions.append(view);}
-            if(pending){const edit=node('a','btn-edit','Editar');edit.href='criar.html?id='+encodeURIComponent(pedido.id);actions.append(edit);}
-            if(pago&&pedido.content_version===1&&pedido.share_token){const share=button('btn-share','🔗','Copiar link');share.dataset.link=new URL('ver.html?token='+encodeURIComponent(pedido.share_token),location.href).href;actions.append(share);}
+            if(pending){const edit=node('a','btn-edit','Editar');edit.href='/criar-presente?id='+encodeURIComponent(pedido.id);actions.append(edit);}
+            if(pago&&pedido.content_version===1&&pedido.share_token){const share=button('btn-share','🔗','Copiar link');share.dataset.link=new URL('/presente?token='+encodeURIComponent(pedido.share_token),location.href).href;actions.append(share);}
             if(hasReceipt(pedido)){const receipt=button('btn-receipt','🧾','Ver comprovante');receipt.dataset.id=pedido.id;actions.append(receipt);}
             const remove=button('btn-delete','🗑️','Excluir');remove.dataset.id=pedido.id;remove.dataset.status=pedido.status;actions.append(remove);
             const meta=node('div','gift-meta');meta.append(to);

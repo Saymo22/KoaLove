@@ -1,13 +1,13 @@
-// Links antigos de recuperação continuam aceitos, com token somente no fragmento.
+// O retorno de login aceita somente destinos internos conhecidos.
 function destinoAposLogin() {
   const next = new URLSearchParams(location.search).get('next');
   try {
-    const url = new URL(next || 'minha-conta.html', location.href);
-    if (url.origin === location.origin && /^\/(criar|minha-conta|pagamento|resultado)\.html$/.test(url.pathname)) {
+    const url = new URL(next || '/minha-conta', location.href);
+    if (url.origin === location.origin && /^\/(criar-presente|minha-conta|pagamento|resultado)$/.test(url.pathname)) {
       return url.pathname + url.search;
     }
   } catch {}
-  return 'minha-conta.html';
+  return '/minha-conta';
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

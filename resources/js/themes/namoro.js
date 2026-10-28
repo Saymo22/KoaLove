@@ -502,7 +502,7 @@ document.addEventListener('keydown', e => {
 
 
 /* ================================================================
-   INTEGRAÇÃO COM ver.html — não altera o visual da referência.
+   INTEGRAÇÃO COM /presente — não altera o visual da referência.
    O pai envia apenas os dados normalizados que já foram carregados
    de GET /api/purchases/:id e IndexedDB. Nenhum novo endpoint.
    ================================================================ */

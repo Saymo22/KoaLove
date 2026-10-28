@@ -29,7 +29,7 @@ Nenhum usuário/admin com senha padrão é criado. Registre uma conta pela tela 
 ## Testes
 
 - npm test: runtime dos temas, referências estáveis, etapas, retomada/salvamento, CSRF no cliente e assets.
-- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo admin/planos.html.
+- npm run build: compila todas as páginas e seus assets pelo Vite, incluindo /admin/planos.
 - php vendor/bin/phpunit: suíte HTTP Laravel em SQLite :memory:.
 - php vendor/bin/phpunit -c phpunit.pgsql.xml: mesma suíte no banco projeto_na_test. DB_HOST, DB_PORT, DB_USERNAME e DB_PASSWORD vêm do ambiente. Nunca apontar para o banco de uso.
 - php vendor/bin/pint --test: convenções PHP Laravel.
@@ -56,4 +56,4 @@ O admin usa `resources/css/admin.css` e o shell em `resources/js/admin/header.js
 
 resources/assets.json é o catálogo de entradas; cada página possui um bundle que preserva o escopo legado. O plugin classic-page-boundaries em vite.config.js concatena fontes existentes sem duplicá-las. A separação futura em ES modules/componentes Blade exige testes dos consumidores e mantém os scripts fora das views. O QR é gerado localmente pelo adapter resources/js/adapters/qr-code.js; o gateway implementa App/Contracts/PaymentGateway.
 
-As rotas de páginas usam caminhos legíveis e nomes Laravel (por exemplo, `/criar-presente`, `/minha-conta` e `/temas/namoro`). Os caminhos `.html` do catálogo `resources/assets.json` continuam válidos como aliases de compatibilidade e redirecionam permanentemente para o caminho amigável; mantenha-os fora da lista principal de rotas. `config/seo.php` define os caminhos amigáveis, canonical e páginas indexáveis; sitemap e canonical devem usar somente os amigáveis. Query strings são preservadas nos fluxos que carregam estado de navegação ou de compra e recebem `noindex`; não converta navegação GET para POST como ajuste de SEO.
+As rotas de páginas usam caminhos legíveis e nomes Laravel (por exemplo, `/criar-presente`, `/minha-conta` e `/temas/namoro`). `resources/assets.json` registra diretamente esses caminhos, sem extensão; não adicione aliases ou redirects para URLs `.html`. Caminhos desconhecidos, inclusive os terminados em `.html`, retornam 404. Sitemap e canonical usam os caminhos registrados. Query strings permanecem nos fluxos que carregam estado de navegação ou compra e recebem `noindex`; não converta navegação GET para POST como ajuste de SEO.

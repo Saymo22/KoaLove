@@ -1,5 +1,5 @@
 @php($seo = app(\App\Services\Seo::class)->metadata(request()))
-@unless(request()->is('ver.html', 'teste', 'teste/*'))
+@unless(request()->is('presente', 'temas/*'))
 @vite('resources/js/chat/entry.js')
 @endunless
 @vite('resources/css/brand.css')

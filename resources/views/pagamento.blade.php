@@ -109,7 +109,7 @@
         </div>
 
         <div class="pg-voltar">
-            <a id="editarRascunho" href="criar.html">Voltar e editar</a>
+            <a id="editarRascunho" href="/criar-presente">Voltar e editar</a>
         </div>
 
     </main>

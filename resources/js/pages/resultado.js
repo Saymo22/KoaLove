@@ -18,20 +18,20 @@
        BOOT (contrato: GET /api/purchases/:id)
     ===================================================== */
     (async function () {
-        if (!id) { location.href = "criar.html"; return; }
+        if (!id) { location.href = "/criar-presente"; return; }
 
         let pedido = null;
         try {
             ({ purchase: pedido } = await window.ApiPurchases.getOne(id));
         } catch (err) {
             if (err && (err.code === "NOT_AUTHENTICATED" || err.status === 401)) {
-                location.href = "login.html";
+                location.href = "/entrar";
                 return;
             }
-            location.href = "criar.html";
+            location.href = "/criar-presente";
             return;
         }
-        if (pedido.status !== "paid") { location.href = "pagamento.html?id=" + id; return; }
+        if (pedido.status !== "paid") { location.href = "/pagamento?id=" + id; return; }
 
         if(pedido.content_version!==1){
           try {
@@ -44,7 +44,7 @@
         try { await window.NA_CONFIG_READY; } catch {}
         aplicarTema(pedido.tema);
 
-        const url = new URL("ver.html?token=" + encodeURIComponent(pedido.share_token), location.href).href;
+        const url = new URL("/presente?token=" + encodeURIComponent(pedido.share_token), location.href).href;
         $("link").value = url;
         $("btnVer").href = url;
         $("btnWpp").href = "https://wa.me/?text=" + encodeURIComponent("Fiz uma surpresa para você ❤️ " + url);
@@ -52,7 +52,7 @@
         /* ---- Preview inline (modo embed = sem intro, sem float controls) ---- */
         const iframe = $("rsPreviewIframe");
         const btnFull = $("btnFullPreview");
-        if (iframe) iframe.src = "ver.html?id=" + id + "&embed=1";
+        if (iframe) iframe.src = "/presente?id=" + id + "&embed=1";
         if (btnFull) btnFull.href = url;
 
         /* ---- QR Code ---- */

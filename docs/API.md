@@ -41,7 +41,7 @@ Respostas: {ok:true,data:...}; erros {ok:false,error:{code,message,meta?}}. Vali
 ## Chat e suporte
 
 - GET `/support`: somente autenticado, retorna `user_id` e `ticket:{id,subject,status,messages}|null` da própria conta. Resposta privada sem cache.
-- POST `/support/start`: `text` (3–2000 caracteres), `message_id` UUID, `category` (`payment`, `media`, `account`, `refund`, `themes`, `creation`, `sharing`, `other`), `page` caminho `.html` sem query e `context` opcional (até 3 textos de 500 caracteres). Reutiliza atendimento ativo ou cria um; não aceita dono/status fornecidos pelo cliente.
+- POST `/support/start`: `text` (3–2000 caracteres), `message_id` UUID, `category` (`payment`, `media`, `account`, `refund`, `themes`, `creation`, `sharing`, `other`), `page` caminho sem extensão, query ou fragmento e `context` opcional (até 3 textos de 500 caracteres). Reutiliza atendimento ativo ou cria um; não aceita dono/status fornecidos pelo cliente.
 - POST `/support/messages`: `text` (1–2000) e `message_id` UUID, sempre no atendimento da própria conta. Repetição do mesmo UUID é idempotente. Reabre o estado para `open`.
 - A rota admin `/admin/tickets/{ticket}/reply` devolve a conversa atualizada. Respostas têm `role=admin`, UUID e data do servidor. A leitura do cliente recupera essas respostas no mesmo chat.
 - Escritas: 10/min por conta, 30/min por IP; CSRF e sessão obrigatórios. Ver [CHATBOT.md](CHATBOT.md) para triagem, polling, histórico e limites.
@@ -54,7 +54,7 @@ Por IP/minuto: páginas dinâmicas 1200, API 240, login 5, cadastro 3, recupera�
 
 Além do IP, login permite 5 tentativas/minuto por e-mail normalizado; solicitação de recuperação, 3/hora por e-mail; redefinição, 5/minuto por e-mail. As chaves do cache usam HMAC, sem o e-mail em texto aberto. Exclusão de conta exige a senha atual e permite 5 tentativas/minuto por usuário e IP. Não há bloqueio permanente de conta. Recuperação usa sempre APP_URL para o link; validação, troca de senha, revogação de sessões e consumo do token são atômicos.
 
-Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. URLs .html foram preservadas; são views Laravel, não arquivos públicos.
+Criação aceita client_request_id estável, único por usuário. Trava de usuário + constraint evita duplicação sob concorrência. Bloqueios de compra serializam upload/finalização/pagamento. PhotoIds e referências @media preservam campos de temas após reordenar fotos. As páginas são servidas em rotas Laravel sem extensão, registradas no catálogo Vite; caminhos `.html` não são rotas.
 
 ## Dashboard completo
 

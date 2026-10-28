@@ -14,7 +14,7 @@ class SupportChatTest extends TestCase
 
     private function payload(): array
     {
-        return ['text' => 'Não consigo enviar o vídeo no formulário.', 'message_id' => (string) Str::uuid(), 'category' => 'media', 'page' => '/criar.html', 'context' => ['Quais formatos posso usar?']];
+        return ['text' => 'Não consigo enviar o vídeo no formulário.', 'message_id' => (string) Str::uuid(), 'category' => 'media', 'page' => '/criar-presente', 'context' => ['Quais formatos posso usar?']];
     }
 
     public function test_handoff_and_admin_reply_are_visible_only_to_the_owner(): void
@@ -56,7 +56,7 @@ class SupportChatTest extends TestCase
     public function test_triage_rejects_urls_tokens_excessive_context_and_invalid_ids(): void
     {
         $this->actingAs(User::factory()->create());
-        foreach (['page' => '/ver.html?token=secret', 'category' => 'injected', 'message_id' => 'invalid', 'context' => ['1', '2', '3', '4'], 'text' => str_repeat('x', 2001)] as $field => $value) {
+        foreach ([['page', '/presente?token=secret'], ['page', '/criar-presente.html'], ['category', 'injected'], ['message_id', 'invalid'], ['context', ['1', '2', '3', '4']], ['text', str_repeat('x', 2001)]] as [$field, $value]) {
             $this->postJson('/api/support/start', [...$this->payload(), $field => $value])->assertUnprocessable();
         }
         $this->assertDatabaseCount('tickets', 0);

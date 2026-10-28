@@ -1,6 +1,6 @@
 {
   "admin/planos": {
-    "url": "/admin/planos.html",
+    "url": "/admin/planos",
     "view": "admin.planos",
     "styles": [
       "resources/css/base.css",
@@ -21,7 +21,7 @@
     "entry": "resources/js/entries/admin-planos.js"
   },
   "admin/clientes": {
-    "url": "/admin/clientes.html",
+    "url": "/admin/clientes",
     "view": "admin.clientes",
     "styles": [
       "resources/css/base.css",
@@ -42,7 +42,7 @@
     "entry": "resources/js/entries/admin-clientes.js"
   },
   "admin/dashboard": {
-    "url": "/admin/dashboard.html",
+    "url": "/admin/painel",
     "view": "admin.dashboard",
     "styles": [
       "resources/css/admin-workspace.css",
@@ -58,7 +58,7 @@
     "entry": "resources/js/entries/admin-dashboard.js"
   },
   "admin/login": {
-    "url": "/admin/login.html",
+    "url": "/admin/entrar",
     "view": "admin.login",
     "styles": [
       "resources/css/admin-login-premium.css",
@@ -74,7 +74,7 @@
     "entry": "resources/js/entries/admin-login.js"
   },
   "admin/reembolsos": {
-    "url": "/admin/reembolsos.html",
+    "url": "/admin/reembolsos",
     "view": "admin.reembolsos",
     "styles": [
       "resources/css/base.css",
@@ -94,7 +94,7 @@
     "entry": "resources/js/entries/admin-reembolsos.js"
   },
   "admin/suporte": {
-    "url": "/admin/suporte.html",
+    "url": "/admin/suporte",
     "view": "admin.suporte",
     "styles": [
       "resources/css/base.css",
@@ -114,7 +114,7 @@
     "entry": "resources/js/entries/admin-suporte.js"
   },
   "criar": {
-    "url": "/criar.html",
+    "url": "/criar-presente",
     "view": "criar",
     "styles": [
       "resources/css/base.css",
@@ -138,7 +138,7 @@
     "entry": "resources/js/entries/criar.js"
   },
   "home": {
-    "url": "/home.html",
+    "url": "/",
     "view": "home",
     "styles": [
       "resources/css/base.css",
@@ -158,20 +158,8 @@
     ],
     "entry": "resources/js/entries/home.js"
   },
-  "index": {
-    "url": "/index.html",
-    "view": "index",
-    "styles": [
-      "resources/css/pages/index-extracted.css",
-      "resources/css/accessibility.css"
-    ],
-    "scripts": [
-      "resources/js/pages/extracted/index-0.js"
-    ],
-    "entry": "resources/js/entries/index.js"
-  },
   "login": {
-    "url": "/login.html",
+    "url": "/entrar",
     "view": "login",
     "styles": [
       "resources/css/base.css",
@@ -189,7 +177,7 @@
     "entry": "resources/js/entries/login.js"
   },
   "minha-conta": {
-    "url": "/minha-conta.html",
+    "url": "/minha-conta",
     "view": "minha-conta",
     "styles": [
       "resources/css/base.css",
@@ -211,7 +199,7 @@
     "entry": "resources/js/entries/minha-conta.js"
   },
   "pagamento": {
-    "url": "/pagamento.html",
+    "url": "/pagamento",
     "view": "pagamento",
     "styles": [
       "resources/css/base.css",
@@ -230,7 +218,7 @@
     "entry": "resources/js/entries/pagamento.js"
   },
   "privacidade": {
-    "url": "/privacidade.html",
+    "url": "/politica-de-privacidade",
     "view": "privacidade",
     "styles": [
       "resources/css/base.css",
@@ -247,7 +235,7 @@
     "entry": "resources/js/entries/privacidade.js"
   },
   "recuperar-senha": {
-    "url": "/recuperar-senha.html",
+    "url": "/recuperar-senha",
     "view": "recuperar-senha",
     "styles": [
       "resources/css/base.css",
@@ -262,7 +250,7 @@
     "entry": "resources/js/entries/recuperar-senha.js"
   },
   "reembolso": {
-    "url": "/reembolso.html",
+    "url": "/politica-de-reembolso",
     "view": "reembolso",
     "styles": [
       "resources/css/base.css",
@@ -279,7 +267,7 @@
     "entry": "resources/js/entries/reembolso.js"
   },
   "resultado": {
-    "url": "/resultado.html",
+    "url": "/resultado",
     "view": "resultado",
     "styles": [
       "resources/css/base.css",
@@ -300,7 +288,7 @@
     "entry": "resources/js/entries/resultado.js"
   },
   "termos": {
-    "url": "/termos.html",
+    "url": "/termos-de-uso",
     "view": "termos",
     "styles": [
       "resources/css/base.css",
@@ -317,7 +305,7 @@
     "entry": "resources/js/entries/termos.js"
   },
   "themes/amizade": {
-    "url": "/teste/amizade.html",
+    "url": "/temas/amizade",
     "view": "themes.amizade",
     "styles": [
       "resources/css/themes/amizade.css",
@@ -330,7 +318,7 @@
     "entry": "resources/js/entries/themes-amizade.js"
   },
   "themes/aniversario": {
-    "url": "/teste/aniversario.html",
+    "url": "/temas/aniversario",
     "view": "themes.aniversario",
     "styles": [
       "resources/css/themes/aniversario.css",
@@ -343,7 +331,7 @@
     "entry": "resources/js/entries/themes-aniversario.js"
   },
   "themes/carta-antiga": {
-    "url": "/teste/carta-antiga.html",
+    "url": "/temas/carta-antiga",
     "view": "themes.carta-antiga",
     "styles": [
       "resources/css/themes/carta-antiga.css",
@@ -356,7 +344,7 @@
     "entry": "resources/js/entries/themes-carta-antiga.js"
   },
   "themes/casamento": {
-    "url": "/teste/casamento.html",
+    "url": "/temas/casamento",
     "view": "themes.casamento",
     "styles": [
       "resources/css/themes/casamento.css",
@@ -369,7 +357,7 @@
     "entry": "resources/js/entries/themes-casamento.js"
   },
   "themes/cinema": {
-    "url": "/teste/cinema.html",
+    "url": "/temas/cinema",
     "view": "themes.cinema",
     "styles": [
       "resources/css/themes/cinema.css",
@@ -383,7 +371,7 @@
     "entry": "resources/js/entries/themes-cinema.js"
   },
   "themes/familia": {
-    "url": "/teste/familia.html",
+    "url": "/temas/familia",
     "view": "themes.familia",
     "styles": [
       "resources/css/themes/familia.css",
@@ -396,7 +384,7 @@
     "entry": "resources/js/entries/themes-familia.js"
   },
   "themes/jardim": {
-    "url": "/teste/jardim.html",
+    "url": "/temas/jardim",
     "view": "themes.jardim",
     "styles": [
       "resources/css/themes/jardim.css",
@@ -409,7 +397,7 @@
     "entry": "resources/js/entries/themes-jardim.js"
   },
   "themes/namoro": {
-    "url": "/teste/namoro.html",
+    "url": "/temas/namoro",
     "view": "themes.namoro",
     "styles": [
       "resources/css/themes/namoro.css",
@@ -423,7 +411,7 @@
     "entry": "resources/js/entries/themes-namoro.js"
   },
   "themes/netflix": {
-    "url": "/teste/netflix.html",
+    "url": "/temas/netflix",
     "view": "themes.netflix",
     "styles": [
       "resources/css/themes/netflix.css",
@@ -437,7 +425,7 @@
     "entry": "resources/js/entries/themes-netflix.js"
   },
   "themes/retro": {
-    "url": "/teste/retro.html",
+    "url": "/temas/retro",
     "view": "themes.retro",
     "styles": [
       "resources/css/themes/retro.css",
@@ -451,7 +439,7 @@
     "entry": "resources/js/entries/themes-retro.js"
   },
   "themes/scrapbook": {
-    "url": "/teste/scrapbook.html",
+    "url": "/temas/scrapbook",
     "view": "themes.scrapbook",
     "styles": [
       "resources/css/themes/scrapbook.css",
@@ -464,7 +452,7 @@
     "entry": "resources/js/entries/themes-scrapbook.js"
   },
   "themes/spotify": {
-    "url": "/teste/spotify.html",
+    "url": "/temas/spotify",
     "view": "themes.spotify",
     "styles": [
       "resources/css/themes/spotify.css",
@@ -478,7 +466,7 @@
     "entry": "resources/js/entries/themes-spotify.js"
   },
   "themes/vinil": {
-    "url": "/teste/vinil.html",
+    "url": "/temas/vinil",
     "view": "themes.vinil",
     "styles": [
       "resources/css/themes/vinil.css",
@@ -492,7 +480,7 @@
     "entry": "resources/js/entries/themes-vinil.js"
   },
   "ver": {
-    "url": "/ver.html",
+    "url": "/presente",
     "view": "ver",
     "styles": [
       "resources/css/ver.css",

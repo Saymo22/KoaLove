@@ -94,7 +94,8 @@ class MercadoPagoTest extends TestCase
             && $r['back_urls']['success'] === 'https://gift.example.test/pagamento?id='.$p->id.'&retorno=1'
             && $r['notification_url'] === 'https://gift.example.test/api/webhooks/mercadopago');
         $this->getJson('/api/shared/'.$p->share_token)->assertNotFound();
-        $this->followingRedirects()->get('/pagamento.html?id='.$p->id.'&status=approved&payment_id=789')->assertOk();
+        $this->get('/pagamento?id='.$p->id.'&status=approved&payment_id=789')->assertOk();
+        $this->get('/pagamento.html?id='.$p->id.'&status=approved&payment_id=789')->assertNotFound();
         $this->assertSame('pending', $p->fresh()->status);
     }
 

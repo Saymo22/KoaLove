@@ -18,15 +18,13 @@ NA.navbar = (function () {
 
     /* ================= helpers ================= */
     function currentPage() {
-        const p = window.location.pathname.split("/").pop() || "home.html";
-        return p.split("?")[0].split("#")[0];
+        return window.location.pathname.replace(/\/+$/, "") || "/";
     }
     function isHome() {
-        const p = currentPage();
-        return p === "" || p === "index.html" || p === "home.html";
+        return currentPage() === "/";
     }
     function href(anchor) {
-        return isHome() ? anchor : "home.html" + anchor;
+        return isHome() ? anchor : "/" + anchor;
     }
     function escapeHtml(s) {
         return String(s).replace(/[&<>"']/g, (c) => ({
@@ -46,9 +44,9 @@ NA.navbar = (function () {
 }
     function detectVariant() {
         const p = currentPage();
-        if (p === "minha-conta.html") return "dashboard";
-        if (p === "ver.html") return "none";
-        if (p === "" || p === "index.html" || p === "home.html") return "full";
+        if (p === "/minha-conta") return "dashboard";
+        if (p === "/presente") return "none";
+        if (p === "/") return "full";
         return "minimal";
     }
 
@@ -176,15 +174,15 @@ NA.navbar = (function () {
             const initial = escapeHtml((user.name || "U").trim().charAt(0).toUpperCase() || "U");
             const name = escapeHtml((user.name || "Usuário").trim() || "Usuário");
             return (
-                `<a href="minha-conta.html" class="nav-user" title="Minha Conta">` +
+                `<a href="/minha-conta" class="nav-user" title="Minha Conta">` +
                 `<span class="nav-user-avatar">${initial}</span>` +
                 `<span class="nav-user-name">${name}</span>` +
                 `</a>`
             );
         }
 
-        if (p === "login.html") return "";
-        return `<a href="login.html">Login</a>`;
+        if (p === "/entrar") return "";
+        return `<a href="/entrar">Login</a>`;
     }
 
     /* ================= templates ================= */
@@ -192,7 +190,7 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <a href="/" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
@@ -201,7 +199,7 @@ NA.navbar = (function () {
                         <a href="${href("#preco")}">Preço</a>
                         <a href="${href("#duvidas")}">Dúvidas</a>
                         ${authLinkHTML()}
-                        <a href="criar.html" class="b ouro peq magnetic">Criar presente <span class="seta">→</span></a>
+                        <a href="/criar-presente" class="b ouro peq magnetic">Criar presente <span class="seta">→</span></a>
                     </div>
                 </div>
             </nav>
@@ -212,7 +210,7 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <a href="/" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
                         <a href="${href("#como")}">Como funciona</a>
@@ -220,7 +218,7 @@ NA.navbar = (function () {
                         <a href="${href("#preco")}">Preço</a>
                         <a href="${href("#duvidas")}">Dúvidas</a>
                         ${authLinkHTML()}
-                        <a href="criar.html" class="b ouro peq">Criar presente <span class="seta">→</span></a>
+                        <a href="/criar-presente" class="b ouro peq">Criar presente <span class="seta">→</span></a>
                     </div>
                 </div>
             </nav>
@@ -231,11 +229,11 @@ NA.navbar = (function () {
         return `
             <nav class="nav" id="nav" aria-label="Principal">
                 <div class="wrap">
-                    <a href="home.html" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
+                    <a href="/" class="logo" aria-label="KoaLove — início"><img class="brand-logo" src="/branding/koalove-logo-principal.svg" width="172" height="60" alt="KoaLove"></a>
                     <button class="nav-toggle" aria-label="Abrir menu" aria-controls="navLinks" aria-expanded="false">☰</button>
                     <div class="nav-links" id="navLinks">
-                        <a href="minha-conta.html" class="active">Minha Conta</a>
-                        <a href="criar.html" class="b ouro peq">Criar novo +</a>
+                        <a href="/minha-conta" class="active">Minha Conta</a>
+                        <a href="/criar-presente" class="b ouro peq">Criar novo +</a>
                         <div class="nav-profile">
                             <div class="user-avatar" id="navAvatar">U</div>
                             <span id="navUserName">Usuário</span>

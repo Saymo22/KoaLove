@@ -26,7 +26,7 @@ class GoogleAuthController extends Controller
             'expires' => now()->addMinutes(10)->timestamp,
         ]);
         $next = $request->query('next');
-        if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(?:criar-presente|minha-conta|pagamento|resultado|criar|minha-conta|pagamento|resultado)(?:\.html)?(?:\?[^\s#\\\\]*)?\z/', $next)) {
+        if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(?:criar-presente|minha-conta|pagamento|resultado)(?:\?[^\s#\\\\]*)?\z/', $next)) {
             $request->session()->put('google_login_next', $next);
         } else {
             $request->session()->put('google_login_next', '/minha-conta');
@@ -45,7 +45,7 @@ class GoogleAuthController extends Controller
             || ! is_string($request->query('code'))) {
             Log::notice('Google sign-in callback rejected.', ['route' => 'auth/google/callback']);
 
-            return redirect('/login.html?google=failed');
+            return redirect('/entrar?google=failed');
         }
 
         try {
@@ -82,13 +82,13 @@ class GoogleAuthController extends Controller
         } catch (Throwable) {
             Log::notice('Google sign-in attempt rejected.', ['route' => 'auth/google/callback']);
 
-            return redirect('/login.html?google=failed');
+            return redirect('/entrar?google=failed');
         }
 
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->put('google_session_version', (int) $user->google_session_version);
 
-        return redirect()->to($request->session()->pull('google_login_next', '/minha-conta.html'));
+        return redirect()->to($request->session()->pull('google_login_next', '/minha-conta'));
     }
 }

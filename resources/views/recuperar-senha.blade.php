@@ -13,7 +13,7 @@
 <body>
     @include('partials.noscript')
   <main class="recovery-card">
-    <a href="login.html">← Voltar ao login</a>
+    <a href="/entrar">← Voltar ao login</a>
     <h1 id="recoveryTitle">Recuperar senha</h1>
     <p id="recoveryDescription">Informe o e-mail da sua conta para receber um link de recuperação.</p>
     <form id="recoveryForm">
@@ -25,8 +25,8 @@
       <button id="recoverySubmit" type="submit">Enviar link</button>
       <p id="recoveryMessage" role="status" aria-live="polite"></p>
     </form>
-    <p><a href="recuperar-senha.html" id="requestAgain" hidden>Solicitar outro link</a></p>
-    <footer><a href="termos.html">Termos</a> · <a href="privacidade.html">Privacidade</a></footer>
+    <p><a href="/recuperar-senha" id="requestAgain" hidden>Solicitar outro link</a></p>
+    <footer><a href="/termos-de-uso">Termos</a> · <a href="/politica-de-privacidade">Privacidade</a></footer>
   </main>
 
 

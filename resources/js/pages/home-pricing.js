@@ -22,15 +22,15 @@
             const list=node('ul','preco-lista');for(const feature of plan.features||[])list.append(node('li','',feature));
             const mediaSummary=window.NAPlanLimits?.summary?.(plan);
             const media=node('p','plan-media',mediaSummary||'Fotos, vídeos e música conforme o plano');
-            const link=node('a','b ouro magnetic','Criar meu presente');link.href='criar.html?plano='+encodeURIComponent(plan.id);
-            const guarantee=node('a','preco-garantia','Garantia comercial de 3 dias · antes de abrir o link');guarantee.href='reembolso.html';
+            const link=node('a','b ouro magnetic','Criar meu presente');link.href='/criar-presente?plano='+encodeURIComponent(plan.id);
+            const guarantee=node('a','preco-garantia','Garantia comercial de 3 dias · antes de abrir o link');guarantee.href='/politica-de-reembolso';
             card.append(head,media,list,link,guarantee);return card;
         });
         $('pricingCards').replaceChildren(...cards);
         const plan=catalog.plans.find(p=>p.id===catalog.default_plan_id&&live(p))||catalog.plans.find(live)||catalog.plans.find(p=>p.id===catalog.default_plan_id)||catalog.plans[0];
         $('promoPor').textContent=money(price(plan));$('promoLabel').textContent=live(plan)?plan.promotion.name:plan.name;
         $('promoDe').hidden=!live(plan);$('promoDe').textContent=money(plan.price_cents);
-        $('promoCountdown').hidden=!live(plan);$('promoLink').href='criar.html?plano='+encodeURIComponent(plan.id);
+        $('promoCountdown').hidden=!live(plan);$('promoLink').href='/criar-presente?plano='+encodeURIComponent(plan.id);
         tick();
     }
     function tick(){

@@ -34,8 +34,8 @@
             <a href="#seguranca">5. Segurança</a>
             <a href="#direitos">6. Seus Direitos (LGPD)</a>
             <div class="sidebar-divider"></div>
-            <a href="termos.html">Termos de Uso →</a>
-            <a href="reembolso.html">Política de Reembolso →</a>
+            <a href="/termos-de-uso">Termos de Uso →</a>
+            <a href="/politica-de-reembolso">Política de Reembolso →</a>
         </aside>
 
         <article class="legal-content">
@@ -79,25 +79,25 @@
             </div>
             <div class="rodape-col">
                 <h4>Navegar</h4>
-                <a href="home.html#como">Como funciona</a>
-                <a href="home.html#temas">Temas</a>
-                <a href="home.html#depoimentos">Depoimentos</a>
-                <a href="home.html#preco">Preço</a>
-                <a href="home.html#duvidas">Dúvidas</a>
+                <a href="/#como">Como funciona</a>
+                <a href="/#temas">Temas</a>
+                <a href="/#depoimentos">Depoimentos</a>
+                <a href="/#preco">Preço</a>
+                <a href="/#duvidas">Dúvidas</a>
             </div>
             <div class="rodape-col">
                 <h4>Temas</h4>
-                <a href="criar.html?tema=namoro">Namoro</a>
-                <a href="criar.html?tema=casamento">Casamento</a>
-                <a href="criar.html?tema=netflix">Netflix</a>
-                <a href="criar.html?tema=spotify">Spotify</a>
-                <a href="criar.html?tema=vinil">Vinil</a>
+                <a href="/criar-presente?tema=namoro">Namoro</a>
+                <a href="/criar-presente?tema=casamento">Casamento</a>
+                <a href="/criar-presente?tema=netflix">Netflix</a>
+                <a href="/criar-presente?tema=spotify">Spotify</a>
+                <a href="/criar-presente?tema=vinil">Vinil</a>
             </div>
             <div class="rodape-col">
                 <h4>Suporte</h4>
-                <a href="termos.html">Termos de uso</a>
-                <a href="privacidade.html">Privacidade</a>
-                <a href="reembolso.html">Reembolso</a>
+                <a href="/termos-de-uso">Termos de uso</a>
+                <a href="/politica-de-privacidade">Privacidade</a>
+                <a href="/politica-de-reembolso">Reembolso</a>
             </div>
         </div>
 
@@ -111,8 +111,8 @@
         <div class="rodape-base">
             <div>© <span id="anoAtual"></span> <b>KoaLove</b> — feito com carinho.</div>
             <div class="rodape-base-links">
-                <a href="termos.html">Termos</a>
-                <a href="privacidade.html">Privacidade</a>
+                <a href="/termos-de-uso">Termos</a>
+                <a href="/politica-de-privacidade">Privacidade</a>
                 <a href="#">Cookies</a>
             </div>
         </div>
