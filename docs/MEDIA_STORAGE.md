@@ -1,5 +1,7 @@
 # Fotos, vídeos e músicas no servidor
 
+O diagnóstico do envio tardio, do bloqueio CORS observado e da medição de capacidade do volume está em [UPLOAD_INVESTIGATION.md](UPLOAD_INVESTIGATION.md).
+
 ## Supabase na Vercel e alternativa local
 
 Para Vercel, a integração [Supabase](SUPABASE.md) usa PostgreSQL e bucket privado, com `FILESYSTEM_DISK=supabase`. Mídias vão diretamente ao Storage por URL assinada e são validadas pelo Laravel antes de entrar no presente. O limite no plano Free é de 50 MB por arquivo (fotos e músicas mantêm limites menores). A ativação exige configurar as chaves S3 e verificar o provedor real.
