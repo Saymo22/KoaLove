@@ -7,12 +7,55 @@ use Aws\CommandInterface;
 use Aws\MockHandler;
 use Aws\Result;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SupabaseStorageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_cors_diagnostic_checks_content_type_and_cleans_only_its_probe(): void
+    {
+        $this->configureStorage();
+        $disk = Storage::fake('supabase');
+        $disk->put('gifts/preserved', 'preserve');
+        $disk->buildTemporaryUploadUrlsUsing(fn ($path) => ['url' => 'https://storage.example.test/'.$path.'?signature=private', 'headers' => []]);
+        Http::fake(function ($request) use ($disk) {
+            $this->assertSame('https://www.koalove.site', $request->header('Origin')[0]);
+            if ($request->method() === 'OPTIONS') {
+                $this->assertSame('content-type', $request->header('Access-Control-Request-Headers')[0]);
+
+                return Http::response('', 200, ['Access-Control-Allow-Origin' => 'https://www.koalove.site', 'Access-Control-Allow-Methods' => 'GET, PUT', 'Access-Control-Allow-Headers' => 'content-type']);
+            }
+            $this->assertSame('PUT', $request->method());
+            $disk->put(ltrim(parse_url($request->url(), PHP_URL_PATH), '/'), $request->body());
+
+            return Http::response('', 200, ['Access-Control-Allow-Origin' => '*']);
+        });
+        $this->artisan('media:check', ['--origin' => 'https://www.koalove.site', '--probe' => true, '--capacity' => true])->assertSuccessful();
+        Http::assertSentCount(2);
+        $this->assertSame(['gifts/preserved'], $disk->allFiles());
+    }
+
+    public function test_cors_diagnostic_does_not_send_put_when_preflight_is_incomplete(): void
+    {
+        $this->configureStorage();
+        $disk = Storage::fake('supabase');
+        $disk->buildTemporaryUploadUrlsUsing(fn () => ['url' => 'https://storage.example.test/healthchecks/synthetic', 'headers' => []]);
+        Http::fake(['*' => Http::response('', 200, ['Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Methods' => 'PUT'])]);
+        $this->artisan('media:check', ['--origin' => 'https://www.koalove.site', '--probe' => true])->assertFailed();
+        Http::assertSentCount(1);
+        $this->assertSame([], $disk->allFiles());
+    }
+
+    public function test_cors_diagnostic_rejects_url_with_path_or_credentials_before_network(): void
+    {
+        Http::fake();
+        $this->artisan('media:check', ['--origin' => 'https://fixture.example.test/private'])->assertFailed();
+        $this->artisan('media:check', ['--origin' => 'https://user:password@fixture.example.test'])->assertFailed();
+        Http::assertNothingSent();
+    }
 
     private function configureStorage(): void
     {

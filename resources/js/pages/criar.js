@@ -10,6 +10,7 @@ let draggedIdx = null,
   previewReturnFocus = null;
 
 let pedidoEditandoId = null;
+let mediaStageCreating = false;
 let pedidoAntigo = null;
 let selectedPlanId = new URLSearchParams(location.search).get('plano');
 const PLAN_RELOAD_MESSAGE = 'Não foi possível carregar os limites do plano. Recarregue a página.';
@@ -66,7 +67,7 @@ function renderCreatorPlan(){
  if(!pedidoAntigo?.plan_id&&!plans.some(p=>p.id===selectedPlanId))selectedPlanId=window.NA_PRICING?.default_plan_id||plans[0]?.id;
  select.replaceChildren(...plans.map(p=>new Option(p.name+' — '+formatarPreco(p.amount_cents/100),p.id)));
  if(pedidoAntigo?.plan_id&&!plans.some(p=>p.id===pedidoAntigo.plan_id))select.add(new Option(pedidoAntigo.plan?.name||'Plano do pedido',pedidoAntigo.plan_id));
- select.value=selectedPlanId||'';select.disabled=!!pedidoEditandoId;
+ select.value=selectedPlanId||'';select.disabled=!!pedidoEditandoId||mediaStageCreating;
  const plan=creatorPlan();
  const summary=plan?window.NAPlanLimits?.summary?.(plan):null;
  $('creatorPlanDetails').textContent=summary?`Até ${summary}. O preço final é conferido antes do pagamento.`:PLAN_RELOAD_MESSAGE;
@@ -77,9 +78,9 @@ function clearPlanError(){const error=$('creatorPlanError');if(error){error.hidd
 function changeCreatorPlan(event){
   const next=window.NA_PRICING?.plans?.find(plan=>plan.id===event.target.value);
   const error=$('creatorPlanError');
-  if(pedidoEditandoId||!next||window.NAPlanLimits?.overLimit?.(next,currentMediaCounts())){
+  if(pedidoEditandoId||mediaStageCreating||!next||window.NAPlanLimits?.overLimit?.(next,currentMediaCounts())){
     event.target.value=selectedPlanId||'';
-    if(error){error.hidden=false;error.textContent=pedidoEditandoId?'O plano deste presente já foi salvo e não pode ser alterado.':!next?PLAN_RELOAD_MESSAGE:`Para escolher ${next.name}, reduza a seleção para ${window.NAPlanLimits.summary(next)} antes de trocar o plano. Seus arquivos foram mantidos.`;}
+    if(error){error.hidden=false;error.textContent=mediaStageCreating?'Aguarde a criação do rascunho no servidor.':pedidoEditandoId?'O plano deste presente já foi salvo e não pode ser alterado.':!next?PLAN_RELOAD_MESSAGE:`Para escolher ${next.name}, reduza a seleção para ${window.NAPlanLimits.summary(next)} antes de trocar o plano. Seus arquivos foram mantidos.`;}
     return;
   }
   clearPlanError();selectedPlanId=next.id;$('erroMedia').textContent='';$('erro3').textContent='';renderCreatorPlan();
@@ -109,6 +110,10 @@ function captureDraft(){
 const MAX_EVENTOS = 6;
 
 let draftReady=false,draftRestored=false,draftSuspended=false,draftTimer=null,draftQueue=Promise.resolve(),draftRevision=0;
+function queueDraftSave(snapshot){
+  draftQueue=draftQueue.catch(()=>{}).then(()=>salvarPedido({...snapshot,serverId:pedidoEditandoId}));
+  return draftQueue;
+}
 function scheduleDraftSave(){
   if(!draftReady||draftSuspended)return;
   const revision=++draftRevision;clearTimeout(draftTimer);
@@ -116,12 +121,40 @@ function scheduleDraftSave(){
   draftTimer=setTimeout(()=>{
     let snapshot;
     try{snapshot=captureDraft();}catch{$('draftSaveStatus').textContent='Não foi possível preparar o rascunho. Mantenha esta página aberta e tente novamente.';return;}
-    draftQueue=draftQueue.catch(()=>{}).then(()=>salvarPedido(snapshot)).then(()=>{
+    draftQueue=queueDraftSave(snapshot).then(()=>{
       if(revision===draftRevision)$('draftSaveStatus').textContent=pedidoEditandoId?'Rascunho salvo neste dispositivo · alterações ainda não enviadas ao servidor':'Rascunho salvo neste dispositivo';
     }).catch(()=>{if(revision===draftRevision)$('draftSaveStatus').textContent='Não foi possível salvar neste dispositivo. Mantenha esta página aberta e tente novamente.';});
   },800);
 }
 async function suspendDraftAutosave(){draftSuspended=true;++draftRevision;clearTimeout(draftTimer);await draftQueue.catch(()=>{});}
+let mediaStage=Promise.resolve();
+function stageSelectedMedia(){
+  // Serialize staging with the final save and with later selections. A failed
+  // background attempt leaves the local draft available for the final retry.
+  mediaStage=mediaStage.catch(()=>{}).then(async()=>{
+    if(!draftReady||draftSuspended)return;
+    const draft=captureDraft();
+    if(window.NAPlanLimits?.overLimit?.(creatorPlan(),{photos:draft.fotos.length,videos:draft.videos.length,music:!!draft.musica}))return;
+    // Freeze the chosen plan before the first await, including local persistence.
+    mediaStageCreating=!pedidoEditandoId;
+    renderCreatorPlan();
+    await queueDraftSave(draft);
+    $('draftSaveStatus').textContent='Enviando mídias ao servidor em segundo plano…';
+    if(!pedidoEditandoId){
+      const {purchase}=await ApiPurchases.create(draft);
+      pedidoEditandoId=purchase.id;
+      pedidoAntigo={...pedidoAntigo,...purchase,musica:draft.musica};
+      renderCreatorPlan();
+      await queueDraftSave(captureDraft());
+    }
+    await NAGift.stage(draft,pedidoEditandoId);
+    $('draftSaveStatus').textContent='Seleção anterior enviada · alterações posteriores serão conferidas ao finalizar';
+  }).catch(err=>{
+    $('draftSaveStatus').textContent='Envio das mídias pendente · '+(err?.message||'tente novamente ao finalizar');
+    throw err;
+  }).finally(()=>{mediaStageCreating=false;renderCreatorPlan();});
+  return mediaStage;
+}
 
 const AMOSTRA = {
   namoro: { titulo: "Nós dois", chip: "Uma história que continua...", cont: [["2", "Anos"], ["34", "Meses"], ["952", "Dias"]] },
@@ -674,11 +707,13 @@ $("btnAddEv").addEventListener("click", addEvento);
 function atualizarStepsVisual(n) { window.NACreatorWorkflow.updateProgress(n); }
 
 function ir(n) {
+  const previous=window.NACreatorWorkflow.current;
   const destino=document.querySelector('.passo[data-passo="'+n+'"]');if(!destino)return;
   document.querySelectorAll('.passo').forEach(el=>{el.hidden=el!==destino;el.classList.toggle('ativo',el===destino);});
   atualizarStepsVisual(n);window.scrollTo({top:0,behavior:'auto'});
   destino.querySelector('h2')?.focus({preventScroll:true});
   scheduleDraftSave();
+  if(previous===3&&n>3)stageSelectedMedia().catch(()=>{});
 }
 
 function validar(destino) {
@@ -856,6 +891,8 @@ $("form").addEventListener("submit", async (e) => {
   let recoverable=false;
   try {
     await suspendDraftAutosave();
+    if(typeof mediaStage!=='undefined')await mediaStage.catch(()=>{});
+    draft.serverId=pedidoEditandoId;
     await salvarPedido(draft).then(()=>{recoverable=true;}).catch(()=>{});
     let purchase;
     if(!pedidoEditandoId){

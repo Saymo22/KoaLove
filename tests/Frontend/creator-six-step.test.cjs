@@ -60,3 +60,23 @@ test('Autosave suspenso não recria rascunho depois do envio final',async()=>{
   await c.run('suspendDraftAutosave()');assert.equal(c.timers.size,0);
   c.run('scheduleDraftSave()');await c.flush();assert.equal(c.saved.length,0);
 });
+
+test('Envio antecipado bloqueia a troca de plano durante a criação e serializa o rascunho',async()=>{
+  const c=autosave();let release,uploads=0;
+  c.context.window={NAPlanLimits:{overLimit:()=>false}};
+  c.context.creatorPlan=()=>({photos:12,videos:4,music:1});
+  c.context.captureDraft=()=>({fotos:[],videos:[],musica:null,serverId:c.context.pedidoEditandoId});
+  c.context.renderCreatorPlan=()=>{};
+  c.context.NAGift={stage:async()=>{uploads++;}};
+  c.context.ApiPurchases={create:()=>new Promise(resolve=>{release=resolve;})};
+  c.context.pedidoAntigo=null;
+  c.run('let mediaStageCreating=false;draftReady=true;');
+  const pending=c.run('stageSelectedMedia()');
+  while(!release)await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(c.run('mediaStageCreating'),true);
+  c.run('scheduleDraftSave()');
+  release({purchase:{id:'p_fixture',plan_id:'fixture-plan'}});
+  await pending;await c.flush();
+  assert.equal(c.run('mediaStageCreating'),false);assert.equal(uploads,1);
+  assert.equal(c.saved.at(-1).serverId,'p_fixture','Autosave pendente preserva o ID criado em segundo plano');
+});
