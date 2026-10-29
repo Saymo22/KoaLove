@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\AdminConfiguration;
 use App\Services\Pricing;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -124,6 +125,8 @@ class AdminWorkspaceTest extends TestCase
         $this->assertSame('user', $client->fresh()->role);
         Mail::assertSentCount(1);
         $url = URL::temporarySignedRoute('admin.invitation', now()->addDay(), ['invitation' => $i->id]);
+        Auth::logout();
+        $this->get($url)->assertRedirect('/entrar');
         $this->actingAs($admin)->get($url)->assertForbidden();
         $this->actingAs($client)->get($url)->assertOk();
         $this->post('/admin/invitations/'.$i->id.'/accept', ['confirmed' => true])->assertRedirect('/admin/painel');

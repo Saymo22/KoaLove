@@ -4,7 +4,8 @@ module.exports=async()=>{
  const scope=vm.createContext({location:{href:'https://example.test/entrar',origin:'https://example.test',search:'?next='+encodeURIComponent('/criar-presente?resume=stable-request')},URL,URLSearchParams});
  vm.runInContext(login.slice(0,login.indexOf('document.addEventListener')),scope);
  assert.equal(vm.runInContext('destinoAposLogin()',scope),'/criar-presente?resume=stable-request');
- for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/entrar','/criar.html']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'/minha-conta');}
+ for(const next of ['https://outside.test/','//outside.test/','javascript:alert(1)','/admin/entrar']){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),'/minha-conta');}
+ for(const [next,expected] of [['/criar.html?resume=stable-request','/criar-presente?resume=stable-request'],['/pagamento.html?id=p_fixture','/pagamento?id=p_fixture'],['https://outside.test/criar.html','/minha-conta']]){scope.location.search='?next='+encodeURIComponent(next);assert.equal(vm.runInContext('destinoAposLogin()',scope),expected);}
  const source=fs.readFileSync(path.join(__dirname,'../../resources/js/pages/criar.js'),'utf8');
  const submit=source.slice(source.indexOf('$("form").addEventListener("submit"'),source.indexOf('function abrirPrevia'));
  let saveHandler,creates=0,syncs=0;const controls={btnFinal:{},erroMedia:{},erro3:{},draftSaveStatus:{}};

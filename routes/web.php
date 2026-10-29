@@ -33,6 +33,16 @@ Route::get('/sitemap.xml', fn (Seo $seo) => response()->view('sitemap', ['urls' 
 foreach (json_decode(file_get_contents(resource_path('assets.json')), true) as $key => $page) {
     $name = $key === 'home' ? 'pages.home' : 'pages.'.str_replace('/', '.', $key);
     Route::view($page['url'], $page['view'])->name($name)->middleware('throttle:pages');
+    foreach ($page['legacy_urls'] ?? [] as $legacy) {
+        Route::get($legacy, function (Request $request) use ($page) {
+            $query = $request->server('QUERY_STRING');
+            $target = $page['url'].(is_string($query) && $query !== '' ? '?'.$query : '');
+
+            // Relative Location preserves preview/alias origins and browser fragments.
+            // Do not cache links containing share tokens or payment identifiers.
+            return response('', 301, ['Location' => $target, 'Cache-Control' => 'private, no-store']);
+        })->middleware('throttle:pages');
+    }
 }
 Route::get('/reset-password/{token}', fn () => redirect('/recuperar-senha'))->name('password.reset');
 Route::prefix('api')->middleware(['throttle:api', AdminRuntime::class])->group(function () {

@@ -62,6 +62,14 @@ class SupportChatTest extends TestCase
         $this->assertDatabaseCount('tickets', 0);
     }
 
+    public function test_existing_tabs_can_start_support_with_a_known_legacy_page(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $this->postJson('/api/support/start', [...$this->payload(), 'page' => '/criar.html'])->assertOk();
+        $this->assertStringContainsString('Página: /criar-presente', Ticket::first()->messages[0]['text']);
+        $this->assertStringNotContainsString('.html', Ticket::first()->messages[0]['text']);
+    }
+
     public function test_support_uses_rate_limits_and_preserves_full_conversations(): void
     {
         $owner = User::factory()->create();

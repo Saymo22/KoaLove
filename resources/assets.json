@@ -18,7 +18,10 @@
       "resources/js/app.js",
       "resources/js/admin/planos.js"
     ],
-    "entry": "resources/js/entries/admin-planos.js"
+    "entry": "resources/js/entries/admin-planos.js",
+    "legacy_urls": [
+      "/admin/planos.html"
+    ]
   },
   "admin/clientes": {
     "url": "/admin/clientes",
@@ -39,7 +42,10 @@
       "resources/js/admin/header.js",
       "resources/js/admin/clientes.js"
     ],
-    "entry": "resources/js/entries/admin-clientes.js"
+    "entry": "resources/js/entries/admin-clientes.js",
+    "legacy_urls": [
+      "/admin/clientes.html"
+    ]
   },
   "admin/dashboard": {
     "url": "/admin/painel",
@@ -55,7 +61,10 @@
       "resources/js/admin/auth.js",
       "resources/js/admin/workspace.js"
     ],
-    "entry": "resources/js/entries/admin-dashboard.js"
+    "entry": "resources/js/entries/admin-dashboard.js",
+    "legacy_urls": [
+      "/admin/dashboard.html"
+    ]
   },
   "admin/login": {
     "url": "/admin/entrar",
@@ -71,7 +80,10 @@
       "resources/js/admin/auth.js",
       "resources/js/admin/login.js"
     ],
-    "entry": "resources/js/entries/admin-login.js"
+    "entry": "resources/js/entries/admin-login.js",
+    "legacy_urls": [
+      "/admin/login.html"
+    ]
   },
   "admin/reembolsos": {
     "url": "/admin/reembolsos",
@@ -91,7 +103,10 @@
       "resources/js/admin/header.js",
       "resources/js/admin/reembolsos.js"
     ],
-    "entry": "resources/js/entries/admin-reembolsos.js"
+    "entry": "resources/js/entries/admin-reembolsos.js",
+    "legacy_urls": [
+      "/admin/reembolsos.html"
+    ]
   },
   "admin/suporte": {
     "url": "/admin/suporte",
@@ -111,7 +126,10 @@
       "resources/js/admin/header.js",
       "resources/js/admin/support-conversation.js"
     ],
-    "entry": "resources/js/entries/admin-suporte.js"
+    "entry": "resources/js/entries/admin-suporte.js",
+    "legacy_urls": [
+      "/admin/suporte.html"
+    ]
   },
   "criar": {
     "url": "/criar-presente",
@@ -135,7 +153,10 @@
       "resources/js/pages/creator-workflow.js",
       "resources/js/pages/criar.js"
     ],
-    "entry": "resources/js/entries/criar.js"
+    "entry": "resources/js/entries/criar.js",
+    "legacy_urls": [
+      "/criar.html"
+    ]
   },
   "home": {
     "url": "/",
@@ -156,7 +177,11 @@
       "resources/js/pages/home.js",
       "resources/js/pages/home-pricing.js"
     ],
-    "entry": "resources/js/entries/home.js"
+    "entry": "resources/js/entries/home.js",
+    "legacy_urls": [
+      "/home.html",
+      "/index.html"
+    ]
   },
   "login": {
     "url": "/entrar",
@@ -174,7 +199,10 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/login.js"
     ],
-    "entry": "resources/js/entries/login.js"
+    "entry": "resources/js/entries/login.js",
+    "legacy_urls": [
+      "/login.html"
+    ]
   },
   "minha-conta": {
     "url": "/minha-conta",
@@ -196,7 +224,10 @@
       "resources/js/pages/extracted/minha-conta-0.js",
       "resources/js/pages/privacy.js"
     ],
-    "entry": "resources/js/entries/minha-conta.js"
+    "entry": "resources/js/entries/minha-conta.js",
+    "legacy_urls": [
+      "/minha-conta.html"
+    ]
   },
   "pagamento": {
     "url": "/pagamento",
@@ -215,7 +246,10 @@
       "resources/js/vendor/qrcode.js",
       "resources/js/pages/pagamento.js"
     ],
-    "entry": "resources/js/entries/pagamento.js"
+    "entry": "resources/js/entries/pagamento.js",
+    "legacy_urls": [
+      "/pagamento.html"
+    ]
   },
   "privacidade": {
     "url": "/politica-de-privacidade",
@@ -232,7 +266,10 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/privacidade-0.js"
     ],
-    "entry": "resources/js/entries/privacidade.js"
+    "entry": "resources/js/entries/privacidade.js",
+    "legacy_urls": [
+      "/privacidade.html"
+    ]
   },
   "recuperar-senha": {
     "url": "/recuperar-senha",
@@ -247,7 +284,10 @@
       "resources/js/api/client.js",
       "resources/js/pages/recuperar-senha.js"
     ],
-    "entry": "resources/js/entries/recuperar-senha.js"
+    "entry": "resources/js/entries/recuperar-senha.js",
+    "legacy_urls": [
+      "/recuperar-senha.html"
+    ]
   },
   "reembolso": {
     "url": "/politica-de-reembolso",
@@ -264,7 +304,10 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/reembolso-0.js"
     ],
-    "entry": "resources/js/entries/reembolso.js"
+    "entry": "resources/js/entries/reembolso.js",
+    "legacy_urls": [
+      "/reembolso.html"
+    ]
   },
   "resultado": {
     "url": "/resultado",
@@ -285,7 +328,10 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/resultado.js"
     ],
-    "entry": "resources/js/entries/resultado.js"
+    "entry": "resources/js/entries/resultado.js",
+    "legacy_urls": [
+      "/resultado.html"
+    ]
   },
   "termos": {
     "url": "/termos-de-uso",
@@ -302,7 +348,10 @@
       "resources/js/core/navbar.js",
       "resources/js/pages/extracted/termos-0.js"
     ],
-    "entry": "resources/js/entries/termos.js"
+    "entry": "resources/js/entries/termos.js",
+    "legacy_urls": [
+      "/termos.html"
+    ]
   },
   "themes/amizade": {
     "url": "/temas/amizade",
@@ -315,7 +364,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/amizade.js"
     ],
-    "entry": "resources/js/entries/themes-amizade.js"
+    "entry": "resources/js/entries/themes-amizade.js",
+    "legacy_urls": [
+      "/teste/amizade.html"
+    ]
   },
   "themes/aniversario": {
     "url": "/temas/aniversario",
@@ -328,7 +380,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/aniversario.js"
     ],
-    "entry": "resources/js/entries/themes-aniversario.js"
+    "entry": "resources/js/entries/themes-aniversario.js",
+    "legacy_urls": [
+      "/teste/aniversario.html"
+    ]
   },
   "themes/carta-antiga": {
     "url": "/temas/carta-antiga",
@@ -341,7 +396,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/carta-antiga.js"
     ],
-    "entry": "resources/js/entries/themes-carta-antiga.js"
+    "entry": "resources/js/entries/themes-carta-antiga.js",
+    "legacy_urls": [
+      "/teste/carta-antiga.html"
+    ]
   },
   "themes/casamento": {
     "url": "/temas/casamento",
@@ -354,7 +412,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/casamento.js"
     ],
-    "entry": "resources/js/entries/themes-casamento.js"
+    "entry": "resources/js/entries/themes-casamento.js",
+    "legacy_urls": [
+      "/teste/casamento.html"
+    ]
   },
   "themes/cinema": {
     "url": "/temas/cinema",
@@ -368,7 +429,10 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/cinema.js"
     ],
-    "entry": "resources/js/entries/themes-cinema.js"
+    "entry": "resources/js/entries/themes-cinema.js",
+    "legacy_urls": [
+      "/teste/cinema.html"
+    ]
   },
   "themes/familia": {
     "url": "/temas/familia",
@@ -381,7 +445,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/familia.js"
     ],
-    "entry": "resources/js/entries/themes-familia.js"
+    "entry": "resources/js/entries/themes-familia.js",
+    "legacy_urls": [
+      "/teste/familia.html"
+    ]
   },
   "themes/jardim": {
     "url": "/temas/jardim",
@@ -394,7 +461,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/jardim.js"
     ],
-    "entry": "resources/js/entries/themes-jardim.js"
+    "entry": "resources/js/entries/themes-jardim.js",
+    "legacy_urls": [
+      "/teste/jardim.html"
+    ]
   },
   "themes/namoro": {
     "url": "/temas/namoro",
@@ -408,7 +478,10 @@
       "resources/js/pages/extracted/themes-namoro-0.js",
       "resources/js/themes/namoro.js"
     ],
-    "entry": "resources/js/entries/themes-namoro.js"
+    "entry": "resources/js/entries/themes-namoro.js",
+    "legacy_urls": [
+      "/teste/namoro.html"
+    ]
   },
   "themes/netflix": {
     "url": "/temas/netflix",
@@ -422,7 +495,10 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/netflix.js"
     ],
-    "entry": "resources/js/entries/themes-netflix.js"
+    "entry": "resources/js/entries/themes-netflix.js",
+    "legacy_urls": [
+      "/teste/netflix.html"
+    ]
   },
   "themes/retro": {
     "url": "/temas/retro",
@@ -436,7 +512,10 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/retro.js"
     ],
-    "entry": "resources/js/entries/themes-retro.js"
+    "entry": "resources/js/entries/themes-retro.js",
+    "legacy_urls": [
+      "/teste/retro.html"
+    ]
   },
   "themes/scrapbook": {
     "url": "/temas/scrapbook",
@@ -449,7 +528,10 @@
       "resources/js/core/theme-runtime.js",
       "resources/js/themes/scrapbook.js"
     ],
-    "entry": "resources/js/entries/themes-scrapbook.js"
+    "entry": "resources/js/entries/themes-scrapbook.js",
+    "legacy_urls": [
+      "/teste/scrapbook.html"
+    ]
   },
   "themes/spotify": {
     "url": "/temas/spotify",
@@ -463,7 +545,10 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/spotify.js"
     ],
-    "entry": "resources/js/entries/themes-spotify.js"
+    "entry": "resources/js/entries/themes-spotify.js",
+    "legacy_urls": [
+      "/teste/spotify.html"
+    ]
   },
   "themes/vinil": {
     "url": "/temas/vinil",
@@ -477,7 +562,10 @@
       "resources/js/core/exclusive-theme-runtime.js",
       "resources/js/themes/vinil.js"
     ],
-    "entry": "resources/js/entries/themes-vinil.js"
+    "entry": "resources/js/entries/themes-vinil.js",
+    "legacy_urls": [
+      "/teste/vinil.html"
+    ]
   },
   "ver": {
     "url": "/presente",
@@ -491,6 +579,9 @@
       "resources/js/core/theme-catalog.js",
       "resources/js/pages/ver.js"
     ],
-    "entry": "resources/js/entries/ver.js"
+    "entry": "resources/js/entries/ver.js",
+    "legacy_urls": [
+      "/ver.html"
+    ]
   }
 }

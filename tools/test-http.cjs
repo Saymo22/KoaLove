@@ -12,10 +12,11 @@ async function request(path,body,options={}){
  const res=await fetch(base+path,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:Buffer.isBuffer(body)?body:JSON.stringify(body),redirect:'manual'});
  for(const cookie of res.headers.getSetCookie()){const first=cookie.split(';')[0],at=first.indexOf('=');cookieJar.set(first.slice(0,at),first.slice(at+1));}return res;
 }
-async function page(){const res=await request('/login.html');assert.equal(res.status,200);csrf=(await res.text()).match(/name="csrf-token" content="([^"]+)"/)[1];}
+async function page(){const res=await request('/entrar');assert.equal(res.status,200);csrf=(await res.text()).match(/name="csrf-token" content="([^"]+)"/)[1];}
 (async()=>{
  try{
   let ready=false;for(let i=0;i<80;i++){try{await fetch(base+'/up');ready=true;break;}catch{await pause(100);}}assert(ready,'Servidor não iniciou: '+logs);
+  const legacy=await request('/login.html?next=%2Fcriar.html%3Fresume%3Dsynthetic');assert.equal(legacy.status,301);assert.equal(legacy.headers.get('location'),'/entrar?next=%2Fcriar.html%3Fresume%3Dsynthetic');
   await page();assert.equal((await request('/api/auth/login',{email:'nobody@example.test',password:'invalid-password'},{csrf:false})).status,419,'POST sem CSRF deve falhar');
   const email='http-'+Date.now()+'@example.test',password='synthetic-password';
   let res=await request('/api/auth/register',{name:'Teste HTTP',email,password});assert.equal(res.status,201,await res.text());await page();

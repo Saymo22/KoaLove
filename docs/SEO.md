@@ -18,7 +18,7 @@ O formulário, o acesso à conta e a exibição interativa dos presentes ainda p
 
 ## Configuração
 
-- `config/seo.php`: títulos/descrições específicos, páginas utilitárias e caminhos restritos. Os 13 temas são obtidos do catálogo; para sobrescrever os metadados de um tema, adicione sua URL em `pages`. Páginas usam caminhos sem extensão; URLs `.html` não são aceitas nem redirecionadas.
+- `config/seo.php`: títulos/descrições específicos, páginas utilitárias e caminhos restritos. Os 13 temas são obtidos do catálogo; para sobrescrever os metadados de um tema, adicione sua URL em `pages`. Páginas usam caminhos sem extensão. Os caminhos `.html` já publicados ficam em `resources/assets.json` como `legacy_urls` e respondem 301 para a página equivalente, sem entrar no sitemap. `/index.html` e `/home.html` apontam para `/`. Não há fallback para URLs desconhecidas.
 - `APP_URL`: origem canônica e dos links do sitemap. Em produção, use o domínio público definitivo (`https://www.koalove.site`); aliases `*.vercel.app` são apenas endereços alternativos. O header Host do visitante não altera esses links. Ao trocar o domínio, reimplante e confira canonical/sitemap no endereço novo; os bundles do Vite já são relativos à origem e continuam válidos em qualquer alias.
 - `SEO_INDEXING_ENABLED`: padrão ligado em `APP_ENV=production`; use `false` para desativar. Prévias com `VERCEL_ENV=preview` continuam bloqueadas mesmo que a variável seja `true`.
 - `SEO_ALLOW_GPTBOT_TRAINING=false`: mantém GPTBot bloqueado por padrão. Use `true` somente se desejar permitir também seu uso de treinamento nas páginas públicas. Essa opção é independente de pesquisa.
@@ -35,7 +35,7 @@ Após publicar, confira essas duas URLs no domínio real e envie o sitemap ao Go
 
 ## Validação
 
-- `php vendor/bin/phpunit --filter SeoTest`: verifica as 30 páginas, descrições/robots sem duplicação, noscript, restrições por parâmetros, host não confiável, XML, rotas públicas e rejeição de URLs `.html`.
+- `php vendor/bin/phpunit --filter SeoTest`: verifica as 30 páginas, descrições/robots sem duplicação, noscript, restrições por parâmetros, host não confiável, XML, rotas públicas, redirects legados com query/origem preservadas e 404 para caminhos desconhecidos.
 - `npm test` e `npm run build`: verificam o catálogo e o CSS separado de acessibilidade.
 - No navegador, teste home/login/tema com JavaScript ligado e desligado. O aviso precisa ficar visível acima dos loaders dos temas, sem aparecer na navegação normal.
 - Na Vercel, confira produção e prévia: somente o ambiente de produção deve permitir indexação.
@@ -44,4 +44,5 @@ Após publicar, confira essas duas URLs no domínio real e envie o sitemap ao Go
 
 - [Google: meta robots e X-Robots-Tag](https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag)
 - [Google: bloqueio de indexação](https://developers.google.com/search/docs/crawling-indexing/block-indexing)
+- [Google: migração de URLs e redirecionamentos](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
 - [OpenAI: diferença entre OAI-SearchBot e GPTBot](https://developers.openai.com/api/docs/bots)

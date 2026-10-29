@@ -117,7 +117,7 @@ class GoogleAuthenticationTest extends TestCase
     public function test_google_callback_keeps_the_draft_return_query_and_state_is_single_use(): void
     {
         $flow = $this->googleFlow(['sub' => 'new-sub', 'email' => 'synthetic@example.test',
-            'name' => 'Synthetic', 'picture' => null, 'email_authoritative' => false], '/criar-presente?resume=synthetic-draft-123');
+            'name' => 'Synthetic', 'picture' => null, 'email_authoritative' => false], '/criar.html?resume=synthetic-draft-123');
         $this->get('/auth/google/callback?state='.$flow['state'].'&code=code')->assertRedirect('/criar-presente?resume=synthetic-draft-123');
         $this->assertAuthenticated();
         $this->assertSame(0, session('google_session_version'));

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contracts\IdentityProvider;
 use App\Models\User;
+use App\Support\PageUrls;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,13 @@ class GoogleAuthController extends Controller
             'expires' => now()->addMinutes(10)->timestamp,
         ]);
         $next = $request->query('next');
+        if (is_string($next)) {
+            $parts = explode('?', $next, 2);
+            $path = PageUrls::canonicalPath($parts[0]);
+            if ($path) {
+                $next = $path.(isset($parts[1]) ? '?'.$parts[1] : '');
+            }
+        }
         if (is_string($next) && strlen($next) <= 1000 && preg_match('/\A\/(?:criar-presente|minha-conta|pagamento|resultado)(?:\?[^\s#\\\\]*)?\z/', $next)) {
             $request->session()->put('google_login_next', $next);
         } else {

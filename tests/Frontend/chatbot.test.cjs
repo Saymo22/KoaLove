@@ -1,5 +1,10 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
+test('Chat permanece ausente em presentes e temas, incluindo URLs anteriores',async()=>{
+    const {chatAllowed}=await import('../../resources/js/chat/page-policy.js');
+    for(const path of ['/presente','/ver.html','/temas/namoro','/teste/namoro.html','/admin/painel','/temas','/teste'])assert.equal(chatAllowed(path),false,path);
+    assert.equal(chatAllowed('/criar-presente'),true);assert.equal(chatAllowed('/criar-presente',true),false);
+});
 test('Chat distingue assuntos, usa catálogo atual e preserva análise legal',async()=>{
     const {answer,identify}=await import('../../resources/js/chat/knowledge.js');
     assert.equal(identify('Não consigo enviar o vídeo'),'media');
