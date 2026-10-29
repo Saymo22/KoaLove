@@ -1,6 +1,10 @@
 /* Referências persistentes de mídia; migra índices antigos antes de reordenar. */
 window.NAGift = (() => {
   const uploaded=new Map();
+  function retainSelection(purchaseId,selection){
+    const active=new Set([...selection.photos,...selection.videos,selection.music].filter(Boolean).map(asset=>purchaseId+':'+asset));
+    for(const key of uploaded.keys())if(key.startsWith(purchaseId+':')&&!active.has(key))uploaded.delete(key);
+  }
   const id = () => crypto.randomUUID?.() || Array.from(crypto.getRandomValues(new Uint8Array(16)),byte=>byte.toString(16).padStart(2,'0')).join('');
   const url = value => typeof value==='string' ? new URL(value,location.origin).href : URL.createObjectURL(value);
   function refs(value,ids) {
@@ -26,11 +30,13 @@ window.NAGift = (() => {
     };
     // Declare the current selection before uploads so abandoned staged files do not
     // consume a slot forever after an interrupted sync. Saved manifest files survive.
-    await ApiPurchases.selectMedia(purchaseId,{
+    const selection={
       photos:p.fotos.map((value,i)=>assetId(value,p.photoIds[i])),
       videos:(p.videos||[]).map((value,i)=>assetId(value,p.videoIds[i])),
       music:p.musica?assetId(p.musica,p.musicId):null,
-    });
+    };
+    await ApiPurchases.selectMedia(purchaseId,selection);
+    retainSelection(purchaseId,selection);
     const send=async(value,asset)=>{
       if(value instanceof Blob){
         const key=purchaseId+':'+asset;
@@ -59,11 +65,13 @@ window.NAGift = (() => {
       if(parsed.origin!==location.origin||!parsed.pathname.startsWith('/api/purchases/'+purchaseId+'/media/'))throw new Error('Selecione novamente a mídia para sincronizar.');
       return decodeURIComponent(parsed.pathname.split('/').pop());
     };
-    await ApiPurchases.selectMedia(purchaseId,{
+    const selection={
       photos:p.fotos.map((v,i)=>asset(v,p.photoIds[i])),
       videos:(p.videos||[]).map((v,i)=>asset(v,p.videoIds[i])),
       music:p.musica?asset(p.musica,p.musicId):null,
-    });
+    };
+    await ApiPurchases.selectMedia(purchaseId,selection);
+    retainSelection(purchaseId,selection);
     for(const [values,ids] of [[p.fotos,p.photoIds],[p.videos||[],p.videoIds]]){
       for(let i=0;i<values.length;i++)if(values[i] instanceof Blob){
         const key=purchaseId+':'+ids[i];

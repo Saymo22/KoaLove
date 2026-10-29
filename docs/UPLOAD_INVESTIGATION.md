@@ -1,5 +1,32 @@
 # Investigação do envio de mídias no criador
 
+## Correções e verificação do PR #28 / issue #29
+
+O envio antecipado agora compartilha a fila de persistência do autosave. O plano é bloqueado antes da criação assíncrona do pedido, o ID do servidor é preservado nas gravações pendentes e a revisão aguarda o envio em curso. O cache de confirmações descarta IDs removidos da seleção: se forem adicionados novamente, o arquivo será reenviado. Falhas mantêm os arquivos locais e permitem retentar apenas os envios ainda pendentes. A mensagem de conclusão distingue a seleção enviada das alterações posteriores.
+
+Diagnóstico operacional, executado com as variáveis privadas do ambiente, sem publicar URLs assinadas:
+
+```sh
+php artisan media:check --origin=https://www.koalove.site
+php artisan media:check --origin=https://www.koalove.site --probe --capacity
+php artisan media:check --capacity --probe # somente no host com volume local persistente
+```
+
+`--origin` faz OPTIONS da URL assinada e verifica origem, PUT e todos os cabeçalhos utilizados, incluindo `content-type` mesmo quando omitido pelo SDK. Com `--probe`, também envia 32 bytes sintéticos, verifica CORS da resposta PUT, lê o conteúdo de volta e remove somente o objeto criado em `healthchecks/<uuid>`. Não cria usuário ou compra. Erros não imprimem URLs, chaves ou respostas brutas. O comando não modifica políticas CORS.
+
+Resultado HTTP medido em 28/10/2026 (horário de Brasília), no endpoint S3 do projeto KoaLove, usando `Origin: https://www.koalove.site`:
+
+- OPTIONS **200**; `Access-Control-Allow-Origin: *`; métodos incluem PUT; `content-type` permitido. Esse wildcard é a resposta existente do provedor para requisições sem cookies, não uma política adicionada por este PR. `Vary` não foi retornado.
+- PUT assinado **200**, leitura idêntica e remoção confirmadas. Tempo total observado **1.920 ms / 32 bytes**, incluindo OPTIONS, PUT, leitura e primeira remoção, a partir desta estação. Não é benchmark de fotos/vídeos nem do processamento FFprobe na Vercel.
+- Consulta agregada somente de leitura no catálogo do Storage: bucket `gift-media` **privado**, teto de **50.000.000 bytes por arquivo**, **125 objetos / 159.322.612 bytes lógicos** no instante da consulta. Inclui objetos temporários; não é medida de espaço livre, quota contratada, egress ou capacidade física. Nenhum nome de arquivo ou conteúdo de cliente foi consultado.
+- O teste não reproduziu a rejeição CORS das capturas. Não há evidência para alterar a política do bucket ou relaxar a CSP. A API S3 do Supabase não implementa `PutBucketCors` ([compatibilidade oficial](https://supabase.com/docs/guides/storage/s3/compatibility)).
+
+`--capacity` apresenta total/livre do volume privado local com data da medição e espaço livre dos temporários; estes podem compartilhar o mesmo volume. Em S3/Supabase, informa explicitamente que capacidade física remota não está disponível. Não consulta o disco desta estação para estimar capacidade da Vercel ou do bucket.
+
+**Issue #29 permanece parcialmente pendente:** transferência real de foto/vídeo/áudio em Firefox e outro navegador; latência de arquivos grandes/interrupção em conexão móvel; CPU/memória/temporários do host efetivo; quota atual de Storage e restauração isolada de backup. O teste HTTP acima não substitui esses testes. Não foi fornecido um host próprio com volume persistente para medir/restaurar; a implantação documentada continua Laravel na Vercel e mídias no Supabase. Não restaurar backups sobre produção nem interpretar a leitura de um probe como restauração de backup.
+
+Os parágrafos seguintes preservam o diagnóstico inicial e os critérios operacionais, não constituem medições adicionais.
+
 ## Evidência observada em 28/10/2026
 
 As capturas fornecidas mostram `POST .../upload-url` com HTTP 200 e um `PUT` assinado para `*.storage.supabase.co` bloqueado pelo navegador por CORS. A linha do PUT registra **0 bytes transferidos** e ausência de status HTTP. Portanto, esse caso falha antes da transferência do arquivo; as capturas não demonstram lentidão da rede nem falta de espaço no servidor. O navegador apresenta a mensagem genérica de falha de conexão e mantém o rascunho. Os erros de `file:///` na prévia são separados do upload.

@@ -89,6 +89,21 @@ test('Mídias enviadas durante a criação não são retransmitidas na revisão'
   await window.NAGift.stage(draft,'p_fixture');
   await window.NAGift.sync(draft,'p_fixture');
   assert.deepEqual(calls,['selection','upload','selection','update']);
+  await window.NAGift.stage({fotos:[],videos:[],musica:null},'p_fixture');
+  await window.NAGift.sync(draft,'p_fixture');
+  assert.deepEqual(calls.slice(4),['selection','selection','upload','update'],'Uma seleção removida deve voltar a ser enviada quando readicionada');
+});
+
+test('Falha no upload antecipado permite retentar sem perder confirmações anteriores',async()=>{
+  const calls=[];let fail=true;const window={};
+  const scope=vm.createContext({window,URL,Blob,crypto:require('node:crypto').webcrypto,location:{origin:'https://fixture.example.test'},ApiPurchases:{
+    selectMedia:async()=>{},upload:async(_purchase,asset)=>{calls.push(asset);if(asset==='second-photo-11111111'&&fail){fail=false;throw Error('offline');}},
+  },ApiClient:{post:async()=>({purchase:{id:'p_fixture'}})}});
+  vm.runInContext(fs.readFileSync('resources/js/core/gift-sync.js','utf8'),scope);
+  const draft={fotos:[new Blob(['one']),new Blob(['two'])],photoIds:['first-photo-11111111','second-photo-11111111'],videos:[],musica:null};
+  await assert.rejects(window.NAGift.stage(draft,'p_fixture'),/offline/);
+  await window.NAGift.sync(draft,'p_fixture');
+  assert.deepEqual(calls,['first-photo-11111111','second-photo-11111111','second-photo-11111111']);
 });
 
 test('NAPlanLimits detecta mídia acima do plano sem apagar dados',()=>{
