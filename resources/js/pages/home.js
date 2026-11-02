@@ -57,8 +57,6 @@ function revelarTemas() {
 
 /* Temas e preço vêm de GET /api/config (nada hardcoded) */
 NA_CONFIG_READY.then(() => {
-    if (!Object.keys(THEMES).length) return;
-
     Object.entries(THEMES).forEach(([chave, t]) => {
         const card = criarTemaCard(chave, t);
         if (t.categoria === "especial") {
@@ -70,6 +68,11 @@ NA_CONFIG_READY.then(() => {
         }
         todosCards.push(card);
     });
+
+    const natal = window.NAThemeCard.create('natal', {nome:'Natal', emoji:'★', categoria:'especial'}, {mode:'preview', badge:'★ Novo'});
+    caixaEspeciais.appendChild(natal);
+    todosCards.push(natal);
+    totEspeciais++;
 
     document.getElementById("cntTodos").textContent = todosCards.length;
     document.getElementById("cntClassicos").textContent = totClassicos;
