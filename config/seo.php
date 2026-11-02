@@ -5,6 +5,7 @@ return [
     'allow_gptbot_training' => env('SEO_ALLOW_GPTBOT_TRAINING', false),
     'site_name' => 'KoaLove',
     'pages' => [
+        '/temas/natal' => ['title' => 'Um Feliz Natal — KoaLove', 'description' => 'Explore a demonstração de Natal do KoaLove, com árvore interativa, mensagens e surpresas.'],
         '/' => ['title' => 'KoaLove — Presentes digitais personalizados', 'description' => 'Crie um presente digital com fotos, vídeos, música e mensagens. Escolha entre 13 temas e compartilhe sua história por link ou QR Code.'],
         '/criar-presente' => ['title' => 'Criar presente digital — KoaLove', 'description' => 'Personalize seu presente digital: escolha um tema, adicione fotos, vídeos, música e mensagens e confira a prévia antes de compartilhar.'],
         '/termos-de-uso' => ['title' => 'Termos de Uso — KoaLove', 'description' => 'Conheça as condições de uso do KoaLove, as responsabilidades da conta e as regras dos presentes digitais.'],

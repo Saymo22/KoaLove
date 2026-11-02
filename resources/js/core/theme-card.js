@@ -11,6 +11,7 @@ window.NAThemeCard=(()=>{
     cinema:{titulo:'Sessão da Tarde',chip:'A melhor história é a nossa.',cont:[['2h','Duração'],['1','Sessão'],['VIP','Lugar']]},
     retro80:{titulo:'Para Sempre',chip:'Nossa história em neon.',cont:[['1980','Ano'],['100%','Synth'],['∞','Love']]},
     namoro:{titulo:'Nós dois',chip:'Uma história que continua...',cont:[['2','Anos'],['34','Meses'],['952','Dias']]},
+    natal:{titulo:'Nosso Natal',chip:'Edição de colecionador',cont:[['24','Dez'],['∞','Amor'],['1','Família']]},
   };
   function create(key,theme,{mode='link',sample,badge}={}){
     const card=document.createElement('article');
@@ -33,6 +34,16 @@ window.NAThemeCard=(()=>{
     card.querySelector('.top-row').textContent=badge||(exclusive?'Exclusivo VIP':'Clássico');
     card.querySelector('.teaser').textContent=preview.chip;
     card.querySelector('.hero-title').textContent=preview.titulo;
+    if (key === 'natal') {
+      card.querySelector('.fleuron').outerHTML = `<div class="natal-tree-medallion" aria-hidden="true">
+        <svg viewBox="0 0 100 100" focusable="false">
+          <path class="tree-silhouette" d="M50 8 80 47H69L87 68H75L92 86H8L25 68H13L31 47H20Z"/>
+          <circle cx="34" cy="44" r="4"/><circle cx="67" cy="44" r="4"/>
+          <circle cx="50" cy="59" r="4"/><circle cx="50" cy="80" r="4"/>
+          <circle class="red" cx="29" cy="70" r="4"/><circle class="red" cx="71" cy="70" r="4"/>
+        </svg>
+      </div>`;
+    }
     card.querySelector('.emoji').textContent=theme.emoji||'✦';
     card.querySelector('.nome').textContent=theme.nome;
     for(const [number,label] of preview.cont){
@@ -43,12 +54,13 @@ window.NAThemeCard=(()=>{
     }
     const action=document.createElement(mode==='select'?'button':'a');
     action.className='cta';
-    action.innerHTML=(mode==='select'?'Escolher este tema':'Criar este tema')+' <span class="arrow" aria-hidden="true">→</span>';
-    action.setAttribute('aria-label',(mode==='select'?'Escolher tema: ':'Criar presente com o tema ')+theme.nome);
+    const actionText = {select:'Escolher este tema',preview:'Ver demonstração',link:'Criar este tema'};
+    action.innerHTML=actionText[mode]+' <span class="arrow" aria-hidden="true">→</span>';
+    action.setAttribute('aria-label',mode==='preview'?'Ver demonstração do tema '+theme.nome:(mode==='select'?'Escolher tema: ':'Criar presente com o tema ')+theme.nome);
     if(mode==='select'){
       action.type='button';action.setAttribute('aria-pressed','false');
     }else{
-      action.href='/criar-presente?tema='+encodeURIComponent(key);
+      action.href=(mode==='preview'?'/temas/':'/criar-presente?tema=')+encodeURIComponent(key);
       card.addEventListener('click',event=>{if(!event.target.closest('a,button'))action.click();});
     }
     card.querySelector('.bottom-block').appendChild(action);

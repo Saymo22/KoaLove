@@ -587,5 +587,18 @@
     "legacy_urls": [
       "/ver.html"
     ]
+  },
+  "themes/natal": {
+    "url": "/temas/natal",
+    "view": "themes.natal",
+    "styles": [
+      "resources/css/themes/natal.css",
+      "resources/css/accessibility.css"
+    ],
+    "scripts": [
+      "resources/js/themes/natal.js"
+    ],
+    "entry": "resources/js/entries/themes-natal.js",
+    "legacy_urls": []
   }
 }

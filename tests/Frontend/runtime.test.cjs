@@ -42,9 +42,9 @@ test('Armazenamento indisponível preserva o rascunho e não inicia upload',asyn
 test('Seis etapas do criador e validação de cada etapa',require('./creator-workflow.cjs'));
 test('Checkout envia card, redireciona sem aprovar e aguarda confirmação do servidor',require('./payment-flow.cjs'));
 test('Salvamento recuperável, retomada de sessão e repetição sem duplicação',require('./creator-saving.cjs'));
-test('Todas as páginas e os 13 temas carregam assets separados pelo Vite',()=>{
+test('Todas as páginas de temas carregam assets separados pelo Vite',()=>{
   const pages=JSON.parse(fs.readFileSync('resources/assets.json'));
-  assert.equal(Object.keys(pages).filter(p=>p.startsWith('themes/')).length,13);
+  assert.equal(Object.keys(pages).filter(p=>p.startsWith('themes/')).length,14);
   for(const [name,page]of Object.entries(pages)){
     const html=fs.readFileSync('resources/views/'+name+'.blade.php','utf8');
     assert(!/<script\b|<style\b|\sstyle\s*=|\son\w+\s*=/i.test(html),name+' não deve incluir código inline');

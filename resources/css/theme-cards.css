@@ -397,3 +397,22 @@
   .kl-theme-card *::before, .kl-theme-card *::after { animation: none !important; transition: none !important; }
   .kl-theme-card:hover, .kl-theme-card.on { transform: none; }
 }
+.kl-theme-card.theme-natal { aspect-ratio: auto; }
+.kl-theme-card.theme-natal .card-bg-layer {
+  background: radial-gradient(ellipse at center, #171710, #080808 72%);
+}
+.kl-theme-card.theme-natal .natal-tree-medallion {
+  display: grid;
+  place-items: center;
+  width: clamp(85px, 48cqi, 175px);
+  aspect-ratio: 1;
+  margin: 18px 0 0;
+  border: 1px solid #d4af3740;
+  border-radius: 50%;
+  background: radial-gradient(circle, #d4af3738, transparent 66%);
+  outline: 1px dashed #d4af3730;
+  outline-offset: -13px;
+}
+.kl-theme-card.theme-natal svg { width: 52%; fill: #e1b64e; }
+.kl-theme-card.theme-natal .tree-silhouette { fill: #143a2b; stroke: #2e6345; stroke-width: 2; }
+.kl-theme-card.theme-natal .red { fill: #e23a50; }
