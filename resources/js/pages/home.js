@@ -24,91 +24,7 @@ const DESTAQUES = { netflix: "🔥 Popular", vinil: "⭐ Novo" };
    CRIAR CARD DE TEMA
 ===================================================== */
 function criarTemaCard(chave, t) {
-    const a = AMOSTRA[chave] || AMOSTRA.namoro;
-    const isEspecial = t.categoria === "especial";
-    const cores = isEspecial && VITRINE_CORES[chave] ? VITRINE_CORES[chave] : t.cores;
-
-    const el = document.createElement("div");
-    el.className = "tema-card";
-    el.dataset.categoria = t.categoria || "classico";
-    el.dataset.chave = chave;
-    el.setAttribute("role", "button");
-    el.setAttribute("tabindex", "0");
-    el.setAttribute("aria-label", "Criar presente com o tema " + t.nome);
-
-    el.style.setProperty("--c-rosa", cores.rosa);
-    el.style.setProperty("--c-vinho", cores.vinho);
-    el.style.setProperty("--c-pastel", cores.pastel);
-
-    const destaque = DESTAQUES[chave];
-
-    el.innerHTML =
-        '<div class="shine"></div>' +
-        '<div class="tema-prev">' +
-            '<div class="tema-top">' +
-                '<span class="tema-badge ' + (destaque ? 'destaque' : '') + '">' +
-                    (destaque || (isEspecial ? "Exclusivo" : "Clássico")) +
-                '</span>' +
-                '<button type="button" class="tema-fav" title="Favoritar">♡</button>' +
-            '</div>' +
-            '<div class="tema-mock">' +
-                '<div class="tema-mock-titulo"></div>' +
-                '<div class="tema-mock-titulo-grande"></div>' +
-                '<div class="tema-mock-cont"></div>' +
-            '</div>' +
-        '</div>' +
-        '<div class="tema-info">' +
-            '<h3>' + t.emoji + ' ' + t.nome + '</h3>' +
-            '<p class="tema-description"></p>' +
-            '<a class="b">Criar com este tema <span class="arrow">→</span></a>' +
-        '</div>';
-
-    el.querySelector(".tema-description").textContent = t.desc || t.pequeno || t.sufixo || "Personalize suas memórias neste tema.";
-    el.querySelector(".tema-mock-titulo").textContent = a.chip;
-    el.querySelector(".tema-mock-titulo-grande").textContent = a.titulo;
-
-    const mockCont = el.querySelector(".tema-mock-cont");
-    a.cont.forEach(([n, rot]) => {
-        const d = document.createElement("div");
-        d.innerHTML = "<strong></strong><span></span>";
-        d.children[0].textContent = n;
-        d.children[1].textContent = rot;
-        mockCont.appendChild(d);
-    });
-
-    el.querySelector("a.b").href = "/criar-presente?tema=" + chave;
-
-    const fav = el.querySelector(".tema-fav");
-    fav.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        fav.classList.toggle("on");
-        fav.textContent = fav.classList.contains("on") ? "♥" : "♡";
-    });
-
-    // Tracking do mouse → apenas para o glow radial.
-    // O tilt 3D fica por conta do CSS (:hover), igual ao /criar-presente.
-    if (!window.matchMedia("(pointer: coarse)").matches) {
-        el.addEventListener("mousemove", (e) => {
-            const rect = el.getBoundingClientRect();
-            el.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
-            el.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
-        });
-        el.addEventListener("mouseleave", () => {
-            el.style.setProperty("--mouse-x", "50%");
-            el.style.setProperty("--mouse-y", "50%");
-        });
-    }
-
-    el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            const link = el.querySelector("a.b");
-            if (link) link.click();
-        }
-    });
-
-    return el;
+    return window.NAThemeCard.create(chave,t,{mode:'link',sample:AMOSTRA[chave],badge:DESTAQUES[chave]});
 }
 
 /* =====================================================
@@ -192,7 +108,7 @@ document.querySelectorAll(".filtro").forEach(btn => {
             titEspeciais.classList.remove("hidden");
         }
 
-        document.querySelectorAll(".tema-card").forEach((c, i) => {
+        document.querySelectorAll("[data-theme-card]").forEach((c, i) => {
             const visivel = c.offsetParent !== null;
             if (visivel) {
                 c.classList.remove("on");

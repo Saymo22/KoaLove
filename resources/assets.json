@@ -137,7 +137,8 @@
     "styles": [
       "resources/css/base.css",
       "resources/css/criar.css",
-      "resources/css/accessibility.css"
+      "resources/css/accessibility.css",
+      "resources/css/theme-cards.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -151,6 +152,7 @@
       "resources/js/core/theme-catalog.js",
       "resources/js/pages/theme-editor.js",
       "resources/js/pages/creator-workflow.js",
+      "resources/js/core/theme-card.js",
       "resources/js/pages/criar.js"
     ],
     "entry": "resources/js/entries/criar.js",
@@ -165,7 +167,8 @@
       "resources/css/base.css",
       "resources/css/home.css",
       "resources/css/pages/home-extracted.css",
-      "resources/css/accessibility.css"
+      "resources/css/accessibility.css",
+      "resources/css/theme-cards.css"
     ],
     "scripts": [
       "resources/js/core/config.js",
@@ -174,6 +177,7 @@
       "resources/js/app.js",
       "resources/js/core/plan-limits.js",
       "resources/js/core/navbar.js",
+      "resources/js/core/theme-card.js",
       "resources/js/pages/home.js",
       "resources/js/pages/home-pricing.js"
     ],
