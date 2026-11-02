@@ -35,7 +35,7 @@ window.NAThemeCard=(()=>{
     card.querySelector('.teaser').textContent=preview.chip;
     card.querySelector('.hero-title').textContent=preview.titulo;
     if (key === 'natal') {
-      card.querySelector('.fleuron').outerHTML = `<div class="natal-tree-medallion" aria-hidden="true">
+      card.querySelector('.card-bg-layer').innerHTML = `<div class="natal-tree-medallion" aria-hidden="true">
         <svg viewBox="0 0 100 100" focusable="false">
           <path class="tree-silhouette" d="M50 8 80 47H69L87 68H75L92 86H8L25 68H13L31 47H20Z"/>
           <circle cx="34" cy="44" r="4"/><circle cx="67" cy="44" r="4"/>
