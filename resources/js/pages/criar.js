@@ -263,66 +263,25 @@ function limparTodosErros() {
 });
 
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".tema")) {
+  if (e.target.closest("[data-theme-card]")) {
     $("passo1").classList.remove("temas-erro");
     $("erro1").textContent = "";
   }
 });
 
 function criarCardTema(chave, t) {
-  const a = AMOSTRA[chave] || AMOSTRA.namoro;
-  const isEspecial = t.categoria === "especial";
-  const cores = isEspecial && VITRINE_CORES[chave] ? VITRINE_CORES[chave] : t.cores;
-  const destaque = DESTAQUES[chave];
-
-  const el = document.createElement("div");
-  el.className = "tema prereveal";
-  el.dataset.chave = chave;
-  el.dataset.categoria = t.categoria || "classico";
-  el.style.setProperty("--t-rosa", cores.rosa);
-  el.style.setProperty("--t-vinho", cores.vinho);
-  el.setAttribute("role", "button");
-  el.setAttribute("tabindex", "0");
-  el.setAttribute("aria-label", "Escolher tema: " + t.nome);
-
-  el.innerHTML =
-    '<div class="tema-prev">' +
-    '<span class="tema-badge ' + (destaque ? "destaque" : "") + '">' + (destaque || (isEspecial ? "Exclusivo" : "Clássico")) + "</span>" +
-    '<div class="tema-mock">' +
-    '<div class="tema-mock-titulo"></div>' +
-    '<div class="tema-mock-grande"></div>' +
-    '<div class="tema-mock-cont"></div>' +
-    "</div>" +
-    "</div>" +
-    '<div class="tema-info">' +
-    '<h3><span class="emoji"></span><span class="nome"></span></h3>' +
-    "<p></p>" +
-    "</div>";
-
-  el.querySelector(".tema-mock-titulo").textContent = a.chip;
-  el.querySelector(".tema-mock-grande").textContent = a.titulo;
-  const mockCont = el.querySelector(".tema-mock-cont");
-  a.cont.forEach(([n, rot]) => {
-    const d = document.createElement("div");
-    d.innerHTML = "<strong></strong><span></span>";
-    d.children[0].textContent = n;
-    d.children[1].textContent = rot;
-    mockCont.appendChild(d);
-  });
-  el.querySelector(".emoji").textContent = t.emoji;
-  el.querySelector(".nome").textContent = t.nome;
-  el.querySelector(".tema-info p").textContent = t.desc || t.pequeno || t.sufixo || '';
+  const el=window.NAThemeCard.create(chave,t,{mode:'select',sample:AMOSTRA[chave],badge:DESTAQUES[chave]});
 
   function selecionar() {
     tema = chave;
-    document.querySelectorAll(".tema").forEach((x) => {
+    document.querySelectorAll("[data-theme-card]").forEach((x) => {
       x.classList.remove("sel");
-      x.setAttribute("aria-pressed", "false");
+      x.querySelector('.cta').setAttribute("aria-pressed", "false");
     });
     el.classList.add("sel");
     el.classList.remove("prereveal"); // garante o card visível mesmo antes da cascata
     el.classList.add("on");
-    el.setAttribute("aria-pressed", "true");
+    el.querySelector('.cta').setAttribute("aria-pressed", "true");
     document.body.classList.toggle("tema-escuro", temaEscuro(chave));
     aplicarTemaPreview(chave);
     if (!fraseEditada) $("frase").value = t.sufixo;
@@ -332,12 +291,6 @@ function criarCardTema(chave, t) {
   }
 
   el.addEventListener("click", selecionar);
-  el.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      selecionar();
-    }
-  });
 
   return el;
 }
@@ -987,7 +940,7 @@ async function carregarPedidoParaEdicao() {
 
   tema = pedido.tema;
   window.NAThemeEditor?.restore(pedido.themeData);
-  const cardTema = document.querySelector(`.tema[data-chave="${tema}"]`);
+  const cardTema = document.querySelector(`[data-theme-card][data-chave="${tema}"]`);
   if (cardTema) setTimeout(() => cardTema.click(), 100);
 
   $("de").value = pedido.de || "";

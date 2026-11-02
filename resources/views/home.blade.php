@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(["resources/css/base.css","resources/css/home.css","resources/css/pages/home-extracted.css","resources/js/entries/home.js"])
+    @vite(["resources/css/base.css","resources/css/home.css","resources/css/pages/home-extracted.css","resources/css/theme-cards.css","resources/js/entries/home.js"])
 </head>
 <body>
     @include('partials.noscript')
