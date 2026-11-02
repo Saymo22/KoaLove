@@ -598,6 +598,7 @@
     "scripts": [
       "resources/js/themes/natal.js"
     ],
-    "entry": "resources/js/entries/themes-natal.js"
+    "entry": "resources/js/entries/themes-natal.js",
+    "legacy_urls": []
   }
 }

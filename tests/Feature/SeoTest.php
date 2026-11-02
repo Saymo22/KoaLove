@@ -87,9 +87,10 @@ class SeoTest extends TestCase
         $xml = simplexml_load_string($response->getContent());
         $this->assertNotFalse($xml);
         $urls = array_map(fn ($url) => (string) $url->loc, iterator_to_array($xml->url, false));
-        $this->assertCount(18, $urls);
+        $this->assertCount(19, $urls);
         $this->assertContains('https://site.example.test/', $urls);
         $this->assertContains('https://site.example.test/temas/vinil', $urls);
+        $this->assertContains('https://site.example.test/temas/natal', $urls);
         $this->assertNotContains('https://site.example.test/entrar', $urls);
         foreach ($urls as $url) {
             $this->assertStringStartsWith('https://site.example.test/', $url);
