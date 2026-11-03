@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 function workflow(){
-  const controls=new Map();const node=()=>({value:'',textContent:'',checked:false,style:{},hidden:false,children:[],handlers:{},closest(){return this;},append(...items){this.children.push(...items);},replaceChildren(){this.children=[];},setAttribute(){},addEventListener(name,fn){this.handlers[name]=fn;},querySelector(){return {focus(){}};}});const get=id=>{if(!controls.has(id))controls.set(id,node());return controls.get(id);};
+  const controls=new Map();const node=()=>({value:'',textContent:'',checked:false,style:{},hidden:false,children:[],handlers:{},closest(){return this;},append(...items){this.children.push(...items);},prepend(item){this.children=[item,...this.children.filter(child=>child!==item)];},replaceChildren(){this.children=[];},setAttribute(){},addEventListener(name,fn){this.handlers[name]=fn;},querySelector(){return {focus(){}};}});const get=id=>{if(!controls.has(id))controls.set(id,node());return controls.get(id);};
   const buttons=Array.from({length:6},(_,i)=>({dataset:{step:String(i+1)},classList:{toggle(){}},setAttribute(){},removeAttribute(){}}));
   const state={theme:'namoro',plan:{photos:5,videos:1,music:1},photos:1,videos:0,music:false};
   const window={NACreatorState:()=>state};
@@ -31,6 +31,14 @@ test('Os 13 temas mantêm perfis e títulos próprios na seção de personaliza�
   for(const key of ['namoro','casamento','amizade','familia','aniversario','carta-antiga','jardim','scrapbook','netflix','cinema','vinil','spotify','retro']){
     api.configure(key);assert.equal(get('themeSectionTitle').textContent,api.profile(key).content);assert.ok(get('letterHint').textContent);
   }
+  assert.match(get('themePersonalHeading').textContent,/mixtape/);
+  assert.equal(get('personalSections').children[0],get('personalTheme'));
+  get('personalTheme').open=false;
+  api.configure('retro');
+  assert.equal(get('personalTheme').open,false,'Atualizar a prévia não reabre um painel fechado');
+  api.configure('namoro');
+  assert.equal(get('personalSections').children[0],get('personalMessage'));
+  assert.equal(get('themeLetterLabel').textContent,'Sua carta de amor');
 });
 test('Revisão informa o plano, pendências e leva cada atalho à seção correta',()=>{
   const c=workflow();c.state.planId='fixture-plan';c.window.NA_PRICING={plans:[{id:'fixture-plan',name:'Plano QA',amount_cents:990}]};
