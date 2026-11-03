@@ -16,11 +16,43 @@ window.NACreatorWorkflow = (() => {
     spotify:{name:'Spotify',title:'Nome da playlist principal',date:'Quando essa playlist começou?',content:'Playlists, faixas e álbuns',moments:'Conte os momentos do histórico. As playlists, as faixas e a mensagem em destaque são editadas na seção de recursos do tema.',letter:'Esta é a carta do presente. A mensagem em destaque da playlist tem um campo próprio.',music:'Este arquivo é a música principal e a alternativa para faixas sem áudio próprio. Nome e artista preenchem a primeira faixa.',noCounter:true},
     retro:{name:'Retrô',title:'Título da experiência retrô',date:'O início dessa história',content:'VHS, mixtape e fliperama',moments:'Os momentos formam a linha do tempo. Edite as fitas VHS, as músicas e as memórias do jogo na seção de recursos do tema.',letter:'Sua mensagem aparece na carta retrô.',music:'Este arquivo é a música principal e a alternativa para faixas sem áudio próprio. Nome e artista preenchem a primeira faixa da mixtape.'}
   };
+  const themeCopy = {
+    namoro: ['A capa de vocês', 'Personalize a história de vocês', 'Sua carta de amor'],
+    casamento: ['A capa da celebração', 'Personalize a celebração', 'Seus votos'],
+    amizade: ['A capa da amizade', 'Monte o quiz e as memórias', 'Seu bilhete de amizade'],
+    familia: ['A capa da família', 'Monte a árvore da família', 'Sua carta para a família'],
+    aniversario: ['A capa da homenagem', 'Prepare a homenagem', 'Sua mensagem de aniversário'],
+    'carta-antiga': ['A capa da correspondência', 'Prepare o cofre e a correspondência', 'Sua carta principal'],
+    jardim: ['A entrada do jardim', 'Cultive desejos e constelações', 'Sua carta na árvore'],
+    scrapbook: ['A capa do álbum', 'Monte o diário e os recortes', 'Seu bilhete no envelope'],
+    netflix: ['A série em destaque', 'Monte o catálogo e os episódios', 'Sua carta do presente'],
+    cinema: ['O cartaz de estreia', 'Monte os filmes e as fichas técnicas', 'Sua mensagem na claquete'],
+    vinil: ['A capa do disco', 'Monte as faixas e os encartes', 'Suas notas no encarte'],
+    spotify: ['A playlist em destaque', 'Monte as playlists, faixas e álbuns', 'Sua carta do presente'],
+    retro: ['A abertura retrô', 'Monte a mixtape, as fitas e o fliperama', 'Sua carta retrô'],
+  };
   let active=null,current=1;
   function profile(key){return profiles[key]||profiles.namoro;}
   function configure(key){
+    const changed = active !== key;
     active=key;const p=profile(key);
     const text=(id,value)=>{$(id).textContent=value;};
+    const [coverHeading, personalHeading, letterLabel] = themeCopy[key] || themeCopy.namoro;
+    text('themeCoverHeading', coverHeading);
+    text('themePersonalHeading', personalHeading);
+    text('themeLetterLabel', letterLabel);
+    text('themeShortcut', p.content);
+    text('messageShortcut', letterLabel);
+    text('themeSectionLabel', p.content);
+    text('themeMessageSection', letterLabel);
+    if (changed) {
+      const isNamoro = key === 'namoro';
+      const resources = $('personalTheme');
+      const message = $('personalMessage');
+      resources.open = !isNamoro;
+      message.open = isNamoro;
+      $('personalSections').prepend(isNamoro ? message : resources);
+    }
     text('themeContext',p.cover||`Você está criando um presente no tema ${p.name}. Os campos abaixo preenchem a capa e os dados principais.`);
     text('wizardThemeName',p.name);text('previewThemeName',p.name);
     document.querySelector('label[for="titulo"]').textContent=p.title||'Título da capa';
@@ -31,7 +63,7 @@ window.NACreatorWorkflow = (() => {
     $('counterExample').hidden=!['namoro','casamento','amizade'].includes(key);
     $('frase').maxLength=key==='netflix'?600:90;
     text('momentsHint',p.moments||'Seus momentos aparecem na linha do tempo do tema. Adicione só o que você quer contar.');
-    text('mediaHint',p.media||'As fotos e legendas aparecem na galeria do tema. Os vídeos aparecem nos stories.');
+    text('themeMediaGuide',p.media||'As fotos e legendas aparecem na galeria do tema. Os vídeos aparecem nos stories.');
     text('letterHint',p.letter);text('musicHint',p.music||'O arquivo escolhido toca no player do tema. Nome e artista identificam a música.');
     text('reasonsTitle',key==='familia'?'O que torna essa família especial?':key==='amizade'?'O que faz essa amizade especial?':'O que você admira nessa pessoa?');
     text('themeSectionTitle',p.content);

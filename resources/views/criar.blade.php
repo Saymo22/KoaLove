@@ -26,7 +26,7 @@
             </span> ATELIÊ DE MEMÓRIAS</div>
             <h1 class="criar-titulo">Um presente que é <em>só de vocês.</em>
           </h1>
-          <p class="criar-sub">Escolha o tema. Conte a história. Veja tudo ganhar vida.</p>
+          <p class="criar-sub">Escolha uma experiência e acompanhe cada detalhe na prévia enquanto cria.</p>
         </header>
         <section id="draftRecovery" class="draft-recovery" hidden aria-labelledby="draftRecoveryTitle">
           <h2 id="draftRecoveryTitle">Você tem um rascunho neste navegador</h2>
@@ -70,12 +70,17 @@
           <p id="creatorPlanError" class="erro" role="alert" hidden></p>
         </section>
 
-            <div class="temas-grupo">
+            <div class="theme-filters" role="group" aria-label="Filtrar temas">
+              <button type="button" data-theme-filter="all" aria-pressed="true">Todos</button>
+              <button type="button" data-theme-filter="classico" aria-pressed="false">Clássicos</button>
+              <button type="button" data-theme-filter="especial" aria-pressed="false">Exclusivos</button>
+            </div>
+            <div class="temas-grupo" data-theme-group="classico">
               <h3>Clássicos</h3>
               <div class="temas" id="temasClassicos">
               </div>
             </div>
-            <div class="temas-grupo">
+            <div class="temas-grupo" data-theme-group="especial">
               <h3>Especiais e exclusivos</h3>
               <div class="temas" id="temasEspeciais">
               </div>
@@ -91,7 +96,7 @@
           <div class="passo " data-passo="2" id="passo2" hidden>
             <div class="passo-header">
               <span class="step-kicker">ETAPA 02</span>
-              <h2 tabindex="-1">Uma capa com a sua cara</h2>
+              <h2 tabindex="-1" id="themeCoverHeading">Uma capa com a sua cara</h2>
               <p>Defina quem faz parte da história e como ela começa.</p>
             </div>
             <div class="theme-context" id="themeContext">
@@ -187,7 +192,8 @@
               <div class="erro-campo-msg" data-msg="videos">Escolha vídeos compatíveis com o plano.</div>
             </div>
             <div id="videosGrid" class="videos-grid"></div>
-            <p class="nota" id="mediaHint">
+            <p class="nota" id="themeMediaGuide"></p>
+            <p class="nota" id="mediaHint" role="status">
             </p>
             <div class="erro" id="erroMedia" role="status" aria-live="polite">
             </div>
@@ -196,7 +202,13 @@
               <button type="button" class="btn ouro" data-ir="4">Continuar →</button>
             </div>
           </div>
-          <div class="passo " data-passo="4" id="passo4" hidden><div class="passo-header"><span class="step-kicker">ETAPA 04</span><h2 tabindex="-1">Dê seu toque ao presente</h2><p>Abra uma seção por vez. A mensagem é obrigatória; os demais detalhes são opcionais.</p></div>
+          <div class="passo " data-passo="4" id="passo4" hidden><div class="passo-header"><span class="step-kicker">ETAPA 04</span><h2 tabindex="-1" id="themePersonalHeading">Dê seu toque ao presente</h2><p>Edite a mensagem principal e explore os recursos do tema escolhido.</p></div>
+            <div class="theme-filters section-shortcuts" role="group" aria-label="Atalhos de personalização">
+              <button type="button" data-personal-section="personalMessage" id="messageShortcut">Mensagem</button>
+              <button type="button" data-personal-section="personalTheme" id="themeShortcut">Recursos do tema</button>
+              <button type="button" data-personal-section="personalMoments">Momentos</button>
+            </div>
+            <div id="personalSections">
             <details class="creator-section" id="personalMoments"><summary><span>Momentos e detalhes</span><span class="section-state" data-section-state="personalMoments">Opcional</span></summary><div class="creator-section-body">
             <div class="section-note" id="momentsHint">
             </div>
@@ -221,15 +233,15 @@
             </div>
 
 </div></details>
-            <details class="creator-section" id="personalTheme"><summary><span>Recursos do tema</span><span class="section-state" data-section-state="personalTheme">Opcional</span></summary><div class="creator-section-body"><h3 id="themeSectionTitle">Seu tema</h3>
+            <details class="creator-section" id="personalTheme"><summary><span id="themeSectionLabel">Recursos do tema</span><span class="section-state" data-section-state="personalTheme">Opcional</span></summary><div class="creator-section-body"><h3 id="themeSectionTitle">Seu tema</h3>
             <section id="themeDetails" class="theme-details">
               <p class="nota">Escolha um tema para ver os campos dele.</p>
             </section>
 
 </div></details>
-            <details class="creator-section" id="personalMessage" open><summary><span>Mensagem e encerramento</span><span class="section-state" data-section-state="personalMessage">Pendente</span></summary><div class="creator-section-body">
+            <details class="creator-section" id="personalMessage" open><summary><span id="themeMessageSection">Mensagem e encerramento</span><span class="section-state" data-section-state="personalMessage">Pendente</span></summary><div class="creator-section-body">
             <div class="campo" data-campo="carta">
-              <label for="carta">Sua mensagem</label>
+              <label for="carta" id="themeLetterLabel">Sua mensagem</label>
               <textarea id="carta" aria-required="true"  maxlength="2000" placeholder="O que você gostaria de dizer?">
               </textarea>
               <div class="erro-campo-msg" data-msg="carta">Preencha este campo para continuar.</div>
@@ -243,6 +255,7 @@
             </div>
 
 </div></details>
+            </div>
             <div class="acoes"><button type="button" class="btn sec" data-ir="3">← Voltar</button><button type="button" class="btn ouro" data-ir="5">Continuar →</button></div>
           </div>
           <div class="passo " data-passo="5" id="passo5" hidden>
@@ -331,10 +344,11 @@
             </div>
             <span class="preview-label" id="previewLabel">
               <span class="live-dot">
-              </span> Ao vivo</span>
+              </span> <span id="previewConnection" role="status">Prévia</span></span>
             </div>
             <div class="preview-toolbar">
               <span id="previewModeLabel">Prévia de edição</span>
+              <button type="button" id="previewRetry" hidden>Tentar novamente</button>
               <button type="button" id="previewHome">↑ Início</button>
               <button type="button" id="previewExpand" aria-pressed="false">Ampliar ↗</button>
             </div>

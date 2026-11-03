@@ -876,3 +876,6 @@ footer small{display:block;margin-top:22px;font-family:'JetBrains Mono',monospac
 @media(pointer:coarse){button,[role=button],.flower,.polaroid,.member-card,.g-item{cursor:pointer}}
 @media(prefers-reduced-motion:reduce){[data-reveal]{opacity:1!important;transform:none!important}}
 @media(max-width:600px){.hero-inner,.hero-grid,.hero-text,.hero-content{min-width:0;max-width:100%}.hero-title,.hero-names,.hero-title span{overflow-wrap:anywhere}.hero-title .line1,.hero-title .line2{font-size:clamp(2rem,11vw,4.5rem)}.hero-sub,.hero-lede{max-width:100%}.hero-title{max-width:100%}}
+@media (max-width: 600px) {
+  .hero-title .line1 { font-size: clamp(1.2rem, 8vw, 3rem); }
+}

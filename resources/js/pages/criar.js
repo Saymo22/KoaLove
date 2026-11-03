@@ -273,6 +273,12 @@ function criarCardTema(chave, t) {
   const el=window.NAThemeCard.create(chave,t,{mode:'select',sample:AMOSTRA[chave],badge:DESTAQUES[chave]});
 
   function selecionar() {
+    const previousTheme = THEMES[tema] || window.NA_THEME_METADATA?.[tema];
+    const frase = $("frase");
+    if (!fraseEditada || frase.value === previousTheme?.sufixo) {
+      frase.value = t.sufixo || '';
+      fraseEditada = false;
+    }
     tema = chave;
     document.querySelectorAll("[data-theme-card]").forEach((x) => {
       x.classList.remove("sel");
@@ -284,7 +290,6 @@ function criarCardTema(chave, t) {
     el.querySelector('.cta').setAttribute("aria-pressed", "true");
     document.body.classList.toggle("tema-escuro", temaEscuro(chave));
     aplicarTemaPreview(chave);
-    if (!fraseEditada) $("frase").value = t.sufixo;
     $("erro1").textContent = "";
     atualizarPreview();
     scheduleDraftSave();
@@ -298,6 +303,26 @@ function criarCardTema(chave, t) {
 const wrapClassicos = $("temasClassicos");
 const wrapEspeciais = $("temasEspeciais");
 const todosCards = [];
+document.querySelectorAll('[data-theme-filter]').forEach(button => {
+  button.addEventListener('click', () => {
+    const filter = button.dataset.themeFilter;
+    document.querySelectorAll('[data-theme-filter]').forEach(option => {
+      option.setAttribute('aria-pressed', String(option === button));
+    });
+    document.querySelectorAll('[data-theme-group]').forEach(group => {
+      group.hidden = filter !== 'all' && group.dataset.themeGroup !== filter;
+    });
+  });
+});
+document.querySelectorAll('[data-personal-section]').forEach(button => {
+  button.addEventListener('click', () => {
+    const section = $(button.dataset.personalSection);
+    section.open = true;
+    const summary = section.querySelector('summary');
+    summary.focus({preventScroll: true});
+    summary.scrollIntoView({block: 'start'});
+  });
+});
 /* Revela os cards de forma robusta: anima em cascata, mas garante
    que TODOS fiquem visíveis mesmo se algo interromper a animação. */
 function revelarCards() {
@@ -362,10 +387,10 @@ function atualizarPreview() {
   const ini = $("inicio").value;
   const sufixo = $("frase").value.trim();
   const tempo = ini ? tempoJuntos(ini) : null;
-  document.querySelector('label[for="inicio"]').textContent = temaChave === 'aniversario' ? 'Data de nascimento' : 'Desde quando?';
+  window.NACreatorWorkflow?.configure(temaChave);
+  window.NAThemeEditor?.activate(temaChave);
   aplicarTemaPreview(temaChave);
   atualizarPreviewTema(temaChave);
-  window.NAThemeEditor?.activate(temaChave);
   if (tempo) {
     $("pAnos").textContent = tempo.anos;
     $("pMeses").textContent = tempo.meses;
@@ -377,7 +402,6 @@ function atualizarPreview() {
     $("previaFrase").textContent = "Escolha a data para ver o contador.";
   }
   window.NAThemeEditor?.setPhotos(fotoURLs,[...document.querySelectorAll('.ev-item')].map(el=>({data:el.querySelector('.ev-data').value.trim(),titulo:el.querySelector('.ev-titulo').value.trim(),texto:el.querySelector('.ev-texto').value.trim()})).filter(ev=>ev.titulo||ev.texto),photoIds);
-  window.NACreatorWorkflow?.configure(temaChave);
   pulsarPreview();
 }
 
@@ -385,12 +409,19 @@ function atualizarPreview() {
 let themePreviewFrame = null;
 let temaPreviewKey = null;
 let previewExperience = false;
+let previewTimeout;
+function previewStatus(message, retry = false) {
+  $('previewConnection').textContent = message;
+  $('previewRetry').hidden = !retry;
+}
 function atualizarPreviewTema(chave) {
   const ativo = !!window.NA_THEME_FILES?.[chave];
   $("previewScroll").classList.toggle("preview-tema", ativo);
   $("previewDots").hidden = ativo;
   const empty=$("previewEmpty");if(empty)empty.hidden=ativo;
   if (!ativo) {
+    clearTimeout(previewTimeout);
+    previewStatus('Prévia');
     themePreviewFrame?.remove();
     themePreviewFrame = null;
     temaPreviewKey = null;
@@ -402,6 +433,8 @@ function atualizarPreviewTema(chave) {
     temaPreviewKey = chave;
   }
   if (!themePreviewFrame) {
+    clearTimeout(previewTimeout);
+    previewStatus('Carregando');
     themePreviewFrame = document.createElement("iframe");
     themePreviewFrame.className = "preview-tema-frame";
     themePreviewFrame.title = "Prévia do tema " + (THEMES[chave]?.nome || chave);
@@ -409,6 +442,7 @@ function atualizarPreviewTema(chave) {
     if(chave === 'aniversario') themePreviewFrame.setAttribute('allow', 'microphone');
     themePreviewFrame.addEventListener("load", enviarPreviewTema);
     $("previewScroll").append(themePreviewFrame);
+    previewTimeout = setTimeout(() => previewStatus('Prévia indisponível', true), 12000);
   }
   enviarPreviewTema();
 }
@@ -441,9 +475,20 @@ function enviarPreviewTema() {
 window.addEventListener("message", event => {
   if(event.origin !== location.origin || event.source !== themePreviewFrame?.contentWindow)return;
   if(event.data?.type === 'NOSSO_AMOR_THEME_READY' && event.data.key === temaPreviewKey){
+    clearTimeout(previewTimeout);
+    previewStatus('Ao vivo');
     window.NAThemeEditor?.acceptSchema({...event.data,name:THEMES[temaPreviewKey]?.nome});
     enviarPreviewTema();
-  }else if(event.data?.type === "NOSSO_AMOR_NAMORO_READY") enviarPreviewTema();
+  }else if(event.data?.type === "NOSSO_AMOR_NAMORO_READY" && temaPreviewKey === 'namoro'){
+    clearTimeout(previewTimeout);
+    previewStatus('Ao vivo');
+    enviarPreviewTema();
+  }
+});
+$('previewRetry').addEventListener('click', () => {
+  themePreviewFrame?.remove();
+  themePreviewFrame = null;
+  atualizarPreview();
 });
 
 function renderFotosGrid() {
@@ -998,7 +1043,8 @@ async function carregarPedidoParaEdicao() {
   const planLoaded=creatorPlan();
   atualizarQtdMidia(planLoaded);
   renderMediaLimits(planLoaded);
-  fraseEditada = true;
+  const restoredTheme = THEMES[tema] || window.NA_THEME_METADATA?.[tema];
+  fraseEditada = typeof pedido.frase === 'string' && pedido.frase !== restoredTheme?.sufixo;
   await new Promise(resolve=>setTimeout(resolve,150));
   atualizarPreview();if(recovered)ir(window.NACreatorWorkflow.restoreStep(recovered));
 }
