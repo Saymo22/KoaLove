@@ -273,6 +273,12 @@ function criarCardTema(chave, t) {
   const el=window.NAThemeCard.create(chave,t,{mode:'select',sample:AMOSTRA[chave],badge:DESTAQUES[chave]});
 
   function selecionar() {
+    const previousTheme = THEMES[tema] || window.NA_THEME_METADATA?.[tema];
+    const frase = $("frase");
+    if (!fraseEditada || frase.value === previousTheme?.sufixo) {
+      frase.value = t.sufixo || '';
+      fraseEditada = false;
+    }
     tema = chave;
     document.querySelectorAll("[data-theme-card]").forEach((x) => {
       x.classList.remove("sel");
@@ -284,7 +290,6 @@ function criarCardTema(chave, t) {
     el.querySelector('.cta').setAttribute("aria-pressed", "true");
     document.body.classList.toggle("tema-escuro", temaEscuro(chave));
     aplicarTemaPreview(chave);
-    if (!fraseEditada) $("frase").value = t.sufixo;
     $("erro1").textContent = "";
     atualizarPreview();
     scheduleDraftSave();
@@ -1038,7 +1043,8 @@ async function carregarPedidoParaEdicao() {
   const planLoaded=creatorPlan();
   atualizarQtdMidia(planLoaded);
   renderMediaLimits(planLoaded);
-  fraseEditada = true;
+  const restoredTheme = THEMES[tema] || window.NA_THEME_METADATA?.[tema];
+  fraseEditada = typeof pedido.frase === 'string' && pedido.frase !== restoredTheme?.sufixo;
   await new Promise(resolve=>setTimeout(resolve,150));
   atualizarPreview();if(recovered)ir(window.NACreatorWorkflow.restoreStep(recovered));
 }
